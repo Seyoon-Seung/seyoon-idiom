@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>승세윤의 사자성어 암기앱</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&family=Noto+Serif+KR:wght@600;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --accent: #5E5CE6;
+            --accent-dark: #4442B1;
+            --bg: #F5F5F7;
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --glass-shadow: 0 12px 40px -8px rgba(31, 38, 135, 0.08);
+            --ease-fluid: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg); overflow-x: hidden; overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+            letter-spacing: -0.02em; color: #1d1d1f;
+            -webkit-touch-callout: none;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+        .hanja-font { font-family: 'Noto Serif KR', serif; }
+        .hidden { display: none !important; }
+
+        .aurora-container { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #F5F5F7; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; animation: float 14s infinite ease-in-out; will-change: transform; }
+        .blob-1 { top: -10%; left: -5%; width: 50vw; height: 50vw; background: #E0E7FF; }
+        .blob-2 { bottom: -10%; right: -5%; width: 40vw; height: 40vw; background: #FAE8FF; animation-delay: -7s; }
+        .blob-3 { top: 30%; left: 20%; width: 30vw; height: 30vw; background: #F0F9FF; animation-delay: -4s; opacity: 0.35; }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.35);
+            transition: all 0.4s var(--ease-bounce);
+            position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        @media (hover: hover) {
+            .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px -4px rgba(99, 102, 241, 0.5); }
+        }
+        .primary-btn:active { transform: scale(0.92) translateY(2px); opacity: 0.9; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); transition: all 0.1s; }
+        .primary-btn:disabled { opacity: 0.4; transform: none; box-shadow: none; background: #c7c8f0; pointer-events: none; }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 15px 30px -2px rgba(99, 102, 241, 0.6); transform: scale(1.02); }
+        }
+        .btn-pulse:not(:disabled) { animation: pulseGlow 2s infinite var(--ease-fluid); }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUpFade 0.6s var(--ease-bounce) both; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+
+        @keyframes textPop {
+            0% { opacity: 0; transform: translateY(15px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .text-pop { animation: textPop 0.5s var(--ease-bounce) both; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake-error { animation: shake 0.4s var(--ease-fluid); color: #f43f5e !important; border-bottom-color: #f43f5e !important; }
+
+        @keyframes hoverFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .icon-float { animation: hoverFloat 3s ease-in-out infinite; }
+
+        .chapter-btn { 
+            transition: transform 0.4s var(--ease-bounce), background-color 0.3s var(--ease-fluid), border-color 0.3s var(--ease-fluid), box-shadow 0.4s var(--ease-bounce);
+            position: relative;
+            will-change: transform, box-shadow;
+        }
+        
+        @keyframes tilePopUp {
+            0% { opacity: 0; transform: translateY(40px) scale(0.7) rotate(-3deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-entry { animation: tilePopUp 0.6s var(--ease-bounce) backwards; }
+
+        .chapter-btn.selected {
+            background: white; border: 2.5px solid var(--accent); color: var(--accent);
+            box-shadow: 0 15px 30px -8px rgba(94, 92, 230, 0.4);
+            transform: translateY(-8px) scale(1.05); z-index: 10;
+        }
+        .card-fixed-size { 
+            width: 100%; 
+            max-width: 340px; 
+            min-height: 380px; 
+            margin: 0 auto; 
+            flex-shrink: 0; 
+        }
+        @media (min-width: 640px) {
+            .card-fixed-size { max-width: 400px; min-height: 420px; }
+            #study-mean-container { min-height: 100px !important; }
+        }
+        #study-mean-container { min-height: 80px; display: flex; align-items: center; justify-content: center; width: 100%; }
+
+        .fade-enter-active { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .fluid-card-exit { animation: fluidExit 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .fluid-card-enter { animation: fluidEnter 0.5s var(--ease-bounce) forwards; }
+        @keyframes fluidExit { 0% { transform: translateX(0) scale(1); opacity: 1; } 100% { transform: translateX(-40px) scale(0.95); opacity: 0; } }
+        @keyframes fluidEnter { 0% { transform: translateX(40px) scale(0.95); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
+
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.3); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        #quiz-feedback { transition: opacity 0.35s var(--ease-fluid); opacity: 0; pointer-events: none; backdrop-filter: blur(16px); z-index: 100; }
+        #quiz-feedback.show { opacity: 1; pointer-events: auto; }
+    </style>
+</head>
+<body>
+    <div class="aurora-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    
+    <div id="app" class="max-w-md sm:max-w-[520px] mx-auto min-h-[100dvh] flex flex-col p-5 sm:p-10 relative transition-all duration-500">
+        <!-- 헤더 -->
+        <header class="flex items-center mb-6 shrink-0 z-20 h-12 gap-4">
+            <button id="btn-back" class="hidden w-10 h-10 glass rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white hover:shadow-md active:scale-90 text-gray-700 shadow-sm">
+                <svg id="header-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></svg>
+            </button>
+            <div id="header-title" class="flex flex-col justify-center transition-opacity duration-300">
+                <h1 class="text-2xl font-extrabold text-gray-900 leading-tight tracking-tight">승세윤의 사자성어</h1>
+            </div>
+        </header>
+
+        <div id="main-container" class="flex-1 z-10 pb-32 relative">
+            <!-- 1. 메뉴 뷰 -->
+            <div id="view-menu" class="space-y-10 fade-enter-active">
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="btn-start-study" class="animate-slide-up glass p-5 rounded-[32px] flex flex-col items-center gap-3 transition-all duration-300 h-40 justify-center group active:scale-95 sm:hover:shadow-xl sm:hover:-translate-y-1">
+                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center shadow-inner icon-float">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V5H6.5A2.5 2.5 0 0 0 4 7.5v12z"/></svg>
+                        </div>
+                        <div class="text-center">
+                            <span class="block font-extrabold text-sm text-gray-800">학습 카드</span>
+                            <span class="text-[10px] text-gray-500 font-bold mt-1 block tracking-tight">(챕터를 선택하세요)</span>
+                        </div>
+                    </button>
+                    <button id="btn-review" class="animate-slide-up delay-100 glass p-5 rounded-[32px] flex flex-col items-center gap-3 transition-all duration-300 h-40 justify-center group active:scale-95 disabled:opacity-50 sm:hover:shadow-xl sm:hover:-translate-y-1">
+                        <div id="review-icon-bg" class="w-14 h-14 bg-gray-50 text-gray-500 rounded-[22px] flex items-center justify-center shadow-inner icon-float">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9.5 12.5 5 5"/><path d="m14.5 12.5-5 5"/></svg>
+                        </div>
+                        <div class="text-center">
+                            <span id="review-btn-text" class="block font-extrabold text-sm text-gray-800">오답 노트</span>
+                            <span id="review-count" class="text-[10px] text-gray-500 font-bold mt-1 block tracking-tight">기록 없음</span>
+                        </div>
+                    </button>
+                </div>
+
+                <section class="space-y-4 animate-slide-up delay-200">
+                    <div class="flex justify-between items-center px-1">
+                        <div class="flex items-center gap-2">
+                            <div class="w-1 h-3.5 bg-indigo-500 rounded-full"></div>
+                            <h3 class="text-[11px] font-black text-gray-600 uppercase tracking-[0.15em]">Chapter Selection</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="btn-multi-select" class="text-[10px] font-bold text-gray-600 bg-white/50 glass px-3 py-1.5 rounded-lg transition-all duration-300 active:scale-90 sm:hover:bg-white">복수선택</button>
+                            <button id="btn-select-all" class="text-[10px] font-bold text-indigo-600 bg-indigo-50/50 glass px-3 py-1.5 rounded-lg transition-all duration-300 active:scale-90 hidden sm:hover:bg-indigo-100">전체선택</button>
+                        </div>
+                    </div>
+                    <div id="chapter-grid" class="grid grid-cols-4 gap-3 p-1 min-h-[160px]"></div>
+                </section>
+            </div>
+
+            <!-- 2. 학습 뷰 -->
+            <div id="view-study" class="hidden h-full flex flex-col gap-6 pt-2 fade-enter-active">
+                <div class="px-2 flex justify-between items-end">
+                    <p class="text-3xl font-light text-gray-900 tracking-tighter"><span id="study-current-num" class="font-black text-indigo-600">1</span><span class="text-lg text-gray-300 mx-1.5">/</span><span id="study-total-num" class="text-lg text-gray-500 font-semibold">10</span></p>
+                </div>
+                <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden mx-0.5">
+                    <div id="study-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+                </div>
+                <div class="study-card-container flex justify-center w-full mt-4">
+                    <div id="study-card-inner" class="glass card-fixed-size rounded-[44px] p-8 flex flex-col items-center justify-center text-center gap-6 shadow-xl relative transition-all duration-300 hover:shadow-2xl">
+                        <p id="study-index" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-4 py-1.5 rounded-full uppercase tracking-widest transition-all">Index 001</p>
+                        <div class="space-y-4 w-full">
+                            <h3 id="study-text" class="text-pop text-5xl sm:text-6xl font-black text-gray-900 tracking-tighter leading-tight break-keep">사자성어</h3>
+                            <p id="study-hanja" class="text-pop text-2xl sm:text-3xl hanja-font text-gray-500 font-normal tracking-[0.2em]" style="animation-delay: 0.1s;">漢字</p>
+                        </div>
+                        <div class="h-1.5 w-10 bg-indigo-50 rounded-full my-1"></div>
+                        <div id="study-mean-container">
+                            <p id="study-mean" class="text-pop text-xl sm:text-2xl font-bold text-gray-700 break-keep px-4 leading-relaxed" style="animation-delay: 0.2s;">성어의 뜻풀이</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-4 w-full px-2 mt-6">
+                    <button id="btn-study-prev" class="flex-1 h-14 glass rounded-[20px] font-bold text-gray-700 text-base transition-all duration-300 active:scale-95 disabled:opacity-30 sm:hover:bg-white sm:hover:shadow-md">이전</button>
+                    <button id="btn-study-next" class="flex-1 primary-btn h-14 rounded-[20px] font-bold text-base shadow-md transition-all">다음 카드</button>
+                </div>
+            </div>
+
+            <!-- 3. 퀴즈 뷰 -->
+            <div id="view-quiz" class="hidden h-full flex flex-col gap-6 pt-2">
+                <div class="px-2 flex justify-between items-center">
+                    <p class="text-3xl font-light text-gray-900 tracking-tighter"><span id="quiz-current" class="font-black text-indigo-600">1</span><span class="text-lg text-gray-300 mx-1.5">/</span><span id="quiz-total" class="text-lg text-gray-500 font-semibold">10</span></p>
+                </div>
+                <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden mx-0.5">
+                    <div id="quiz-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-center w-full mt-2">
+                    <div id="quiz-card" class="glass card-fixed-size rounded-[44px] p-8 flex flex-col items-center justify-center gap-8 relative overflow-hidden shadow-xl bg-white/70 transition-all duration-300">
+                        <div id="quiz-feedback" class="absolute inset-0 z-50 flex flex-col items-center justify-center cursor-pointer" onclick="skipFeedback()">
+                            <div id="feedback-icon-box" class="w-20 h-20 rounded-[28px] flex items-center justify-center text-white mb-6 shadow-2xl"></div>
+                            <div id="feedback-text-box" class="text-center space-y-3 px-8">
+                                <p id="feedback-answer" class="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter"></p>
+                                <p id="feedback-mean" class="text-base sm:text-lg font-semibold text-gray-700 leading-relaxed break-keep"></p>
+                            </div>
+                        </div>
+                        <div class="text-center space-y-6 w-full mt-2">
+                            <p id="quiz-q-wrapper" class="text-pop text-6xl sm:text-7xl font-black text-gray-900 tracking-tighter leading-tight flex justify-center gap-2">
+                                <span id="quiz-q-text">??</span><span class="text-gray-200">??</span>
+                            </p>
+                            <div id="quiz-hint" class="opacity-0 transition-all duration-500 transform translate-y(1rem) h-20 flex flex-col items-center justify-center gap-1.5"></div>
+                        </div>
+                        <div class="w-full max-w-[240px] space-y-6">
+                            <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" class="w-full bg-transparent border-b-[3px] border-gray-300 focus:border-indigo-600 text-center text-5xl font-black outline-none pb-2 text-indigo-600 transition-all duration-300 placeholder:text-gray-200 caret-indigo-500" placeholder="??">
+                            <div class="grid grid-cols-4 gap-3">
+                                <button id="btn-quiz-skip" class="col-span-1 h-14 glass rounded-2xl flex items-center justify-center text-gray-500 transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:shadow-md"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l10 8-10 8V4zM19 5v14"/></svg></button>
+                                <button id="btn-quiz-hint" class="col-span-1 h-14 glass rounded-2xl text-[11px] font-bold text-gray-600 transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:text-indigo-600 sm:hover:shadow-md">힌트</button>
+                                <button id="btn-quiz-check" disabled class="col-span-2 h-14 primary-btn rounded-2xl text-xs font-black tracking-widest uppercase">Check</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 결과 뷰 -->
+            <div id="view-result" class="hidden h-full flex flex-col gap-8 py-6">
+                <div class="animate-slide-up glass p-10 rounded-[44px] w-full space-y-8 shadow-xl text-center">
+                    <div id="result-icon-box" class="w-24 h-24 bg-gradient-to-br from-indigo-50 to-blue-50 text-indigo-600 rounded-[32px] mx-auto flex items-center justify-center shadow-inner icon-float transition-all duration-500">
+                        <div id="result-icon-svg">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h2 id="result-title" class="text-pop text-3xl font-black text-gray-900 tracking-tight leading-none transition-colors duration-300">학습 완료!</h2>
+                        <div class="text-pop flex items-center justify-center gap-3 text-5xl font-black text-indigo-600" style="animation-delay: 0.1s;">
+                            <span id="result-score">0</span><span class="text-gray-300 text-3xl">/</span><span id="result-total" class="text-gray-500 text-3xl">0</span>
+                        </div>
+                    </div>
+                    <button id="btn-result-home" class="w-full primary-btn h-16 rounded-[24px] font-black text-base shadow-lg mt-2">홈으로 돌아가기</button>
+                </div>
+            </div>
+
+            <!-- 5. 오답노트 뷰 -->
+            <div id="view-review" class="hidden space-y-6 pb-20">
+                <div class="animate-slide-up flex justify-between items-center px-1 mb-2">
+                    <div class="space-y-0.5">
+                        <h2 class="text-2xl font-black text-gray-900 tracking-tight">오답 노트</h2>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Personal Library</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="btn-test-wrongs" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-[10px] font-bold shadow-lg transition-all duration-300 active:scale-90 sm:hover:-translate-y-1">테스트</button>
+                        <button id="btn-trash" class="text-rose-500 w-10 h-10 flex items-center justify-center glass rounded-xl transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:shadow-md"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                </div>
+                <div id="review-list" class="grid gap-3"></div>
+            </div>
+        </div>
+
+        <footer id="footer-menu" class="fixed bottom-4 left-0 right-0 p-5 sm:p-10 bg-transparent z-30 transition-transform duration-700 pointer-events-none">
+            <div class="max-w-md sm:max-w-[480px] mx-auto glass p-3.5 rounded-full flex items-center shadow-[0_25px_60px_-15px_rgba(94,92,230,0.25)] pointer-events-auto backdrop-blur-3xl">
+                <div class="flex-1 px-6 flex flex-col justify-center">
+                    <p id="footer-status" class="font-black text-gray-900 text-base tracking-tight transition-all duration-300">챕터를 선택하세요</p>
+                    <p class="text-[10px] text-gray-400 font-bold tracking-tighter mt-0.5">* 4글자 성어만 시험 포함</p>
+                </div>
+                <button id="btn-footer-start" disabled class="primary-btn btn-pulse h-14 px-10 rounded-full text-sm font-black tracking-widest uppercase transition-all duration-300">
+                    START
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 모달 -->
+    <div id="modal-confirm" class="modal-overlay">
+        <div class="glass w-full max-w-[280px] rounded-[36px] p-8 shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-confirm-inner">
+            <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-[22px] flex items-center justify-center mx-auto mb-6 shadow-inner"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <h3 class="text-lg font-black text-gray-900 mb-2">모두 비울까요?</h3>
+            <p class="text-xs text-gray-500 mb-8 font-medium">저장된 오답이 삭제됩니다.</p>
+            <div class="flex gap-3">
+                <button id="btn-modal-cancel" class="flex-1 py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-bold text-xs active:scale-95 sm:hover:bg-gray-200">취소</button>
+                <button id="btn-modal-confirm" class="flex-1 py-3.5 bg-rose-500 text-white rounded-2xl font-bold text-xs active:scale-95 sm:hover:bg-rose-600">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-stop-quiz" class="modal-overlay">
+        <div class="glass w-full max-w-[280px] rounded-[36px] p-8 shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-stop-inner">
+            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center mx-auto mb-6 shadow-inner"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <h3 class="text-lg font-black text-gray-900 mb-2">그만둘까요?</h3>
+            <p class="text-xs text-gray-500 mb-8 font-medium">기록이 저장되지 않습니다.</p>
+            <div class="flex gap-3">
+                <button id="btn-stop-cancel" class="flex-1 py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-bold text-xs active:scale-95 sm:hover:bg-gray-200">계속</button>
+                <button id="btn-stop-confirm" class="flex-1 primary-btn py-3.5 rounded-2xl font-bold text-xs shadow-lg">중단</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 🚀 RAW_DATA 정밀 교정 ---
+        const RAW_DATA = [
+            { index: 1, text: "가인박명", hanja: "佳人薄命", mean: "아름다운 사람은 운명이 기박함" },
+            { index: 2, text: "가정맹호", hanja: "苛政猛虎", mean: "가혹한 정치는 호랑이보다 무섭다" },
+            { index: 3, text: "각주구검", hanja: "刻舟求劍", mean: "융통성 없이 현실에 맞지 않는 생각을 고집함" },
+            { index: 4, text: "간담상조", hanja: "肝膽相照", mean: "서로 마음을 터놓고 친하게 지냄" },
+            { index: 5, text: "건곤일척", hanja: "乾坤一擲", mean: "운명을 걸고 단판 승부를 겨룸" },
+            { index: 6, text: "격물치지", hanja: "格物致知", mean: "사물의 이치를 연구하여 지식을 넓힘" },
+            { index: 7, text: "견마지양", hanja: "犬馬之養", mean: "부모를 봉양만 하고 공경하지 않음" },
+            { index: 8, text: "결초보은", hanja: "結草報恩", mean: "죽어서도 은혜를 잊지 않고 갚음" },
+            { index: 9, text: "경국지색", hanja: "傾國之色", mean: "나라를 기울게 할 만큼 아름다운 미인" },
+            { index: 10, text: "계륵", hanja: "鷄肋", mean: "큰 소용은 없으나 버리기엔 아까운 것" },
+            { index: 11, text: "계명구도", hanja: "鷄鳴狗盜", mean: "비굴하게 남을 속이는 하찮은 재주" },
+            { index: 12, text: "고복격양", hanja: "鼓腹擊壤", mean: "태평성대를 즐거워함" },
+            { index: 13, text: "고침안면", hanja: "高枕安眠", mean: "근심 없이 편안하게 잠" },
+            { index: 14, text: "곡학아세", hanja: "曲學阿世", mean: "학문을 굽혀 세상에 아첨함" },
+            { index: 15, text: "과유불급", hanja: "過猶不及", mean: "지나친 것은 미치지 못한 것과 같음" },
+            { index: 16, text: "공중누각", hanja: "空中樓閣", mean: "근거 없는 가공의 사물" },
+            { index: 17, text: "관포지교", hanja: "管鮑之交", mean: "아주 친한 친구 사이" },
+            { index: 18, text: "괄목상대", hanja: "刮目相對", mean: "학식이나 재주가 놀랍게 향상됨" },
+            { index: 19, text: "교언영색", hanja: "巧言令色", mean: "남의 환심을 사려 아첨함" },
+            { index: 20, text: "구밀복검", hanja: "口蜜腹劍", mean: "입으로는 달콤하나 속에는 칼을 품음" },
+            { index: 21, text: "구우일모", hanja: "九牛一毛", mean: "아주 큰 것 속의 아주 작은 것" }, // "초" -> "것"
+            { index: 22, text: "군계일학", hanja: "群鷄一鶴", mean: "평범한 무리 중 뛰어난 사람" },
+            { index: 23, text: "권토중래", hanja: "捲土重來", mean: "실패 후 다시 힘을 쌓아 쳐들어옴" },
+            { index: 24, text: "근묵자흑", hanja: "近墨者黑", mean: "나쁜 사람과 가까이하면 물들기 쉬움" },
+            { index: 25, text: "금상첨화", hanja: "錦上添花", mean: "좋은 일 위에 또 좋은 일이 더해짐" },
+            { index: 26, text: "금의야행", hanja: "錦衣夜行", mean: "자랑해도 남이 알아주지 않음" }, // "행" -> "行"
+            { index: 27, text: "기사회생", hanja: "起死回生", mean: "죽을 고비에서 다시 살아남" },
+            { index: 28, text: "기우", hanja: "杞憂", mean: "쓸데없는 걱정" },
+            { index: 29, text: "기호지세", hanja: "騎虎之勢", mean: "중도에 그만둘 수 없는 형세" },
+            { index: 30, text: "난형난제", hanja: "難兄難弟", mean: "우열을 가리기 어려움" },
+            { index: 31, text: "남가일몽", hanja: "南柯一夢", mean: "덧없는 부귀영화" },
+            { index: 32, text: "남상", hanja: "濫觴", mean: "사물의 시초" },
+            { index: 33, text: "낭중지추", hanja: "囊中之錐", mean: "재능이 뛰어난 사람은 저절로 드러남" },
+            { index: 34, text: "누란지위", hanja: "累卵之危", mean: "몹시 위태로운 형세" },
+            { index: 35, text: "다다익선", hanja: "多多益善", mean: "많으면 많을수록 좋음" },
+            { index: 36, text: "단장", hanja: "斷腸", mean: "창자가 끊어질 듯한 슬픔" },
+            { index: 37, text: "당랑거철", hanja: "螳螂拒轍", mean: "제 분수 모르고 강적에게 덤빔" },
+            { index: 38, text: "대기만성", hanja: "大器晩成", mean: "큰 인물은 늦게 이루어짐" },
+            { index: 39, text: "도청도설", hanja: "道聽塗說", mean: "길거리의 뜬소문" },
+            { index: 40, text: "동병상련", hanja: "同病相憐", mean: "같은 처지의 사람끼리 서로 동정함" }, // "동병상련" -> 한자
+            { index: 41, text: "등용문", hanja: "登龍門", mean: "출세의 관문" },
+            { index: 42, text: "마이동풍", hanja: "馬耳東風", mean: "남의 말을 귀담아듣지 않음" },
+            { index: 43, text: "맥수지탄", hanja: "麥秀之嘆", mean: "나라가 망함을 한탄함" },
+            { index: 44, text: "맹모삼천", hanja: "孟母三遷", mean: "교육 환경의 중요성" },
+            { index: 45, text: "명경지수", hanja: "明鏡止水", mean: "고요하고 깨끗한 마음" },
+            { index: 46, text: "모순", hanja: "矛盾", mean: "앞뒤가 맞지 않음" },
+            { index: 47, text: "무용지용", hanja: "無用之用", mean: "쓸모없는 것이 도리어 크게 쓰임" },
+            { index: 48, text: "문경지교", hanja: "刎頸之交", mean: "생사를 같이할 수 있는 친한 사이" }, // "교" -> "交"
+            { index: 49, text: "문전성시", hanja: "門前成市", mean: "찾아오는 사람이 많아 붐빔" },
+            { index: 50, text: "미봉책", hanja: "彌縫策", mean: "임시변통으로 꾸며대는 계책" },
+            { index: 51, text: "미생지신", hanja: "尾生之信", mean: "약속을 굳게 지킴" },
+            { index: 52, text: "발본색원", hanja: "拔本塞源", mean: "폐단의 근본 원인을 아주 없애 버림" },
+            { index: 53, text: "방약무인", hanja: "傍若無人", mean: "제세상인 듯 함부로 행동함" },
+            { index: 54, text: "배수지진", hanja: "背水之陣", mean: "필사의 각오로 적과 싸움" },
+            { index: 55, text: "백년하청", hanja: "百年河淸", mean: "아무리 기다려도 실현될 가능성이 없음" },
+            { index: 56, text: "백면서생", hanja: "白面書生", mean: "글만 읽고 세상일에 어두운 사람" }, // "생" -> "生"
+            { index: 57, text: "백미", hanja: "白眉", mean: "여럿 중 가장 뛰어난 사람이나 물건" },
+            { index: 58, text: "부화뇌동", hanja: "附和雷同", mean: "주관 없이 남의 의견을 따름" }, // "동" -> "同"
+            { index: 59, text: "불비불명", hanja: "不蜚不鳴", mean: "큰 일을 위해 때를 기다림" },
+            { index: 60, text: "불원천리", hanja: "不遠千里", mean: "천 리를 멀다 하지 않고 달려옴" },
+            { index: 61, text: "불치하문", hanja: "不恥下問", mean: "아랫사람에게 묻는 것을 부끄러워하지 않음" },
+            { index: 62, text: "사면초가", hanja: "四面楚歌", mean: "사방이 적에게 둘러싸인 고립무원의 상태" },
+            { index: 63, text: "살신성인", hanja: "殺身成仁", mean: "자신을 희생하여 인을 이룸" },
+            { index: 64, text: "삼고초려", hanja: "三顧草廬", mean: "인재를 얻기 위해 정성을 다함" },
+            { index: 65, text: "삼순구식", hanja: "三旬九食", mean: "몹시 가난한 생활" },
+            { index: 66, text: "상전벽해", hanja: "桑田碧海", mean: "세상이 몰라보게 바뀜" },
+            { index: 67, text: "새옹지마", hanja: "塞翁之馬", mean: "세상의 길흉화복은 예측할 수 없음" },
+            { index: 68, text: "수구초심", hanja: "首丘初心", mean: "고향을 그리워하는 마음" },
+            { index: 69, text: "수불석권", hanja: "手不釋卷", mean: "손에서 책을 놓지 않고 늘 공부함" },
+            { index: 70, text: "수서양단", hanja: "首鼠兩端", mean: "결정을 내리지 못하고 망설임" },
+            { index: 71, text: "수어지교", hanja: "水魚之交", mean: "매우 친밀한 관계" },
+            { index: 72, text: "수주대토", hanja: "守株待兎", mean: "융통성 없이 구습만 지킴" },
+            { index: 73, text: "순망치한", hanja: "唇亡齒寒", mean: "서로 이해관계가 밀접한 사이" },
+            { index: 74, text: "안중지정", hanja: "眼中之釘", mean: "눈엣가시처럼 몹시 미운 사람" },
+            { index: 75, text: "양두구육", hanja: "羊頭狗肉", mean: "겉은 번지르르하나 속은 변변치 않음" },
+            { index: 76, text: "양상군자", hanja: "梁上君子", mean: "들보 위의 군자, 즉 도둑" },
+            { index: 77, text: "양약고구", hanja: "良藥苦口", mean: "좋은 약은 입에 쓰나 병에는 좋다" },
+            { index: 78, text: "어부지리", hanja: "漁父之利", mean: "둘이 다투는 사이 제삼자가 이득을 봄" },
+            { index: 79, text: "연목구어", hanja: "緣木求魚", mean: "불가능한 일을 하려 함" },
+            { index: 80, text: "오리무중", hanja: "五里霧中", mean: "갈피를 잡지 못하고 헤맴" },
+            { index: 81, text: "오십보백보", hanja: "五十步百步", mean: "조금의 차이는 있으나 본질은 같음" },
+            { index: 82, text: "오월동주", hanja: "吳越同舟", mean: "원수끼리 같은 배에 탐" },
+            { index: 83, text: "온고지신", hanja: "溫故知新", mean: "옛것을 익혀 새것을 앎" },
+            { index: 84, text: "와신상담", hanja: "臥薪嘗膽", mean: "목표를 위해 고난을 참음" },
+            { index: 85, text: "우공이산", hanja: "愚公移山", mean: "끊임없이 노력하면 결국 이룸" },
+            { index: 86, text: "우화등선", hanja: "羽化登仙", mean: "신선이 되어 하늘로 올라감" },
+            { index: 87, text: "위편삼절", hanja: "韋編三絶", mean: "책을 끈이 끊어질 정도로 열심히 읽음" },
+            { index: 88, text: "유비무환", hanja: "有備無患", mean: "준비가 있으면 걱정이 없음" },
+            { index: 89, text: "읍참마속", hanja: "泣斬馬謖", mean: "대의를 위해 아끼는 사람을 처벌함" },
+            { index: 90, text: "이심전심", hanja: "以心傳心", mean: "마음에서 마음으로 통함" },
+            { index: 91, text: "일거양득", hanja: "一擧兩得", mean: "한 가지 일로 두 가지 이득을 얻음" },
+            { index: 92, text: "일망타진", hanja: "一網打盡", mean: "한꺼번에 모두 잡음" },
+            { index: 93, text: "자포자기", hanja: "自暴自棄", mean: "절망하여 자신을 돌보지 않음" },
+            { index: 94, text: "전전긍긍", hanja: "戰戰兢兢", mean: "몹시 두려워하며 조심함" },
+            { index: 95, text: "전화위복", hanja: "轉禍爲福", mean: "화가 바뀌어 복이 됨" },
+            { index: 96, text: "절차탁마", hanja: "切磋琢磨", mean: "학문이나 인격을 갈고닦음" },
+            { index: 97, text: "점입가경", hanja: "漸入佳境", mean: "갈수록 상황이 재미있어짐" },
+            { index: 98, text: "정저지와", hanja: "井底之蛙", mean: "우물 안 개구리" },
+            { index: 99, text: "조강지처", hanja: "糟糠之妻", mean: "고생을 함께한 아내" },
+            { index: 100, text: "조령모개", hanja: "朝令暮改", mean: "명령을 자꾸 바꿈" },
+            { index: 101, text: "조삼모사", hanja: "朝三暮四", mean: "간사한 꾀로 남을 속임" },
+            { index: 102, text: "죽마고우", hanja: "竹馬故友", mean: "어릴 때부터 친한 친구" }, // "죽마고우" -> 한자
+            { index: 103, text: "중과부적", hanja: "衆寡不敵", mean: "적은 수로 많은 적을 대적하지 못함" },
+            { index: 104, text: "지록위마", hanja: "指鹿爲馬", mean: "윗사람을 농락하여 권세를 휘두름" },
+            { index: 105, text: "천의무봉", hanja: "天衣無縫", mean: "완전무결하여 흠이 없음" },
+            { index: 106, text: "천재일우", hanja: "千載一遇", mean: "좀처럼 만나기 어려운 기회" },
+            { index: 107, text: "철면피", hanja: "鐵面皮", mean: "뻔뻔스럽고 염치없는 사람" }, // "피" -> "皮"
+            { index: 108, text: "청출어람", hanja: "靑出於藍", mean: "제자가 스승보다 나음" },
+            { index: 109, text: "촌철살인", hanja: "寸鐵殺人", mean: "짧은 말로 남을 감동시키거나 핵심을 찌름" },
+            { index: 110, text: "쾌도난마", hanja: "快刀亂麻", mean: "얽힌 일을 명쾌하게 처리함" },
+            { index: 111, text: "타산지석", hanja: "他山之石", mean: "다른 사람의 하찮은 언행도 자기 수양에 도움이 됨" },
+            { index: 112, text: "토사구팽", hanja: "兎死狗烹", mean: "쓸모없어지면 버림받음" },
+            { index: 113, text: "파죽지세", hanja: "破竹之勢", mean: "막을 수 없이 거센 기세" },
+            { index: 114, text: "형설지공", hanja: "螢雪之功", mean: "고생 속에서 공부하여 얻은 공" },
+            { index: 115, text: "호가호위", hanja: "狐假虎威", mean: "남의 권세를 빌려 위세를 부림" },
+            { index: 116, text: "호연지기", hanja: "浩然之氣", mean: "너르고 큰 기운" }, // "단어" -> "hanja", "지" -> "之"
+            { index: 117, text: "화룡점정", hanja: "畵龍點睛", mean: "마지막에 가장 중요한 일을 마침" },
+            { index: 118, text: "화사첨족", hanja: "畵蛇添足", mean: "쓸데없는 일을 덧붙임" },
+            { index: 119, text: "화이부동", hanja: "和而不同", mean: "조화를 이루나 무조건 같아지지는 않음" },
+            { index: 120, text: "환골탈태", hanja: "換骨奪胎", mean: "완전히 새로워짐" }
+        ];
+
+        const CHAPTERS = Array.from({ length: 12 }, (_, i) => ({ id: i + 1 }));
+
+        // --- 상태 관리 ---
+        const state = {
+            view: 'menu',
+            selectedChapters: [1],
+            multiSelectMode: false,
+            quiz: { list: [], idx: 0, val: '', hints: false, wrongs: [], feedback: null, mode: 'normal', timer: null },
+            studyIdx: 0,
+            savedWrongs: JSON.parse(localStorage.getItem('idiom_seung_opt_v1') || '[]'),
+            isAnimating: false,
+            isMenuFirstLoad: true 
+        };
+
+        const els = {
+            views: { menu: document.getElementById('view-menu'), study: document.getElementById('view-study'), quiz: document.getElementById('view-quiz'), result: document.getElementById('view-result'), review: document.getElementById('view-review') },
+            header: { title: document.getElementById('header-title'), back: document.getElementById('btn-back'), icon: document.getElementById('header-icon') },
+            footer: document.getElementById('footer-menu'),
+            modals: { trash: document.getElementById('modal-confirm'), stop: document.getElementById('modal-stop-quiz') }
+        };
+
+        const ICONS = { back: '<path d="m15 18-6-6 6-6"/>', home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' };
+
+        // 애니메이션 유틸리티
+        function restartAnimation(selector, animClass) {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => { el.classList.remove(animClass); void el.offsetWidth; el.classList.add(animClass); });
+        }
+
+        function showModal(modalEl, innerId) {
+            modalEl.classList.add('show');
+            const inner = document.getElementById(innerId);
+            if (inner) { inner.classList.remove('scale-95'); inner.classList.add('scale-100'); }
+        }
+
+        function hideModal(modalEl, innerId) {
+            const inner = document.getElementById(innerId);
+            if (inner) { inner.classList.remove('scale-100'); inner.classList.add('scale-95'); }
+            setTimeout(() => { modalEl.classList.remove('show'); }, 150);
+        }
+
+        function triggerConfetti() {
+            const count = 200;
+            const defaults = { origin: { y: 0.7 }, zIndex: 2000 };
+            function fire(particleRatio, opts) { confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) }); }
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+        }
+
+        // --- 기능 로직 ---
+        function navigateTo(newView, fromPopState = false) {
+            if (state.view === newView) return;
+            const currentEl = els.views[state.view];
+            currentEl.style.opacity = '0';
+            currentEl.style.transform = 'translateY(-10px)';
+            currentEl.style.transition = 'all 0.3s ease';
+            
+            setTimeout(() => {
+                currentEl.classList.add('hidden');
+                const newEl = els.views[newView];
+                newEl.classList.remove('hidden');
+                void newEl.offsetWidth;
+                newEl.classList.add('fade-enter-active');
+                if (newView === 'menu') state.isMenuFirstLoad = true;
+                if (!fromPopState) {
+                    if (newView === 'menu') history.replaceState({ view: newView }, "");
+                    else history.pushState({ view: newView }, "");
+                }
+                state.view = newView;
+                updateUI();
+            }, 300);
+        }
+
+        function updateUI() {
+            const isMenu = state.view === 'menu';
+            els.header.title.classList.toggle('opacity-0', !isMenu);
+            els.header.back.classList.toggle('hidden', isMenu);
+            
+            if (isMenu) {
+                els.footer.classList.remove('translate-y-[150%]'); 
+                renderMenu(); 
+            } else {
+                els.footer.classList.add('translate-y-[150%]');
+                els.header.icon.innerHTML = (state.view === 'quiz') ? ICONS.home : ICONS.back;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            if (state.view === 'study') renderStudy('none');
+            else if (state.view === 'quiz') renderQuiz();
+            else if (state.view === 'result') renderResult();
+            else if (state.view === 'review') renderReview();
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById('chapter-grid');
+            const btnMulti = document.getElementById('btn-multi-select');
+            const btnSelectAll = document.getElementById('btn-select-all');
+            
+            if (state.multiSelectMode) {
+                btnMulti.classList.remove('bg-white/50', 'text-gray-600');
+                btnMulti.classList.add('bg-indigo-600', 'text-white');
+                btnMulti.innerText = '복수해제'; 
+                btnSelectAll.classList.remove('hidden');
+                const isAllSelected = state.selectedChapters.length === CHAPTERS.length;
+                btnSelectAll.innerText = isAllSelected ? '전체해제' : '전체선택';
+            } else {
+                btnMulti.classList.remove('bg-indigo-600', 'text-white');
+                btnMulti.classList.add('bg-white/50', 'text-gray-600');
+                btnMulti.innerText = '복수선택';
+                btnSelectAll.classList.add('hidden');
+            }
+            
+            if (grid.children.length === 0) {
+                CHAPTERS.forEach((ch, idx) => {
+                    const btn = document.createElement('button');
+                    btn.id = `tile-${ch.id}`;
+                    btn.className = `h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm`;
+                    btn.style.animationDelay = `${idx * 0.04}s`; 
+                    btn.innerHTML = `
+                        <span class="text-[10px] font-black opacity-40 uppercase tracking-tighter mb-0.5 transition-opacity duration-300">CH ${ch.id}</span>
+                        <span class="text-[13px] font-extrabold tracking-tight">${(ch.id-1)*10+1}-${ch.id*10}</span>
+                    `;
+                    btn.onclick = () => handleChapterClick(ch.id);
+                    grid.appendChild(btn);
+                });
+            }
+
+            CHAPTERS.forEach(ch => {
+                const btn = document.getElementById(`tile-${ch.id}`);
+                if (!btn) return;
+                const isActive = state.selectedChapters.includes(ch.id);
+                const titleSpan = btn.querySelector('span:first-child');
+                if (isActive) { btn.classList.add('selected'); titleSpan.classList.replace('opacity-40', 'opacity-80'); }
+                else { btn.classList.remove('selected'); titleSpan.classList.replace('opacity-80', 'opacity-40'); }
+                if (state.isMenuFirstLoad) btn.classList.add('animate-entry');
+                else btn.classList.remove('animate-entry'); 
+            });
+            
+            if (state.isMenuFirstLoad) setTimeout(() => { state.isMenuFirstLoad = false; }, 800);
+
+            const hasWrongs = state.savedWrongs.length > 0;
+            document.getElementById('btn-review').disabled = !hasWrongs;
+            document.getElementById('review-count').innerText = hasWrongs ? `${state.savedWrongs.length}개 저장` : '기록 없음';
+            
+            const hasSelection = state.selectedChapters.length > 0;
+            document.getElementById('btn-footer-start').disabled = !hasSelection;
+            
+            const statusText = document.getElementById('footer-status');
+            const listLen = RAW_DATA.filter(it => state.selectedChapters.includes(Math.ceil(it.index / 10)) && it.text.length === 4).length;
+            
+            const oldText = statusText.innerText;
+            const newText = hasSelection ? `${listLen}개 선택됨` : '챕터를 선택하세요';
+            if (oldText !== newText) {
+                statusText.style.opacity = '0';
+                statusText.style.transform = 'translateY(5px)';
+                setTimeout(() => {
+                    statusText.innerText = newText;
+                    statusText.style.opacity = '1';
+                    statusText.style.transform = 'translateY(0)';
+                }, 150);
+            }
+        }
+
+        function handleChapterClick(chapterId) {
+            state.isMenuFirstLoad = false; 
+            const isActive = state.selectedChapters.includes(chapterId);
+            if (state.multiSelectMode) {
+                if (isActive) state.selectedChapters = state.selectedChapters.filter(c => c !== chapterId);
+                else state.selectedChapters.push(chapterId);
+            } else { state.selectedChapters = [chapterId]; }
+            renderMenu();
+        }
+
+        function renderStudy(direction = 'none') {
+            const list = RAW_DATA.filter(it => state.selectedChapters.includes(Math.ceil(it.index / 10)));
+            if (!list.length) return;
+            const item = list[state.studyIdx];
+            const cardInner = document.getElementById('study-card-inner');
+            document.getElementById('study-current-num').innerText = state.studyIdx + 1;
+            document.getElementById('study-total-num').innerText = list.length;
+            document.getElementById('study-progress').style.width = `${((state.studyIdx + 1) / list.length) * 100}%`;
+            if (direction === 'none') { updateStudyCardData(item); restartAnimation('.text-pop', 'text-pop'); return; }
+            cardInner.style.transform = direction === 'next' ? 'translateX(-40px) scale(0.95)' : 'translateX(40px) scale(0.95)';
+            cardInner.style.opacity = '0';
+            setTimeout(() => {
+                updateStudyCardData(item); restartAnimation('.text-pop', 'text-pop');
+                cardInner.style.transition = 'none';
+                cardInner.style.transform = direction === 'next' ? 'translateX(40px) scale(0.95)' : 'translateX(-40px) scale(0.95)';
+                setTimeout(() => { cardInner.style.transition = 'all 0.5s var(--ease-bounce)'; cardInner.style.transform = 'translateX(0) scale(1)'; cardInner.style.opacity = '1'; }, 50);
+            }, 200);
+        }
+
+        function updateStudyCardData(item) {
+            if (!item) return;
+            document.getElementById('study-index').innerText = `Index ${String(item.index).padStart(3, '0')}`;
+            document.getElementById('study-text').innerText = item.text;
+            document.getElementById('study-hanja').innerText = item.hanja;
+            document.getElementById('study-mean').innerText = item.mean;
+            document.getElementById('btn-study-prev').disabled = state.studyIdx === 0;
+            const listLen = RAW_DATA.filter(it => state.selectedChapters.includes(Math.ceil(it.index / 10))).length;
+            document.getElementById('btn-study-next').innerText = (state.studyIdx === listLen - 1) ? '완료' : '다음 카드';
+        }
+
+        function renderQuiz() {
+            const item = state.quiz.list[state.quiz.idx];
+            if (!item) return;
+            document.getElementById('quiz-current').innerText = state.quiz.idx + 1;
+            document.getElementById('quiz-total').innerText = state.quiz.list.length;
+            document.getElementById('quiz-progress').style.width = `${((state.quiz.idx + 1) / state.quiz.list.length) * 100}%`;
+            document.getElementById('quiz-q-text').innerText = item.text.slice(0, 2);
+            restartAnimation('#quiz-q-wrapper', 'text-pop');
+            const hintEl = document.getElementById('quiz-hint');
+            if (state.quiz.hints) {
+                hintEl.innerHTML = `<span class="text-2xl hanja-font text-indigo-500 font-bold block mb-1">${item.hanja}</span><span class="text-base text-indigo-600 font-bold block break-keep leading-tight px-4">${item.mean}</span>`;
+                hintEl.style.opacity = '1'; hintEl.style.transform = 'translateY(0) scale(1)';
+            } else {
+                hintEl.innerHTML = ''; hintEl.style.opacity = '0'; hintEl.style.transform = 'translateY(15px) scale(0.95)';
+            }
+            const input = document.getElementById('quiz-input');
+            input.value = state.quiz.val;
+            input.classList.remove('shake-error'); 
+            if (!state.quiz.feedback) {
+                setTimeout(() => {
+                    input.focus();
+                    if (window.innerWidth < 640) input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+            document.getElementById('btn-quiz-check').disabled = state.quiz.val.length < 2;
+            if (!state.quiz.feedback) document.getElementById('quiz-feedback').classList.remove('show');
+        }
+
+        function checkAnswer(skipped = false) {
+            if (state.quiz.feedback) return;
+            const item = state.quiz.list[state.quiz.idx];
+            const isCorrect = !skipped && state.quiz.val.trim() === item.text.slice(2);
+            const inputEl = document.getElementById('quiz-input');
+            if (!isCorrect && !skipped) { inputEl.classList.add('shake-error'); setTimeout(() => inputEl.classList.remove('shake-error'), 400); }
+            state.quiz.feedback = isCorrect ? 'O' : 'X';
+            const overlay = document.getElementById('quiz-feedback');
+            overlay.classList.add('show');
+            overlay.style.backgroundColor = isCorrect ? 'rgba(236, 253, 245, 0.9)' : 'rgba(255, 241, 242, 0.9)';
+            const iconBox = document.getElementById('feedback-icon-box');
+            iconBox.className = `w-20 h-20 rounded-[28px] flex items-center justify-center text-white mb-6 shadow-xl ${isCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
+            iconBox.innerHTML = isCorrect ? '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>' : '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+            if (!isCorrect) {
+                document.getElementById('feedback-answer').innerText = item.text;
+                document.getElementById('feedback-mean').innerText = item.mean;
+                if (!state.savedWrongs.some(it => it.index === item.index)) { state.savedWrongs.unshift(item); localStorage.setItem('idiom_seung_opt_v1', JSON.stringify(state.savedWrongs)); }
+                if (!state.quiz.wrongs.some(it => it.index === item.index)) state.quiz.wrongs.push(item);
+            } else { document.getElementById('feedback-answer').innerText = "Correct!"; document.getElementById('feedback-mean').innerText = ""; }
+            state.quiz.timer = setTimeout(() => nextQuestion(), isCorrect ? 600 : 1500);
+        }
+
+        function nextQuestion() {
+            if (state.quiz.idx + 1 >= state.quiz.list.length) navigateTo('result');
+            else {
+                const card = document.getElementById('quiz-card');
+                card.classList.add('fluid-card-exit');
+                setTimeout(() => {
+                    state.quiz.idx++; state.quiz.val = ''; state.quiz.hints = false; state.quiz.feedback = null;
+                    document.getElementById('quiz-feedback').classList.remove('show');
+                    updateUI(); renderQuiz();
+                    card.classList.remove('fluid-card-exit'); card.classList.add('fluid-card-enter');
+                    setTimeout(() => card.classList.remove('fluid-card-enter'), 400);
+                }, 350);
+            }
+        }
+
+        function startQuiz(mode = 'normal') {
+            const list = mode === 'review' ? [...state.savedWrongs] : RAW_DATA.filter(it => state.selectedChapters.includes(Math.ceil(it.index / 10)) && it.text.length === 4);
+            if (!list.length) return;
+            state.quiz = { list: [...list].sort(() => Math.random() - 0.5), idx: 0, val: '', hints: false, wrongs: [], feedback: null, mode: mode, timer: null };
+            navigateTo('quiz');
+        }
+
+        function renderResult() {
+            const score = state.quiz.list.length - state.quiz.wrongs.length;
+            const total = state.quiz.list.length;
+            const isPerfect = score === total && total > 0;
+            document.getElementById('result-score').innerText = score;
+            document.getElementById('result-total').innerText = total;
+            const titleEl = document.getElementById('result-title');
+            const iconBox = document.getElementById('result-icon-box');
+            const iconSvg = document.getElementById('result-icon-svg');
+            if (isPerfect) {
+                titleEl.innerText = "완벽해요! 🎉"; titleEl.classList.add('text-amber-500'); titleEl.classList.remove('text-gray-900');
+                iconBox.classList.add('bg-amber-50', 'text-amber-500'); iconBox.classList.remove('bg-indigo-50', 'text-indigo-600');
+                iconSvg.innerHTML = `<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
+                triggerConfetti();
+            } else {
+                titleEl.innerText = "학습 완료!"; titleEl.classList.add('text-gray-900'); titleEl.classList.remove('text-amber-500');
+                iconBox.classList.add('bg-indigo-50', 'text-indigo-600'); iconBox.classList.remove('bg-amber-50', 'text-amber-500');
+                iconSvg.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>`;
+            }
+            restartAnimation('.text-pop', 'text-pop');
+            document.getElementById('btn-result-home').onclick = () => navigateTo('menu');
+        }
+
+        function renderReview() {
+            const listEl = document.getElementById('review-list');
+            listEl.innerHTML = '';
+            if (!state.savedWrongs.length) listEl.innerHTML = `<div class="glass p-16 rounded-[40px] text-center text-gray-500 font-bold animate-slide-up">저장된 오답이 없습니다.</div>`;
+            else state.savedWrongs.forEach((it, idx) => {
+                const el = document.createElement('div');
+                el.className = 'animate-slide-up glass p-5 rounded-[24px] space-y-3 relative transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1';
+                el.style.animationDelay = `${idx * 0.05}s`;
+                el.innerHTML = `
+                    <div class="flex justify-between items-start pr-8">
+                        <div><span class="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg inline-block transition-colors">Idx ${it.index}</span><h3 class="text-lg font-black text-gray-800 mt-1">${it.text}</h3></div>
+                        <span class="text-xl hanja-font text-indigo-400 font-bold opacity-80">${it.hanja}</span>
+                    </div>
+                    <p class="text-[13px] text-gray-700 font-semibold break-keep leading-relaxed">${it.mean}</p>
+                    <button class="delete-btn absolute top-5 right-5 w-8 h-8 flex items-center justify-center text-gray-400 transition-all duration-300 hover:text-rose-500 hover:bg-rose-50 rounded-full active:scale-90" data-idx="${it.index}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                `;
+                el.querySelector('.delete-btn').onclick = () => {
+                    el.style.opacity = '0'; el.style.transform = 'translateX(20px)';
+                    setTimeout(() => { state.savedWrongs = state.savedWrongs.filter(x => x.index !== it.index); localStorage.setItem('idiom_seung_opt_v1', JSON.stringify(state.savedWrongs)); renderReview(); renderMenu(); }, 300);
+                };
+                listEl.appendChild(el);
+            });
+        }
+
+        function skipFeedback() { if (state.quiz.timer) { clearTimeout(state.quiz.timer); state.quiz.timer = null; nextQuestion(); } }
+
+        function init() {
+            history.replaceState({ view: 'menu' }, "");
+            window.onpopstate = (e) => {
+                if (els.modals.stop.classList.contains('show')) { hideModal(els.modals.stop, 'modal-stop-inner'); return; }
+                if (els.modals.trash.classList.contains('show')) { hideModal(els.modals.trash, 'modal-confirm-inner'); return; }
+                if (e.state && e.state.view) {
+                    if (state.view === e.state.view) return;
+                    if (state.view === 'quiz' && e.state.view === 'menu') { showModal(els.modals.stop, 'modal-stop-inner'); history.pushState({ view: 'quiz' }, ""); return; }
+                    navigateTo(e.state.view, true);
+                } else { navigateTo('menu', true); }
+            };
+
+            window.addEventListener('keydown', (e) => {
+                if (state.view === 'study') {
+                    if (e.key === 'ArrowLeft') document.getElementById('btn-study-prev').click();
+                    else if (e.key === 'ArrowRight') document.getElementById('btn-study-next').click();
+                } else if (state.view === 'quiz') {
+                    if (state.quiz.feedback && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); skipFeedback(); }
+                }
+            });
+
+            const safeSetOnclick = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
+            safeSetOnclick('btn-footer-start', () => startQuiz('normal'));
+            safeSetOnclick('btn-start-study', () => { state.studyIdx = 0; navigateTo('study'); });
+            safeSetOnclick('btn-review', () => navigateTo('review'));
+            safeSetOnclick('btn-multi-select', () => { state.multiSelectMode = !state.multiSelectMode; state.isMenuFirstLoad = false; renderMenu(); });
+            safeSetOnclick('btn-select-all', () => { 
+                const isAllSelected = state.selectedChapters.length === CHAPTERS.length;
+                state.selectedChapters = isAllSelected ? [] : CHAPTERS.map(c => c.id);
+                state.isMenuFirstLoad = false; renderMenu(); 
+            });
+            safeSetOnclick('btn-study-prev', () => { if (state.studyIdx > 0) { state.studyIdx--; renderStudy('prev'); } });
+            safeSetOnclick('btn-study-next', () => {
+                const list = RAW_DATA.filter(it => state.selectedChapters.includes(Math.ceil(it.index / 10)));
+                if (state.studyIdx === list.length - 1) navigateTo('menu');
+                else { state.studyIdx++; renderStudy('next'); }
+            });
+            
+            const qIn = document.getElementById('quiz-input');
+            if (qIn) {
+                qIn.oninput = (e) => { state.quiz.val = e.target.value; document.getElementById('btn-quiz-check').disabled = state.quiz.val.length < 2; };
+                qIn.onkeydown = (e) => { if (e.key === 'Enter') { if (state.quiz.feedback) skipFeedback(); else if (state.quiz.val.length === 2) checkAnswer(); else if (state.quiz.val.length === 0) checkAnswer(true); } };
+            }
+
+            safeSetOnclick('btn-quiz-hint', () => { state.quiz.hints = !state.quiz.hints; renderQuiz(); });
+            safeSetOnclick('btn-quiz-check', () => checkAnswer());
+            safeSetOnclick('btn-quiz-skip', () => checkAnswer(true));
+            safeSetOnclick('btn-result-home', () => navigateTo('menu'));
+            safeSetOnclick('btn-test-wrongs', () => startQuiz('review'));
+            safeSetOnclick('btn-trash', () => showModal(els.modals.trash, 'modal-confirm-inner'));
+            safeSetOnclick('btn-modal-cancel', () => hideModal(els.modals.trash, 'modal-confirm-inner'));
+            safeSetOnclick('btn-modal-confirm', () => { state.savedWrongs = []; localStorage.setItem('idiom_seung_opt_v1', '[]'); hideModal(els.modals.trash, 'modal-confirm-inner'); setTimeout(() => updateUI(), 200); });
+            safeSetOnclick('btn-stop-cancel', () => hideModal(els.modals.stop, 'modal-stop-inner'));
+            safeSetOnclick('btn-stop-confirm', () => { hideModal(els.modals.stop, 'modal-stop-inner'); setTimeout(() => navigateTo('menu'), 150); });
+            if (els.header.back) { els.header.back.onclick = () => { if (state.view === 'quiz') showModal(els.modals.stop, 'modal-stop-inner'); else navigateTo('menu'); }; }
+            updateUI();
+        }
+        init();
+    </script>
+</body>
+</html>
