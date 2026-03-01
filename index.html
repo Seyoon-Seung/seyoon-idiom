@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="승세윤이 만든 사자성어 암기 도우미">
+    <meta property="og:title" content="승세윤의 사자성어 암기앱">
+    <meta property="og:description" content="120개의 핵심 사자성어를 퀴즈로 완벽하게 마스터하세요!">
+    <meta property="og:image" content="thumbnail.png">
     <title>승세윤의 사자성어 암기앱</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -131,8 +136,8 @@
         .fade-enter-active { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-        .fluid-card-exit { animation: fluidExit 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .fluid-card-enter { animation: fluidEnter 0.5s var(--ease-bounce) forwards; }
+        .fluid-card-exit { animation: fluidExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .fluid-card-enter { animation: fluidEnter 0.4s var(--ease-bounce) forwards; }
         @keyframes fluidExit { 0% { transform: translateX(0) scale(1); opacity: 1; } 100% { transform: translateX(-40px) scale(0.95); opacity: 0; } }
         @keyframes fluidEnter { 0% { transform: translateX(40px) scale(0.95); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
 
@@ -142,8 +147,34 @@
             opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        #quiz-feedback { transition: opacity 0.35s var(--ease-fluid); opacity: 0; pointer-events: none; backdrop-filter: blur(16px); z-index: 100; }
+
+        /* --- 🚀 퀴즈 피드백 애니메이션 강화 --- */
+        #quiz-feedback { 
+            transition: opacity 0.25s var(--ease-fluid); 
+            opacity: 0; pointer-events: none; backdrop-filter: blur(16px); z-index: 100; 
+        }
         #quiz-feedback.show { opacity: 1; pointer-events: auto; }
+
+        @keyframes feedbackPop {
+            0% { transform: scale(0.4); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes feedbackShake {
+            0%, 100% { transform: translateX(0) scale(1); }
+            20% { transform: translateX(-15px) scale(1.05); }
+            40% { transform: translateX(15px) scale(1.05); }
+            60% { transform: translateX(-10px) scale(1.02); }
+            80% { transform: translateX(10px) scale(1.02); }
+        }
+        @keyframes feedbackTextSlideUp {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        #quiz-feedback.show #feedback-icon-box.correct { animation: feedbackPop 0.5s var(--ease-bounce) both; box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); }
+        #quiz-feedback.show #feedback-icon-box.wrong { animation: feedbackShake 0.5s var(--ease-fluid) both; box-shadow: 0 0 40px rgba(244, 63, 94, 0.4); }
+        #quiz-feedback.show #feedback-text-box { animation: feedbackTextSlideUp 0.4s var(--ease-fluid) 0.05s both; }
     </style>
 </head>
 <body>
@@ -170,7 +201,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <button id="btn-start-study" class="animate-slide-up glass p-5 rounded-[32px] flex flex-col items-center gap-3 transition-all duration-300 h-40 justify-center group active:scale-95 sm:hover:shadow-xl sm:hover:-translate-y-1">
                         <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center shadow-inner icon-float">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V5H6.5A2.5 2.5 0 0 0 4 7.5v12z"/></svg>
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V5H6.5A2.5 2.5 0 0 0 4 7.5v12z"/></svg>
                         </div>
                         <div class="text-center">
                             <span class="block font-extrabold text-sm text-gray-800">학습 카드</span>
@@ -241,7 +272,7 @@
                 <div class="flex justify-center w-full mt-2">
                     <div id="quiz-card" class="glass card-fixed-size rounded-[44px] p-8 flex flex-col items-center justify-center gap-8 relative overflow-hidden shadow-xl bg-white/70 transition-all duration-300">
                         <div id="quiz-feedback" class="absolute inset-0 z-50 flex flex-col items-center justify-center cursor-pointer" onclick="skipFeedback()">
-                            <div id="feedback-icon-box" class="w-20 h-20 rounded-[28px] flex items-center justify-center text-white mb-6 shadow-2xl"></div>
+                            <div id="feedback-icon-box" class="w-20 h-20 sm:w-24 sm:h-24 rounded-[28px] sm:rounded-[36px] flex items-center justify-center text-white mb-6"></div>
                             <div id="feedback-text-box" class="text-center space-y-3 px-8">
                                 <p id="feedback-answer" class="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter"></p>
                                 <p id="feedback-mean" class="text-base sm:text-lg font-semibold text-gray-700 leading-relaxed break-keep"></p>
@@ -338,7 +369,6 @@
     </div>
 
     <script>
-        // --- 🚀 RAW_DATA 정밀 교정 ---
         const RAW_DATA = [
             { index: 1, text: "가인박명", hanja: "佳人薄命", mean: "아름다운 사람은 운명이 기박함" },
             { index: 2, text: "가정맹호", hanja: "苛政猛虎", mean: "가혹한 정치는 호랑이보다 무섭다" },
@@ -360,12 +390,12 @@
             { index: 18, text: "괄목상대", hanja: "刮目相對", mean: "학식이나 재주가 놀랍게 향상됨" },
             { index: 19, text: "교언영색", hanja: "巧言令色", mean: "남의 환심을 사려 아첨함" },
             { index: 20, text: "구밀복검", hanja: "口蜜腹劍", mean: "입으로는 달콤하나 속에는 칼을 품음" },
-            { index: 21, text: "구우일모", hanja: "九牛一毛", mean: "아주 큰 것 속의 아주 작은 것" }, // "초" -> "것"
+            { index: 21, text: "구우일모", hanja: "九牛一毛", mean: "아주 큰 것 속의 아주 작은 것" },
             { index: 22, text: "군계일학", hanja: "群鷄一鶴", mean: "평범한 무리 중 뛰어난 사람" },
             { index: 23, text: "권토중래", hanja: "捲土重來", mean: "실패 후 다시 힘을 쌓아 쳐들어옴" },
             { index: 24, text: "근묵자흑", hanja: "近墨者黑", mean: "나쁜 사람과 가까이하면 물들기 쉬움" },
             { index: 25, text: "금상첨화", hanja: "錦上添花", mean: "좋은 일 위에 또 좋은 일이 더해짐" },
-            { index: 26, text: "금의야행", hanja: "錦衣夜行", mean: "자랑해도 남이 알아주지 않음" }, // "행" -> "行"
+            { index: 26, text: "금의야행", hanja: "錦衣夜行", mean: "자랑해도 남이 알아주지 않음" },
             { index: 27, text: "기사회생", hanja: "起死回生", mean: "죽을 고비에서 다시 살아남" },
             { index: 28, text: "기우", hanja: "杞憂", mean: "쓸데없는 걱정" },
             { index: 29, text: "기호지세", hanja: "騎虎之勢", mean: "중도에 그만둘 수 없는 형세" },
@@ -379,7 +409,7 @@
             { index: 37, text: "당랑거철", hanja: "螳螂拒轍", mean: "제 분수 모르고 강적에게 덤빔" },
             { index: 38, text: "대기만성", hanja: "大器晩成", mean: "큰 인물은 늦게 이루어짐" },
             { index: 39, text: "도청도설", hanja: "道聽塗說", mean: "길거리의 뜬소문" },
-            { index: 40, text: "동병상련", hanja: "同病相憐", mean: "같은 처지의 사람끼리 서로 동정함" }, // "동병상련" -> 한자
+            { index: 40, text: "동병상련", hanja: "同病相憐", mean: "같은 처지의 사람끼리 서로 동정함" },
             { index: 41, text: "등용문", hanja: "登龍門", mean: "출세의 관문" },
             { index: 42, text: "마이동풍", hanja: "馬耳東風", mean: "남의 말을 귀담아듣지 않음" },
             { index: 43, text: "맥수지탄", hanja: "麥秀之嘆", mean: "나라가 망함을 한탄함" },
@@ -387,7 +417,7 @@
             { index: 45, text: "명경지수", hanja: "明鏡止水", mean: "고요하고 깨끗한 마음" },
             { index: 46, text: "모순", hanja: "矛盾", mean: "앞뒤가 맞지 않음" },
             { index: 47, text: "무용지용", hanja: "無用之用", mean: "쓸모없는 것이 도리어 크게 쓰임" },
-            { index: 48, text: "문경지교", hanja: "刎頸之交", mean: "생사를 같이할 수 있는 친한 사이" }, // "교" -> "交"
+            { index: 48, text: "문경지교", hanja: "刎頸之交", mean: "생사를 같이할 수 있는 친한 사이" },
             { index: 49, text: "문전성시", hanja: "門前成市", mean: "찾아오는 사람이 많아 붐빔" },
             { index: 50, text: "미봉책", hanja: "彌縫策", mean: "임시변통으로 꾸며대는 계책" },
             { index: 51, text: "미생지신", hanja: "尾生之信", mean: "약속을 굳게 지킴" },
@@ -395,9 +425,9 @@
             { index: 53, text: "방약무인", hanja: "傍若無人", mean: "제세상인 듯 함부로 행동함" },
             { index: 54, text: "배수지진", hanja: "背水之陣", mean: "필사의 각오로 적과 싸움" },
             { index: 55, text: "백년하청", hanja: "百年河淸", mean: "아무리 기다려도 실현될 가능성이 없음" },
-            { index: 56, text: "백면서생", hanja: "白面書生", mean: "글만 읽고 세상일에 어두운 사람" }, // "생" -> "生"
+            { index: 56, text: "백면서생", hanja: "白面書生", mean: "글만 읽고 세상일에 어두운 사람" },
             { index: 57, text: "백미", hanja: "白眉", mean: "여럿 중 가장 뛰어난 사람이나 물건" },
-            { index: 58, text: "부화뇌동", hanja: "附和雷同", mean: "주관 없이 남의 의견을 따름" }, // "동" -> "同"
+            { index: 58, text: "부화뇌동", hanja: "附和雷同", mean: "주관 없이 남의 의견을 따름" },
             { index: 59, text: "불비불명", hanja: "不蜚不鳴", mean: "큰 일을 위해 때를 기다림" },
             { index: 60, text: "불원천리", hanja: "不遠千里", mean: "천 리를 멀다 하지 않고 달려옴" },
             { index: 61, text: "불치하문", hanja: "不恥下問", mean: "아랫사람에게 묻는 것을 부끄러워하지 않음" },
@@ -441,12 +471,12 @@
             { index: 99, text: "조강지처", hanja: "糟糠之妻", mean: "고생을 함께한 아내" },
             { index: 100, text: "조령모개", hanja: "朝令暮改", mean: "명령을 자꾸 바꿈" },
             { index: 101, text: "조삼모사", hanja: "朝三暮四", mean: "간사한 꾀로 남을 속임" },
-            { index: 102, text: "죽마고우", hanja: "竹馬故友", mean: "어릴 때부터 친한 친구" }, // "죽마고우" -> 한자
+            { index: 102, text: "죽마고우", hanja: "竹馬故友", mean: "어릴 때부터 친한 친구" },
             { index: 103, text: "중과부적", hanja: "衆寡不敵", mean: "적은 수로 많은 적을 대적하지 못함" },
             { index: 104, text: "지록위마", hanja: "指鹿爲馬", mean: "윗사람을 농락하여 권세를 휘두름" },
             { index: 105, text: "천의무봉", hanja: "天衣無縫", mean: "완전무결하여 흠이 없음" },
             { index: 106, text: "천재일우", hanja: "千載一遇", mean: "좀처럼 만나기 어려운 기회" },
-            { index: 107, text: "철면피", hanja: "鐵面皮", mean: "뻔뻔스럽고 염치없는 사람" }, // "피" -> "皮"
+            { index: 107, text: "철면피", hanja: "鐵面皮", mean: "뻔뻔스럽고 염치없는 사람" },
             { index: 108, text: "청출어람", hanja: "靑出於藍", mean: "제자가 스승보다 나음" },
             { index: 109, text: "촌철살인", hanja: "寸鐵殺人", mean: "짧은 말로 남을 감동시키거나 핵심을 찌름" },
             { index: 110, text: "쾌도난마", hanja: "快刀亂麻", mean: "얽힌 일을 명쾌하게 처리함" },
@@ -455,7 +485,7 @@
             { index: 113, text: "파죽지세", hanja: "破竹之勢", mean: "막을 수 없이 거센 기세" },
             { index: 114, text: "형설지공", hanja: "螢雪之功", mean: "고생 속에서 공부하여 얻은 공" },
             { index: 115, text: "호가호위", hanja: "狐假虎威", mean: "남의 권세를 빌려 위세를 부림" },
-            { index: 116, text: "호연지기", hanja: "浩然之氣", mean: "너르고 큰 기운" }, // "단어" -> "hanja", "지" -> "之"
+            { index: 116, text: "호연지기", hanja: "浩然之氣", mean: "너르고 큰 기운" },
             { index: 117, text: "화룡점정", hanja: "畵龍點睛", mean: "마지막에 가장 중요한 일을 마침" },
             { index: 118, text: "화사첨족", hanja: "畵蛇添足", mean: "쓸데없는 일을 덧붙임" },
             { index: 119, text: "화이부동", hanja: "和而不同", mean: "조화를 이루나 무조건 같아지지는 않음" },
@@ -464,15 +494,17 @@
 
         const CHAPTERS = Array.from({ length: 12 }, (_, i) => ({ id: i + 1 }));
 
-        // --- 상태 관리 ---
         const state = {
             view: 'menu',
             selectedChapters: [1],
             multiSelectMode: false,
-            quiz: { list: [], idx: 0, val: '', hints: false, wrongs: [], feedback: null, mode: 'normal', timer: null },
+            quiz: { 
+                list: [], idx: 0, val: '', hints: false, wrongs: [], 
+                feedback: null, mode: 'normal', timer: null,
+                lastSubmitTime: 0 
+            },
             studyIdx: 0,
             savedWrongs: JSON.parse(localStorage.getItem('idiom_seung_opt_v1') || '[]'),
-            isAnimating: false,
             isMenuFirstLoad: true 
         };
 
@@ -485,7 +517,6 @@
 
         const ICONS = { back: '<path d="m15 18-6-6 6-6"/>', home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' };
 
-        // 애니메이션 유틸리티
         function restartAnimation(selector, animClass) {
             const elements = document.querySelectorAll(selector);
             elements.forEach(el => { el.classList.remove(animClass); void el.offsetWidth; el.classList.add(animClass); });
@@ -514,7 +545,6 @@
             fire(0.1, { spread: 120, startVelocity: 45 });
         }
 
-        // --- 기능 로직 ---
         function navigateTo(newView, fromPopState = false) {
             if (state.view === newView) return;
             const currentEl = els.views[state.view];
@@ -542,16 +572,12 @@
             const isMenu = state.view === 'menu';
             els.header.title.classList.toggle('opacity-0', !isMenu);
             els.header.back.classList.toggle('hidden', isMenu);
-            
-            if (isMenu) {
-                els.footer.classList.remove('translate-y-[150%]'); 
-                renderMenu(); 
-            } else {
+            if (isMenu) { els.footer.classList.remove('translate-y-[150%]'); renderMenu(); } 
+            else {
                 els.footer.classList.add('translate-y-[150%]');
                 els.header.icon.innerHTML = (state.view === 'quiz') ? ICONS.home : ICONS.back;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-            
             if (state.view === 'study') renderStudy('none');
             else if (state.view === 'quiz') renderQuiz();
             else if (state.view === 'result') renderResult();
@@ -562,21 +588,18 @@
             const grid = document.getElementById('chapter-grid');
             const btnMulti = document.getElementById('btn-multi-select');
             const btnSelectAll = document.getElementById('btn-select-all');
-            
             if (state.multiSelectMode) {
                 btnMulti.classList.remove('bg-white/50', 'text-gray-600');
                 btnMulti.classList.add('bg-indigo-600', 'text-white');
                 btnMulti.innerText = '복수해제'; 
                 btnSelectAll.classList.remove('hidden');
-                const isAllSelected = state.selectedChapters.length === CHAPTERS.length;
-                btnSelectAll.innerText = isAllSelected ? '전체해제' : '전체선택';
+                btnSelectAll.innerText = state.selectedChapters.length === CHAPTERS.length ? '전체해제' : '전체선택';
             } else {
                 btnMulti.classList.remove('bg-indigo-600', 'text-white');
                 btnMulti.classList.add('bg-white/50', 'text-gray-600');
                 btnMulti.innerText = '복수선택';
                 btnSelectAll.classList.add('hidden');
             }
-            
             if (grid.children.length === 0) {
                 CHAPTERS.forEach((ch, idx) => {
                     const btn = document.createElement('button');
@@ -591,7 +614,6 @@
                     grid.appendChild(btn);
                 });
             }
-
             CHAPTERS.forEach(ch => {
                 const btn = document.getElementById(`tile-${ch.id}`);
                 if (!btn) return;
@@ -602,37 +624,21 @@
                 if (state.isMenuFirstLoad) btn.classList.add('animate-entry');
                 else btn.classList.remove('animate-entry'); 
             });
-            
             if (state.isMenuFirstLoad) setTimeout(() => { state.isMenuFirstLoad = false; }, 800);
-
             const hasWrongs = state.savedWrongs.length > 0;
             document.getElementById('btn-review').disabled = !hasWrongs;
             document.getElementById('review-count').innerText = hasWrongs ? `${state.savedWrongs.length}개 저장` : '기록 없음';
-            
             const hasSelection = state.selectedChapters.length > 0;
             document.getElementById('btn-footer-start').disabled = !hasSelection;
-            
             const statusText = document.getElementById('footer-status');
             const listLen = RAW_DATA.filter(it => state.selectedChapters.includes(Math.ceil(it.index / 10)) && it.text.length === 4).length;
-            
-            const oldText = statusText.innerText;
-            const newText = hasSelection ? `${listLen}개 선택됨` : '챕터를 선택하세요';
-            if (oldText !== newText) {
-                statusText.style.opacity = '0';
-                statusText.style.transform = 'translateY(5px)';
-                setTimeout(() => {
-                    statusText.innerText = newText;
-                    statusText.style.opacity = '1';
-                    statusText.style.transform = 'translateY(0)';
-                }, 150);
-            }
+            statusText.innerText = hasSelection ? `${listLen}개 선택됨` : '챕터를 선택하세요';
         }
 
         function handleChapterClick(chapterId) {
             state.isMenuFirstLoad = false; 
-            const isActive = state.selectedChapters.includes(chapterId);
             if (state.multiSelectMode) {
-                if (isActive) state.selectedChapters = state.selectedChapters.filter(c => c !== chapterId);
+                if (state.selectedChapters.includes(chapterId)) state.selectedChapters = state.selectedChapters.filter(c => c !== chapterId);
                 else state.selectedChapters.push(chapterId);
             } else { state.selectedChapters = [chapterId]; }
             renderMenu();
@@ -680,9 +686,7 @@
             if (state.quiz.hints) {
                 hintEl.innerHTML = `<span class="text-2xl hanja-font text-indigo-500 font-bold block mb-1">${item.hanja}</span><span class="text-base text-indigo-600 font-bold block break-keep leading-tight px-4">${item.mean}</span>`;
                 hintEl.style.opacity = '1'; hintEl.style.transform = 'translateY(0) scale(1)';
-            } else {
-                hintEl.innerHTML = ''; hintEl.style.opacity = '0'; hintEl.style.transform = 'translateY(15px) scale(0.95)';
-            }
+            } else { hintEl.innerHTML = ''; hintEl.style.opacity = '0'; hintEl.style.transform = 'translateY(15px) scale(0.95)'; }
             const input = document.getElementById('quiz-input');
             input.value = state.quiz.val;
             input.classList.remove('shake-error'); 
@@ -702,19 +706,29 @@
             const isCorrect = !skipped && state.quiz.val.trim() === item.text.slice(2);
             const inputEl = document.getElementById('quiz-input');
             if (!isCorrect && !skipped) { inputEl.classList.add('shake-error'); setTimeout(() => inputEl.classList.remove('shake-error'), 400); }
+            
             state.quiz.feedback = isCorrect ? 'O' : 'X';
+            state.quiz.lastSubmitTime = Date.now();
+            
             const overlay = document.getElementById('quiz-feedback');
             overlay.classList.add('show');
             overlay.style.backgroundColor = isCorrect ? 'rgba(236, 253, 245, 0.9)' : 'rgba(255, 241, 242, 0.9)';
+            
             const iconBox = document.getElementById('feedback-icon-box');
-            iconBox.className = `w-20 h-20 rounded-[28px] flex items-center justify-center text-white mb-6 shadow-xl ${isCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
-            iconBox.innerHTML = isCorrect ? '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>' : '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+            iconBox.className = `w-24 h-24 rounded-[32px] flex items-center justify-center text-white mb-6 shadow-2xl ${isCorrect ? 'bg-emerald-500 correct' : 'bg-rose-500 wrong'}`;
+            iconBox.innerHTML = isCorrect ? '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M20 6 9 17l-5-5"/></svg>' : '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+            
             if (!isCorrect) {
                 document.getElementById('feedback-answer').innerText = item.text;
                 document.getElementById('feedback-mean').innerText = item.mean;
                 if (!state.savedWrongs.some(it => it.index === item.index)) { state.savedWrongs.unshift(item); localStorage.setItem('idiom_seung_opt_v1', JSON.stringify(state.savedWrongs)); }
                 if (!state.quiz.wrongs.some(it => it.index === item.index)) state.quiz.wrongs.push(item);
-            } else { document.getElementById('feedback-answer').innerText = "Correct!"; document.getElementById('feedback-mean').innerText = ""; }
+            } else { 
+                document.getElementById('feedback-answer').innerText = "Correct!"; 
+                document.getElementById('feedback-mean').innerText = ""; 
+            }
+            
+            // 🚀 대기 시간 최적화: 정답 0.6초, 오답 1.5초 (속도 대폭 상향)
             state.quiz.timer = setTimeout(() => nextQuestion(), isCorrect ? 600 : 1500);
         }
 
@@ -736,7 +750,10 @@
         function startQuiz(mode = 'normal') {
             const list = mode === 'review' ? [...state.savedWrongs] : RAW_DATA.filter(it => state.selectedChapters.includes(Math.ceil(it.index / 10)) && it.text.length === 4);
             if (!list.length) return;
-            state.quiz = { list: [...list].sort(() => Math.random() - 0.5), idx: 0, val: '', hints: false, wrongs: [], feedback: null, mode: mode, timer: null };
+            state.quiz = { 
+                list: [...list].sort(() => Math.random() - 0.5), idx: 0, val: '', hints: false, wrongs: [], 
+                feedback: null, mode: mode, timer: null, lastSubmitTime: 0 
+            };
             navigateTo('quiz');
         }
 
@@ -787,7 +804,15 @@
             });
         }
 
-        function skipFeedback() { if (state.quiz.timer) { clearTimeout(state.quiz.timer); state.quiz.timer = null; nextQuestion(); } }
+        // 🚀 피드백 건너뛰기 쿨타임 최적화: 0.3초
+        function skipFeedback() { 
+            if (state.quiz.timer) { 
+                if (Date.now() - state.quiz.lastSubmitTime < 300) return;
+                clearTimeout(state.quiz.timer); 
+                state.quiz.timer = null; 
+                nextQuestion(); 
+            } 
+        }
 
         function init() {
             history.replaceState({ view: 'menu' }, "");
@@ -830,7 +855,15 @@
             const qIn = document.getElementById('quiz-input');
             if (qIn) {
                 qIn.oninput = (e) => { state.quiz.val = e.target.value; document.getElementById('btn-quiz-check').disabled = state.quiz.val.length < 2; };
-                qIn.onkeydown = (e) => { if (e.key === 'Enter') { if (state.quiz.feedback) skipFeedback(); else if (state.quiz.val.length === 2) checkAnswer(); else if (state.quiz.val.length === 0) checkAnswer(true); } };
+                qIn.onkeydown = (e) => { 
+                    if (e.key === 'Enter') { 
+                        if (state.quiz.feedback) skipFeedback(); 
+                        else {
+                            if (state.quiz.val.length === 2) checkAnswer(); 
+                            else if (state.quiz.val.length === 0) checkAnswer(true); 
+                        }
+                    } 
+                };
             }
 
             safeSetOnclick('btn-quiz-hint', () => { state.quiz.hints = !state.quiz.hints; renderQuiz(); });
