@@ -103,6 +103,17 @@
             50% { transform: translateY(-5px); }
         }
         .icon-float { animation: hoverFloat 3s ease-in-out infinite; }
+        .icon-float-hover { transition: transform 0.3s ease-in-out; }
+        @media (hover: hover) {
+            .group:hover .icon-float-hover {
+                animation: hoverFloat 3s ease-in-out infinite;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .icon-float, .icon-float-hover, .group:hover .icon-float-hover {
+                animation: none;
+            }
+        }
 
         .chapter-btn { 
             transition: transform 0.4s var(--ease-bounce), background-color 0.3s var(--ease-fluid), border-color 0.3s var(--ease-fluid), box-shadow 0.4s var(--ease-bounce);
@@ -117,9 +128,9 @@
         .animate-entry { animation: tilePopUp 0.6s var(--ease-bounce) backwards; }
 
         .chapter-btn.selected {
-            background: white; border: 2.5px solid var(--accent); color: var(--accent);
+            background: var(--accent); border-color: var(--accent); color: white;
             box-shadow: 0 15px 30px -8px rgba(94, 92, 230, 0.4);
-            transform: translateY(-8px) scale(1.05); z-index: 10;
+            transform: translateY(-2px) scale(1.05); z-index: 10;
         }
         .card-fixed-size { 
             width: 100%; 
@@ -149,6 +160,27 @@
         }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
 
+        #modal-search-detail-inner {
+            width: 340px;
+            max-width: calc(100vw - 40px);
+            padding: 35px 30px 30px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-sizing: border-box;
+        }
+        #modal-search-detail #btn-sd-close {
+            height: 52px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .dark-theme #modal-search-detail-inner {
+            background: rgba(30, 30, 32, 0.92);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
         /* --- 🚀 퀴즈 피드백 애니메이션 강화 --- */
         #quiz-feedback { 
             transition: opacity 0.25s var(--ease-fluid); 
@@ -176,6 +208,103 @@
         #quiz-feedback.show #feedback-icon-box.correct { animation: feedbackPop 0.5s var(--ease-bounce) both; box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); }
         #quiz-feedback.show #feedback-icon-box.wrong { animation: feedbackShake 0.5s var(--ease-fluid) both; box-shadow: 0 0 40px rgba(244, 63, 94, 0.4); }
         #quiz-feedback.show #feedback-text-box { animation: feedbackTextSlideUp 0.4s var(--ease-fluid) 0.05s both; }
+        
+        /* 다크 모드 스타일 */
+        .dark-theme {
+            --accent: #706DFF; /* Brighter for better contrast */
+            --accent-dark: #5E5CE6;
+            --bg: #121212; /* Switched from black to off-black */
+            --glass-border: rgba(255, 255, 255, 0.15); /* Brighter border */
+            --glass-shadow: none;
+        }
+
+        .dark-theme, .dark-theme body {
+            background-color: var(--bg);
+            color: rgba(255, 255, 255, 0.87); /* Standard material dark text color */
+        }
+
+        .dark-theme .glass {
+            background: rgba(36, 36, 38, 0.8); /* Slightly lighter glass bg */
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 60px -20px rgba(0,0,0,0.5); /* subtle dark glow for depth */
+        }
+
+        .dark-theme .aurora-container { background: var(--bg); }
+        .dark-theme .blob { filter: blur(100px); opacity: 0.15; } /* even more subtle */
+        .dark-theme .blob-1 { background: #5E5CE6; animation-duration: 22s; }
+        .dark-theme .blob-2 { background: #9A3EAF; animation-duration: 22s; }
+        .dark-theme .blob-3 { background: #006AB5; animation-duration: 26s; opacity: 0.12;}
+        
+        /* --- Refined Overrides with better contrast and depth --- */
+
+        /* Removing all shadows first */
+        .dark-theme .shadow-xl, .dark-theme .shadow-lg, .dark-theme .shadow-md, .dark-theme .shadow-sm, .dark-theme .sm\:hover\:shadow-xl:hover, .dark-theme .sm\:hover\:shadow-md:hover { box-shadow: none !important; }
+        
+        /* Adding back controlled glows for elevated surfaces */
+        .dark-theme #study-card-inner, .dark-theme #quiz-card, .dark-theme #view-result .glass {
+            box-shadow: 0 0 50px -15px rgba(0,0,0,0.6) !important;
+            border: 1.5px solid var(--glass-border) !important;
+        }
+        .dark-theme #footer-menu .glass {
+            box-shadow: 0 25px 50px -15px rgba(0,0,0,0.6) !important;
+            border-top: 1.5px solid var(--glass-border) !important;
+        }
+        .dark-theme .chapter-btn.selected {
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            border-color: var(--accent);
+            box-shadow: 0 0 30px 0px rgba(112, 109, 255, 0.5);
+        }
+        .dark-theme .chapter-btn {
+            background: rgba(36, 36, 38, 0.8);
+        }
+
+        /* Text colors for contrast */
+        .dark-theme .text-gray-900 { color: rgba(255, 255, 255, 0.95) !important; }
+        .dark-theme .text-gray-800, .dark-theme .sm\:hover\:text-indigo-600:hover { color: rgba(255, 255, 255, 0.87) !important; }
+        .dark-theme .text-gray-700 { color: rgba(255, 255, 255, 0.7) !important; }
+        .dark-theme .text-gray-600 { color: rgba(255, 255, 255, 0.55) !important; }
+        .dark-theme .text-gray-500 { color: rgba(255, 255, 255, 0.45) !important; }
+        .dark-theme .text-gray-400, .dark-theme .placeholder\:text-gray-400::placeholder { color: rgba(255, 255, 255, 0.35) !important; }
+        
+        .dark-theme .text-indigo-600 { color: var(--accent) !important; }
+        .dark-theme .text-indigo-500 { color: #9D9BFF !important; }
+        .dark-theme .text-indigo-400 { color: #A09EFF !important; }
+        .dark-theme .text-rose-500 { color: #ff8fa3 !important; }
+        .dark-theme .hanja-font { color: rgba(255, 255, 255, 0.45) !important; }
+
+        /* Background colors for contrast */
+        .dark-theme .bg-white\/50 { background-color: rgba(36, 36, 38, 0.5) !important; }
+        .dark-theme .bg-white\/70 { background-color: rgba(36, 36, 38, 0.7) !important; }
+        .dark-theme .bg-gray-50, .dark-theme .sm\:hover\:bg-white:hover { background-color: #2a2a2c !important; }
+        .dark-theme .bg-gray-100, .dark-theme .sm\:hover\:bg-gray-200:hover { background-color: #38383a !important; }
+        .dark-theme .bg-gray-200\/50 { background-color: rgba(58, 58, 60, 0.5) !important; }
+        .dark-theme .bg-indigo-50, .dark-theme .bg-indigo-50\/50, .dark-theme .sm\:hover\:bg-indigo-100:hover { background-color: rgba(94, 92, 230, 0.12) !important; }
+        .dark-theme .bg-indigo-100, .dark-theme .hover\:bg-indigo-100:hover { background-color: rgba(94, 92, 230, 0.18) !important; }
+        .dark-theme .bg-rose-50 { background-color: rgba(255, 102, 128, 0.1) !important; }
+        
+        /* Borders for definition */
+        .dark-theme .border-transparent { border-color: transparent !important; }
+        .dark-theme .border-gray-300 { border-color: #444446 !important; }
+        .dark-theme .border-indigo-100, .dark-theme .focus-within\:border-indigo-300:focus-within { border-color: rgba(94, 92, 230, 0.4) !important; }
+        .dark-theme .focus\:border-indigo-600:focus { border-color: var(--accent) !important; }
+        
+        /* Button glows */
+        .dark-theme .primary-btn { box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.4); }
+        .dark-theme .primary-btn:disabled { background: #38383a; color: rgba(255, 255, 255, 0.45); box-shadow: none; }
+        @media (hover: hover) { .dark-theme .primary-btn:hover { box-shadow: 0 8px 25px -2px rgba(99, 102, 241, 0.5); } }
+        
+        .dark-theme #quiz-feedback.show #feedback-icon-box.correct { box-shadow: 0 0 40px rgba(16, 185, 129, 0.5); }
+        .dark-theme #quiz-feedback.show #feedback-icon-box.wrong { box-shadow: 0 0 40px rgba(244, 63, 94, 0.5); }
+        .dark-theme #quiz-feedback.show { background-color: rgba(22, 22, 24, 0.85) !important; }
+        .dark-theme #quiz-feedback.show.correct-feedback { background-color: rgba(6, 38, 26, 0.85) !important; }
+        .dark-theme #quiz-feedback.show.wrong-feedback { background-color: rgba(40, 18, 22, 0.85) !important; }
+        .dark-theme #feedback-answer { color: rgba(255, 255, 255, 0.95) !important; }
+        .dark-theme #feedback-mean { color: rgba(255, 255, 255, 0.7) !important; }
+        .dark-theme .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(16px); }
     </style>
 </head>
 <body>
@@ -187,9 +316,12 @@
     
     <div id="app" class="max-w-md sm:max-w-[520px] mx-auto min-h-[100dvh] flex flex-col p-5 sm:p-10 relative transition-all duration-500">
         <!-- 헤더 -->
-        <header class="flex items-center mb-6 shrink-0 z-20 h-12 gap-4">
-            <button id="btn-back" class="hidden w-10 h-10 glass rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white hover:shadow-md active:scale-90 text-gray-700 shadow-sm">
-                <svg id="header-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></svg>
+        <header class="relative flex items-center justify-center mb-6 shrink-0 z-20 h-12">
+            <button id="btn-back" class="absolute left-0 hidden w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-gray-200/50 active:scale-90 text-gray-800">
+                <svg id="header-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></svg>
+            </button>
+            <button id="btn-theme-toggle" class="absolute right-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-gray-200/50 active:scale-90 text-gray-800">
+                <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></svg>
             </button>
             <div id="header-title" class="flex flex-col justify-center transition-opacity duration-300">
                 <h1 class="text-2xl font-extrabold text-gray-900 leading-tight tracking-tight">승세윤의 사자성어</h1>
@@ -198,19 +330,19 @@
 
         <div id="main-container" class="flex-1 z-10 pb-32 relative">
             <!-- 1. 메뉴 뷰 -->
-            <div id="view-menu" class="space-y-10 fade-enter-active">
+            <div id="view-menu" class="space-y-8 fade-enter-active">
                 <div class="grid grid-cols-2 gap-4">
                     <button id="btn-start-study" class="animate-slide-up glass p-5 rounded-[32px] flex flex-col items-center gap-3 transition-all duration-300 h-40 justify-center group active:scale-95 sm:hover:shadow-xl sm:hover:-translate-y-1">
-                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center shadow-inner icon-float">
+                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center shadow-inner icon-float-hover">
                             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V5H6.5A2.5 2.5 0 0 0 4 7.5v12z"/></svg>
                         </div>
                         <div class="text-center">
                             <span class="block font-extrabold text-sm text-gray-800">학습 카드</span>
-                            <span class="text-[10px] text-gray-500 font-bold mt-1 block tracking-tight">(챕터를 선택하세요)</span>
+                            <span class="text-[10px] text-gray-500 font-bold mt-1 block tracking-tight">120개의 핵심 성어</span>
                         </div>
                     </button>
                     <button id="btn-review" class="animate-slide-up delay-100 glass p-5 rounded-[32px] flex flex-col items-center gap-3 transition-all duration-300 h-40 justify-center group active:scale-95 disabled:opacity-50 sm:hover:shadow-xl sm:hover:-translate-y-1">
-                        <div id="review-icon-bg" class="w-14 h-14 bg-gray-50 text-gray-500 rounded-[22px] flex items-center justify-center shadow-inner icon-float">
+                        <div id="review-icon-bg" class="w-14 h-14 bg-gray-50 text-gray-500 rounded-[22px] flex items-center justify-center shadow-inner icon-float-hover">
                             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9.5 12.5 5 5"/><path d="m14.5 12.5-5 5"/></svg>
                         </div>
                         <div class="text-center">
@@ -221,13 +353,10 @@
                 </div>
 
                 <div class="animate-slide-up delay-200">
-                    <div class="glass rounded-[24px] flex items-center gap-3 px-4 py-3 transition-all duration-300 focus-within:shadow-lg focus-within:border-indigo-300" style="border: 1px solid rgba(99,102,241,0.15);">
+                    <button id="btn-show-search" class="w-full glass rounded-[24px] flex items-center gap-3 px-4 py-3 transition-all duration-300 active:scale-95 border border-indigo-100 text-left sm:hover:bg-white sm:hover:shadow-md">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                        <input id="search-input" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="성어, 한자, 뜻으로 검색…" class="flex-1 bg-transparent outline-none text-sm font-bold text-gray-800 placeholder:text-gray-400 placeholder:font-medium">
-                        <button id="search-clear" class="hidden w-6 h-6 flex items-center justify-center text-gray-400 transition-all duration-200 active:scale-90 hover:text-gray-600">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
-                        </button>
-                    </div>
+                        <span class="flex-1 text-sm font-medium text-gray-500">성어, 한자, 뜻으로 검색…</span>
+                    </button>
                 </div>
 
                 <section class="space-y-4 animate-slide-up delay-200">
@@ -247,11 +376,11 @@
 
             <!-- 2. 학습 뷰 -->
             <div id="view-study" class="hidden h-full flex flex-col gap-6 pt-2 fade-enter-active">
-                <div class="px-2 flex justify-between items-end">
-                    <p class="text-3xl font-light text-gray-900 tracking-tighter"><span id="study-current-num" class="font-black text-indigo-600">1</span><span class="text-lg text-gray-300 mx-1.5">/</span><span id="study-total-num" class="text-lg text-gray-500 font-semibold">10</span></p>
-                </div>
-                <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden mx-0.5">
-                    <div id="study-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden flex-1">
+                        <div id="study-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-500 w-14 text-right tabular-nums"><span id="study-current-num" class="font-bold text-indigo-600">1</span>/<span id="study-total-num">10</span></p>
                 </div>
                 <div class="study-card-container flex justify-center w-full mt-4">
                     <div id="study-card-inner" class="glass card-fixed-size rounded-[44px] p-8 flex flex-col items-center justify-center text-center gap-6 shadow-xl relative transition-all duration-300 hover:shadow-2xl">
@@ -274,11 +403,11 @@
 
             <!-- 3. 퀴즈 뷰 -->
             <div id="view-quiz" class="hidden h-full flex flex-col gap-6 pt-2">
-                <div class="px-2 flex justify-between items-center">
-                    <p class="text-3xl font-light text-gray-900 tracking-tighter"><span id="quiz-current" class="font-black text-indigo-600">1</span><span class="text-lg text-gray-300 mx-1.5">/</span><span id="quiz-total" class="text-lg text-gray-500 font-semibold">10</span></p>
-                </div>
-                <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden mx-0.5">
-                    <div id="quiz-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden flex-1">
+                        <div id="quiz-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-500 w-14 text-right tabular-nums"><span id="quiz-current" class="font-bold text-indigo-600">1</span>/<span id="quiz-total">10</span></p>
                 </div>
                 <div class="flex justify-center w-full mt-2">
                     <div id="quiz-card" class="glass card-fixed-size rounded-[44px] p-8 flex flex-col items-center justify-center gap-8 relative overflow-hidden shadow-xl bg-white/70 transition-all duration-300">
@@ -291,12 +420,12 @@
                         </div>
                         <div class="text-center space-y-6 w-full mt-2">
                             <p id="quiz-q-wrapper" class="text-pop text-6xl sm:text-7xl font-black text-gray-900 tracking-tighter leading-tight flex justify-center gap-2">
-                                <span id="quiz-q-text">??</span><span class="text-gray-200">??</span>
+                                <span id="quiz-q-text">??</span><span class="text-gray-400">??</span>
                             </p>
                             <div id="quiz-hint" class="opacity-0 transition-all duration-500 transform translate-y(1rem) h-20 flex flex-col items-center justify-center gap-1.5"></div>
                         </div>
                         <div class="w-full max-w-[240px] space-y-6">
-                            <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" class="w-full bg-transparent border-b-[3px] border-gray-300 focus:border-indigo-600 text-center text-5xl font-black outline-none pb-2 text-indigo-600 transition-all duration-300 placeholder:text-gray-200 caret-indigo-500" placeholder="??">
+                            <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" class="w-full bg-transparent border-b-[3px] border-gray-300 focus:border-indigo-600 text-center text-5xl font-black outline-none pb-2 text-indigo-600 transition-all duration-300 placeholder:text-gray-400 caret-indigo-500" placeholder="??">
                             <div class="grid grid-cols-4 gap-3">
                                 <button id="btn-quiz-skip" class="col-span-1 h-14 glass rounded-2xl flex items-center justify-center text-gray-500 transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:shadow-md"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l10 8-10 8V4zM19 5v14"/></svg></button>
                                 <button id="btn-quiz-hint" class="col-span-1 h-14 glass rounded-2xl text-[11px] font-bold text-gray-600 transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:text-indigo-600 sm:hover:shadow-md">힌트</button>
@@ -318,10 +447,19 @@
                     <div class="space-y-4">
                         <h2 id="result-title" class="text-pop text-3xl font-black text-gray-900 tracking-tight leading-none transition-colors duration-300">학습 완료!</h2>
                         <div class="text-pop flex items-center justify-center gap-3 text-5xl font-black text-indigo-600" style="animation-delay: 0.1s;">
-                            <span id="result-score">0</span><span class="text-gray-300 text-3xl">/</span><span id="result-total" class="text-gray-500 text-3xl">0</span>
+                            <span id="result-score">0</span><span class="text-gray-300 text-4xl">/</span><span id="result-total" class="text-gray-500 text-4xl">0</span>
                         </div>
                     </div>
                     <button id="btn-result-home" class="w-full primary-btn h-16 rounded-[24px] font-black text-base shadow-lg mt-2">홈으로 돌아가기</button>
+                </div>
+
+                <!-- 🚀 틀린 문제 다시보기 섹션 -->
+                <div id="wrong-answers-container" class="hidden animate-slide-up delay-100">
+                    <div class="flex items-center gap-2 mb-4 px-2">
+                        <div class="w-1 h-3.5 bg-rose-500 rounded-full"></div>
+                        <h3 class="text-sm font-black text-gray-700 uppercase tracking-widest">틀린 문제 다시보기</h3>
+                    </div>
+                    <div id="wrong-answers-list" class="grid gap-3"></div>
                 </div>
             </div>
 
@@ -341,14 +479,18 @@
             </div>
 
             <!-- 6. 검색 뷰 -->
-            <div id="view-search" class="hidden space-y-6 pb-20 fade-enter-active">
-                <div class="animate-slide-up flex items-center px-1 mb-2">
-                    <div class="space-y-0.5">
-                        <h2 class="text-2xl font-black text-gray-900 tracking-tight">검색 결과</h2>
-                        <p id="search-subtitle" class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Search Results</p>
-                    </div>
+            <div id="view-search" class="hidden h-full flex flex-col gap-4">
+                <div class="glass rounded-[24px] flex items-center gap-3 px-4 py-3 transition-all duration-300 focus-within:shadow-lg focus-within:border-indigo-300 border border-transparent shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input id="search-input" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="성어, 한자, 뜻으로 검색…" class="flex-1 bg-transparent outline-none text-sm font-bold text-gray-800 placeholder:text-gray-400 placeholder:font-medium">
+                    <button id="search-clear" class="hidden w-6 h-6 flex items-center justify-center text-gray-400 transition-all duration-200 active:scale-90 hover:text-gray-600">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
                 </div>
-                <div id="search-list" class="grid gap-3"></div>
+                <div class="flex-1 overflow-y-auto pb-20">
+                    <p id="search-subtitle" class="text-[10px] text-gray-500 font-bold uppercase tracking-wider px-2 mb-2 hidden">Search Results</p>
+                    <div id="search-list" class="grid gap-3"></div>
+                </div>
             </div>
         </div>
 
@@ -392,13 +534,13 @@
 
     <!-- 검색 상세 모달 -->
     <div id="modal-search-detail" class="modal-overlay">
-        <div class="glass w-full max-w-[300px] rounded-[40px] p-8 shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-search-detail-inner">
+        <div class="rounded-[40px] shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-search-detail-inner">
             <p id="modal-sd-index" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-4 py-1.5 rounded-full uppercase tracking-widest inline-block mb-6">Index 001</p>
             <h3 id="modal-sd-text" class="text-5xl font-black text-gray-900 tracking-tighter leading-tight mb-3">사자성어</h3>
             <p id="modal-sd-hanja" class="text-2xl hanja-font text-gray-400 tracking-[0.2em] mb-6">漢字</p>
             <div class="h-1 w-8 bg-indigo-100 rounded-full mx-auto mb-6"></div>
             <p id="modal-sd-mean" class="text-base font-bold text-gray-700 break-keep leading-relaxed px-2 mb-8">뜻풀이</p>
-            <button id="btn-sd-close" class="w-full h-13 py-4 primary-btn rounded-[20px] font-black text-sm">닫기</button>
+            <button id="btn-sd-close" class="w-full primary-btn rounded-[20px] font-black text-sm">닫기</button>
         </div>
     </div>
 
@@ -540,18 +682,31 @@
             studyIdx: 0,
             savedWrongs: JSON.parse(localStorage.getItem('idiom_seung_opt_v1') || '[]'),
             isMenuFirstLoad: true,
-            searchQuery: ''
+            searchQuery: '',
+            theme: 'light'
         };
 
         const els = {
             views: { menu: document.getElementById('view-menu'), study: document.getElementById('view-study'), quiz: document.getElementById('view-quiz'), result: document.getElementById('view-result'), review: document.getElementById('view-review'), search: document.getElementById('view-search') },
-            header: { title: document.getElementById('header-title'), back: document.getElementById('btn-back'), icon: document.getElementById('header-icon') },
+            header: { title: document.getElementById('header-title'), back: document.getElementById('btn-back'), icon: document.getElementById('header-icon'), themeToggle: document.getElementById('btn-theme-toggle'), themeIcon: document.getElementById('theme-icon') },
             footer: document.getElementById('footer-menu'),
             modals: { trash: document.getElementById('modal-confirm'), stop: document.getElementById('modal-stop-quiz'), searchDetail: document.getElementById('modal-search-detail') }
         };
 
-        const ICONS = { back: '<path d="m15 18-6-6 6-6"/>', home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' };
+        const ICONS = { 
+            back: '<path d="m15 18-6-6 6-6"/>', 
+            home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+            sun: '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
+            moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+        };
 
+        function applyTheme(theme) {
+            state.theme = theme;
+            document.documentElement.classList.toggle('dark-theme', theme === 'dark');
+            els.header.themeIcon.innerHTML = theme === 'dark' ? ICONS.sun : ICONS.moon;
+            localStorage.setItem('idiom_theme_pref', theme);
+        }
+        
         function restartAnimation(selector, animClass) {
             const elements = document.querySelectorAll(selector);
             elements.forEach(el => { el.classList.remove(animClass); void el.offsetWidth; el.classList.add(animClass); });
@@ -562,7 +717,7 @@
             const inner = document.getElementById(innerId);
             if (inner) { inner.classList.remove('scale-95'); inner.classList.add('scale-100'); }
         }
-
+        
         function hideModal(modalEl, innerId) {
             const inner = document.getElementById(innerId);
             if (inner) { inner.classList.remove('scale-100'); inner.classList.add('scale-95'); }
@@ -580,8 +735,38 @@
             fire(0.1, { spread: 120, startVelocity: 45 });
         }
 
+        function formatRelativeTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diff / (1000 * 60 * 60));
+
+            if (diffDays === 0) {
+                if (diffHours < 1) return '방금 전';
+                return `${diffHours}시간 전`;
+            }
+            if (diffDays === 1) return '어제';
+            if (diffDays < 7) return `${diffDays}일 전`;
+            
+            return date.toLocaleDateString('ko-KR');
+        }
+
         function navigateTo(newView, fromPopState = false) {
             if (state.view === newView) return;
+
+            // When leaving search view, clear it
+            if (state.view === 'search') {
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) searchInput.value = '';
+                state.searchQuery = '';
+                const searchList = document.getElementById('search-list');
+                if(searchList) searchList.innerHTML = '';
+                const searchClear = document.getElementById('search-clear');
+                if(searchClear) searchClear.classList.add('hidden');
+            }
+
             const currentEl = els.views[state.view];
             currentEl.style.opacity = '0';
             currentEl.style.transform = 'translateY(-10px)';
@@ -593,15 +778,13 @@
                 newEl.classList.remove('hidden');
                 void newEl.offsetWidth;
                 newEl.classList.add('fade-enter-active');
+                
                 if (newView === 'menu') {
                     state.isMenuFirstLoad = true;
-                    // 검색 상태 초기화
-                    const si = document.getElementById('search-input');
-                    const sc = document.getElementById('search-clear');
-                    if (si) si.value = '';
-                    if (sc) sc.classList.add('hidden');
-                    state.searchQuery = '';
+                } else if (newView === 'search') {
+                    document.getElementById('search-input')?.focus();
                 }
+                
                 if (!fromPopState) {
                     if (newView === 'menu') history.replaceState({ view: newView }, "");
                     else history.pushState({ view: newView }, "");
@@ -613,8 +796,19 @@
 
         function updateUI() {
             const isMenu = state.view === 'menu';
-            els.header.title.classList.toggle('opacity-0', !isMenu);
+            const isSearch = state.view === 'search';
+
+            els.header.title.classList.toggle('opacity-0', !isMenu && !isSearch);
             els.header.back.classList.toggle('hidden', isMenu);
+            els.header.themeToggle.classList.toggle('hidden', !isMenu);
+
+            const titleH1 = els.header.title.querySelector('h1');
+            if (isSearch) {
+                titleH1.innerText = '검색';
+            } else {
+                titleH1.innerText = '승세윤의 사자성어';
+            }
+            
             if (isMenu) { els.footer.classList.remove('translate-y-[150%]'); renderMenu(); } 
             else {
                 els.footer.classList.add('translate-y-[150%]');
@@ -625,7 +819,6 @@
             else if (state.view === 'quiz') renderQuiz();
             else if (state.view === 'result') renderResult();
             else if (state.view === 'review') renderReview();
-            else if (state.view === 'search') renderSearch();
         }
 
         function renderMenu() {
@@ -709,7 +902,8 @@
 
         function updateStudyCardData(item) {
             if (!item) return;
-            document.getElementById('study-index').innerText = `Index ${String(item.index).padStart(3, '0')}`;
+            const chapter = Math.ceil(item.index / 10);
+            document.getElementById('study-index').innerText = `Ch. ${chapter} · Index ${String(item.index).padStart(3, '0')}`;
             document.getElementById('study-text').innerText = item.text;
             document.getElementById('study-hanja').innerText = item.hanja;
             document.getElementById('study-mean').innerText = item.mean;
@@ -742,6 +936,13 @@
             }
             document.getElementById('btn-quiz-check').disabled = state.quiz.val.length < 2;
             if (!state.quiz.feedback) document.getElementById('quiz-feedback').classList.remove('show');
+
+            const hintBtn = document.getElementById('btn-quiz-hint');
+            if (state.quiz.hints) {
+                hintBtn.classList.add('bg-indigo-100', 'text-indigo-700');
+            } else {
+                hintBtn.classList.remove('bg-indigo-100', 'text-indigo-700');
+            }
         }
 
         function checkAnswer(skipped = false) {
@@ -756,6 +957,8 @@
             
             const overlay = document.getElementById('quiz-feedback');
             overlay.classList.add('show');
+            overlay.classList.toggle('correct-feedback', isCorrect);
+            overlay.classList.toggle('wrong-feedback', !isCorrect);
             overlay.style.backgroundColor = isCorrect ? 'rgba(236, 253, 245, 0.9)' : 'rgba(255, 241, 242, 0.9)';
             
             const iconBox = document.getElementById('feedback-icon-box');
@@ -765,7 +968,11 @@
             if (!isCorrect) {
                 document.getElementById('feedback-answer').innerText = item.text;
                 document.getElementById('feedback-mean').innerText = item.mean;
-                if (!state.savedWrongs.some(it => it.index === item.index)) { state.savedWrongs.unshift(item); localStorage.setItem('idiom_seung_opt_v1', JSON.stringify(state.savedWrongs)); }
+                if (!state.savedWrongs.some(it => it.index === item.index)) { 
+                    const wrongItem = { ...item, date: new Date().toISOString() };
+                    state.savedWrongs.unshift(wrongItem);
+                    localStorage.setItem('idiom_seung_opt_v1', JSON.stringify(state.savedWrongs)); 
+                }
                 if (!state.quiz.wrongs.some(it => it.index === item.index)) state.quiz.wrongs.push(item);
             } else { 
                 document.getElementById('feedback-answer').innerText = "Correct!"; 
@@ -783,7 +990,8 @@
                 card.classList.add('fluid-card-exit');
                 setTimeout(() => {
                     state.quiz.idx++; state.quiz.val = ''; state.quiz.hints = false; state.quiz.feedback = null;
-                    document.getElementById('quiz-feedback').classList.remove('show');
+                    const overlay = document.getElementById('quiz-feedback');
+                    overlay.classList.remove('show', 'correct-feedback', 'wrong-feedback');
                     updateUI(); renderQuiz();
                     card.classList.remove('fluid-card-exit'); card.classList.add('fluid-card-enter');
                     setTimeout(() => card.classList.remove('fluid-card-enter'), 400);
@@ -822,6 +1030,31 @@
             }
             restartAnimation('.text-pop', 'text-pop');
             document.getElementById('btn-result-home').onclick = () => navigateTo('menu');
+
+            // 🚀 틀린 문제 목록 렌더링
+            const wrongsContainer = document.getElementById('wrong-answers-container');
+            const wrongsListEl = document.getElementById('wrong-answers-list');
+            if (state.quiz.wrongs.length > 0) {
+                wrongsContainer.classList.remove('hidden');
+                wrongsListEl.innerHTML = '';
+                state.quiz.wrongs.forEach((it, idx) => {
+                    const el = document.createElement('div');
+                    el.className = 'animate-entry glass p-5 rounded-[24px] space-y-3';
+                    el.style.animationDelay = `${idx * 0.05}s`;
+                    el.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg font-black text-gray-800">${it.text}</h3>
+                                <p class="text-[13px] text-gray-700 font-semibold break-keep leading-relaxed mt-1.5">${it.mean}</p>
+                            </div>
+                            <span class="text-xl hanja-font text-indigo-400 font-bold opacity-80">${it.hanja}</span>
+                        </div>
+                    `;
+                    wrongsListEl.appendChild(el);
+                });
+            } else {
+                wrongsContainer.classList.add('hidden');
+            }
         }
 
         function renderReview() {
@@ -834,7 +1067,11 @@
                 el.style.animationDelay = `${idx * 0.05}s`;
                 el.innerHTML = `
                     <div class="flex justify-between items-start pr-8">
-                        <div><span class="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg inline-block transition-colors">Idx ${it.index}</span><h3 class="text-lg font-black text-gray-800 mt-1">${it.text}</h3></div>
+                        <div>
+                            <span class="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg inline-block transition-colors">Idx ${it.index}</span>
+                            ${it.date ? `<span class="text-[9px] font-bold text-gray-400 ml-1.5">${formatRelativeTime(it.date)}</span>` : ''}
+                            <h3 class="text-lg font-black text-gray-800 mt-1.5">${it.text}</h3>
+                        </div>
                         <span class="text-xl hanja-font text-indigo-400 font-bold opacity-80">${it.hanja}</span>
                     </div>
                     <p class="text-[13px] text-gray-700 font-semibold break-keep leading-relaxed">${it.mean}</p>
@@ -848,41 +1085,78 @@
             });
         }
 
+        function highlight(text, query) {
+            if (!query) return text;
+            const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`(${escapedQuery})`, 'gi');
+            return text.replace(regex, `<strong class="font-black text-indigo-600">$1</strong>`);
+        }
+
+        function getChoseong(str) {
+            const CHOSEONG = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+            let result = '';
+            for (let i = 0; i < str.length; i++) {
+                const code = str.charCodeAt(i);
+                if (code >= 0xAC00 && code <= 0xD7A3) { // '가' to '힣'
+                    const index = Math.floor((code - 0xAC00) / (21 * 28));
+                    result += CHOSEONG[index];
+                }
+                // 한글이 아닌 문자는 초성 변환에서 제외합니다.
+            }
+            return result;
+        }
+
         function renderSearch() {
-            const q = state.searchQuery.trim().toLowerCase();
+            const q = state.searchQuery.trim();
             const listEl = document.getElementById('search-list');
             const subtitle = document.getElementById('search-subtitle');
             listEl.innerHTML = '';
-            if (!q) { subtitle.innerText = 'Search Results'; return; }
+            
+            if (!q) {
+                subtitle.innerText = 'Search Results';
+                return;
+            }
+
+            const lowerQ = q.toLowerCase();
             const results = RAW_DATA.filter(it =>
-                it.text.toLowerCase().includes(q) ||
-                it.hanja.toLowerCase().includes(q) ||
-                it.mean.toLowerCase().includes(q)
+                it.text.toLowerCase().includes(lowerQ) ||
+                it.hanja.toLowerCase().includes(lowerQ) ||
+                it.mean.toLowerCase().includes(lowerQ) ||
+                getChoseong(it.text).includes(q)
             );
-            subtitle.innerText = results.length > 0 ? `${results.length}개 결과` : 'No Results';
+
+            subtitle.innerText = results.length > 0 ? `${results.length}개 결과` : '결과 없음';
+            
             if (!results.length) {
                 listEl.innerHTML = `
                     <div class="glass p-12 rounded-[40px] text-center animate-slide-up">
-                        <div class="text-5xl mb-5">🔍</div>
-                        <p class="text-base font-black text-gray-700 mb-2">"${state.searchQuery}"</p>
-                        <p class="text-sm text-gray-400 font-semibold">검색 결과가 없습니다.</p>
-                    </div>`;
+                        <div class="text-5xl mb-5">🤔</div>
+                        <p class="text-base font-bold text-gray-700 mb-3 leading-snug">'<strong class="text-indigo-600 font-black">${q}</strong>'에 대한<br>검색 결과가 없습니다.</p>
+                        <p class="text-sm text-gray-500 font-semibold">오타가 없는지 확인하거나<br>다른 검색어를 입력해 보세요.</p>
+                    </div>
+                `;
                 return;
             }
+
             results.forEach((it, idx) => {
                 const el = document.createElement('div');
                 el.className = 'animate-slide-up glass p-5 rounded-[24px] space-y-3 cursor-pointer transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-95';
                 el.style.animationDelay = `${idx * 0.04}s`;
                 const chap = Math.ceil(it.index / 10);
+                
+                const highlightedText = highlight(it.text, q);
+                const highlightedHanja = highlight(it.hanja, q);
+                const highlightedMean = highlight(it.mean, q);
+
                 el.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
                             <span class="text-[9px] font-bold text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-lg inline-block">Ch.${chap} · Idx ${it.index}</span>
-                            <h3 class="text-lg font-black text-gray-800 mt-1">${it.text}</h3>
+                            <h3 class="text-lg font-black text-gray-800 mt-1">${highlightedText}</h3>
                         </div>
-                        <span class="text-xl hanja-font text-indigo-400 font-bold opacity-80">${it.hanja}</span>
+                        <span class="text-xl hanja-font text-indigo-400 font-bold opacity-80">${highlightedHanja}</span>
                     </div>
-                    <p class="text-[13px] text-gray-700 font-semibold break-keep leading-relaxed">${it.mean}</p>
+                    <p class="text-[13px] text-gray-700 font-semibold break-keep leading-relaxed">${highlightedMean}</p>
                 `;
                 el.onclick = () => showSearchDetail(it);
                 listEl.appendChild(el);
@@ -909,6 +1183,11 @@
 
         function init() {
             history.replaceState({ view: 'menu' }, "");
+            
+            const savedTheme = localStorage.getItem('idiom_theme_pref');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
+
             window.onpopstate = (e) => {
                 if (els.modals.stop.classList.contains('show')) { hideModal(els.modals.stop, 'modal-stop-inner'); return; }
                 if (els.modals.trash.classList.contains('show')) { hideModal(els.modals.trash, 'modal-confirm-inner'); return; }
@@ -945,6 +1224,11 @@
                 if (state.studyIdx === list.length - 1) navigateTo('menu');
                 else { state.studyIdx++; renderStudy('next'); }
             });
+            safeSetOnclick('btn-theme-toggle', () => {
+                const newTheme = state.theme === 'light' ? 'dark' : 'light';
+                applyTheme(newTheme);
+            });
+            safeSetOnclick('btn-show-search', () => navigateTo('search'));
             
             const qIn = document.getElementById('quiz-input');
             if (qIn) {
@@ -969,76 +1253,57 @@
             safeSetOnclick('btn-modal-cancel', () => hideModal(els.modals.trash, 'modal-confirm-inner'));
             safeSetOnclick('btn-modal-confirm', () => { state.savedWrongs = []; localStorage.setItem('idiom_seung_opt_v1', '[]'); hideModal(els.modals.trash, 'modal-confirm-inner'); setTimeout(() => updateUI(), 200); });
             safeSetOnclick('btn-stop-cancel', () => hideModal(els.modals.stop, 'modal-stop-inner'));
-            safeSetOnclick('btn-stop-confirm', () => { hideModal(els.modals.stop, 'modal-stop-inner'); setTimeout(() => navigateTo('menu'), 150); });
+            safeSetOnclick('btn-stop-confirm', () => { hideModal(els.modals.stop, 'modal-stop-inner'); setTimeout(() => { history.back(); }, 150); });
             safeSetOnclick('btn-sd-close', () => hideModal(els.modals.searchDetail, 'modal-search-detail-inner'));
             if (els.header.back) { els.header.back.onclick = () => { 
-                if (state.view === 'quiz') showModal(els.modals.stop, 'modal-stop-inner'); 
-                else if (state.view === 'search') {
-                    document.getElementById('search-input').value = '';
-                    state.searchQuery = '';
-                    navigateTo('menu');
+                if (state.view === 'quiz') {
+                    showModal(els.modals.stop, 'modal-stop-inner');
+                } else {
+                    history.back();
                 }
-                else navigateTo('menu'); 
             }; }
 
             const searchInput = document.getElementById('search-input');
             const searchClear = document.getElementById('search-clear');
+            let searchDebounceTimeout;
 
             function doSearch() {
                 const q = searchInput.value;
                 state.searchQuery = q;
-                searchClear.classList.toggle('hidden', !q);
-                if (q) {
-                    if (state.view !== 'search') {
-                        const prevEl = els.views[state.view];
-                        prevEl.classList.add('hidden');
-                        prevEl.style.opacity = '';
-                        prevEl.style.transform = '';
-                        prevEl.style.transition = '';
-                        els.views.search.classList.remove('hidden');
-                        void els.views.search.offsetWidth;
-                        els.views.search.classList.add('fade-enter-active');
-                        history.pushState({ view: 'search' }, '');
-                        state.view = 'search';
-                        els.header.title.classList.add('opacity-0');
-                        els.header.back.classList.remove('hidden');
-                        els.header.icon.innerHTML = ICONS.back;
-                        els.footer.classList.add('translate-y-[150%]');
-                    }
-                    renderSearch();
-                } else {
-                    navigateTo('menu');
-                }
+                renderSearch();
             }
 
             if (searchInput) {
-                // X 버튼 표시는 입력 중에도 업데이트
                 searchInput.oninput = (e) => {
                     searchClear.classList.toggle('hidden', !e.target.value);
+                    clearTimeout(searchDebounceTimeout);
+                    searchDebounceTimeout = setTimeout(() => doSearch(), 300);
                 };
-                // 실제 검색은 엔터키에만 실행
                 searchInput.onkeydown = (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        searchInput.blur(); // 모바일 키보드 닫기
+                        searchInput.blur();
+                        clearTimeout(searchDebounceTimeout);
                         doSearch();
-                    } else if (e.key === 'Escape') {
-                        searchInput.value = '';
-                        state.searchQuery = '';
-                        searchClear.classList.add('hidden');
-                        navigateTo('menu');
                     }
                 };
             }
             if (searchClear) {
                 searchClear.onclick = () => {
                     searchInput.value = '';
-                    state.searchQuery = '';
-                    searchClear.classList.add('hidden');
-                    if (state.view === 'search') navigateTo('menu');
-                    setTimeout(() => searchInput.focus(), 400);
+                    doSearch();
+                    searchInput.focus();
                 };
             }
+
+            Object.values(els.modals).forEach(modalEl => {
+                modalEl.addEventListener('click', (e) => {
+                    if (e.target === modalEl) {
+                        const inner = modalEl.querySelector('div[id$="-inner"]');
+                        if(inner) hideModal(modalEl, inner.id);
+                    }
+                });
+            });
 
             updateUI();
         }
