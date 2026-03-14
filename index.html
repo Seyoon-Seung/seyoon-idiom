@@ -220,6 +220,16 @@
                     </button>
                 </div>
 
+                <div class="animate-slide-up delay-200">
+                    <div class="glass rounded-[24px] flex items-center gap-3 px-4 py-3 transition-all duration-300 focus-within:shadow-lg focus-within:border-indigo-300" style="border: 1px solid rgba(99,102,241,0.15);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        <input id="search-input" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="성어, 한자, 뜻으로 검색…" class="flex-1 bg-transparent outline-none text-sm font-bold text-gray-800 placeholder:text-gray-400 placeholder:font-medium">
+                        <button id="search-clear" class="hidden w-6 h-6 flex items-center justify-center text-gray-400 transition-all duration-200 active:scale-90 hover:text-gray-600">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
                 <section class="space-y-4 animate-slide-up delay-200">
                     <div class="flex justify-between items-center px-1">
                         <div class="flex items-center gap-2">
@@ -329,6 +339,17 @@
                 </div>
                 <div id="review-list" class="grid gap-3"></div>
             </div>
+
+            <!-- 6. 검색 뷰 -->
+            <div id="view-search" class="hidden space-y-6 pb-20 fade-enter-active">
+                <div class="animate-slide-up flex items-center px-1 mb-2">
+                    <div class="space-y-0.5">
+                        <h2 class="text-2xl font-black text-gray-900 tracking-tight">검색 결과</h2>
+                        <p id="search-subtitle" class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Search Results</p>
+                    </div>
+                </div>
+                <div id="search-list" class="grid gap-3"></div>
+            </div>
         </div>
 
         <footer id="footer-menu" class="fixed bottom-4 left-0 right-0 p-5 sm:p-10 bg-transparent z-30 transition-transform duration-700 pointer-events-none">
@@ -366,6 +387,18 @@
                 <button id="btn-stop-cancel" class="flex-1 py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-bold text-xs active:scale-95 sm:hover:bg-gray-200">계속</button>
                 <button id="btn-stop-confirm" class="flex-1 primary-btn py-3.5 rounded-2xl font-bold text-xs shadow-lg">중단</button>
             </div>
+        </div>
+    </div>
+
+    <!-- 검색 상세 모달 -->
+    <div id="modal-search-detail" class="modal-overlay">
+        <div class="glass w-full max-w-[300px] rounded-[40px] p-8 shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-search-detail-inner">
+            <p id="modal-sd-index" class="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-4 py-1.5 rounded-full uppercase tracking-widest inline-block mb-6">Index 001</p>
+            <h3 id="modal-sd-text" class="text-5xl font-black text-gray-900 tracking-tighter leading-tight mb-3">사자성어</h3>
+            <p id="modal-sd-hanja" class="text-2xl hanja-font text-gray-400 tracking-[0.2em] mb-6">漢字</p>
+            <div class="h-1 w-8 bg-indigo-100 rounded-full mx-auto mb-6"></div>
+            <p id="modal-sd-mean" class="text-base font-bold text-gray-700 break-keep leading-relaxed px-2 mb-8">뜻풀이</p>
+            <button id="btn-sd-close" class="w-full h-13 py-4 primary-btn rounded-[20px] font-black text-sm">닫기</button>
         </div>
     </div>
 
@@ -506,14 +539,15 @@
             },
             studyIdx: 0,
             savedWrongs: JSON.parse(localStorage.getItem('idiom_seung_opt_v1') || '[]'),
-            isMenuFirstLoad: true 
+            isMenuFirstLoad: true,
+            searchQuery: ''
         };
 
         const els = {
-            views: { menu: document.getElementById('view-menu'), study: document.getElementById('view-study'), quiz: document.getElementById('view-quiz'), result: document.getElementById('view-result'), review: document.getElementById('view-review') },
+            views: { menu: document.getElementById('view-menu'), study: document.getElementById('view-study'), quiz: document.getElementById('view-quiz'), result: document.getElementById('view-result'), review: document.getElementById('view-review'), search: document.getElementById('view-search') },
             header: { title: document.getElementById('header-title'), back: document.getElementById('btn-back'), icon: document.getElementById('header-icon') },
             footer: document.getElementById('footer-menu'),
-            modals: { trash: document.getElementById('modal-confirm'), stop: document.getElementById('modal-stop-quiz') }
+            modals: { trash: document.getElementById('modal-confirm'), stop: document.getElementById('modal-stop-quiz'), searchDetail: document.getElementById('modal-search-detail') }
         };
 
         const ICONS = { back: '<path d="m15 18-6-6 6-6"/>', home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' };
@@ -559,7 +593,15 @@
                 newEl.classList.remove('hidden');
                 void newEl.offsetWidth;
                 newEl.classList.add('fade-enter-active');
-                if (newView === 'menu') state.isMenuFirstLoad = true;
+                if (newView === 'menu') {
+                    state.isMenuFirstLoad = true;
+                    // 검색 상태 초기화
+                    const si = document.getElementById('search-input');
+                    const sc = document.getElementById('search-clear');
+                    if (si) si.value = '';
+                    if (sc) sc.classList.add('hidden');
+                    state.searchQuery = '';
+                }
                 if (!fromPopState) {
                     if (newView === 'menu') history.replaceState({ view: newView }, "");
                     else history.pushState({ view: newView }, "");
@@ -583,6 +625,7 @@
             else if (state.view === 'quiz') renderQuiz();
             else if (state.view === 'result') renderResult();
             else if (state.view === 'review') renderReview();
+            else if (state.view === 'search') renderSearch();
         }
 
         function renderMenu() {
@@ -805,6 +848,55 @@
             });
         }
 
+        function renderSearch() {
+            const q = state.searchQuery.trim().toLowerCase();
+            const listEl = document.getElementById('search-list');
+            const subtitle = document.getElementById('search-subtitle');
+            listEl.innerHTML = '';
+            if (!q) { subtitle.innerText = 'Search Results'; return; }
+            const results = RAW_DATA.filter(it =>
+                it.text.toLowerCase().includes(q) ||
+                it.hanja.toLowerCase().includes(q) ||
+                it.mean.toLowerCase().includes(q)
+            );
+            subtitle.innerText = results.length > 0 ? `${results.length}개 결과` : 'No Results';
+            if (!results.length) {
+                listEl.innerHTML = `
+                    <div class="glass p-12 rounded-[40px] text-center animate-slide-up">
+                        <div class="text-5xl mb-5">🔍</div>
+                        <p class="text-base font-black text-gray-700 mb-2">"${state.searchQuery}"</p>
+                        <p class="text-sm text-gray-400 font-semibold">검색 결과가 없습니다.</p>
+                    </div>`;
+                return;
+            }
+            results.forEach((it, idx) => {
+                const el = document.createElement('div');
+                el.className = 'animate-slide-up glass p-5 rounded-[24px] space-y-3 cursor-pointer transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-95';
+                el.style.animationDelay = `${idx * 0.04}s`;
+                const chap = Math.ceil(it.index / 10);
+                el.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[9px] font-bold text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-lg inline-block">Ch.${chap} · Idx ${it.index}</span>
+                            <h3 class="text-lg font-black text-gray-800 mt-1">${it.text}</h3>
+                        </div>
+                        <span class="text-xl hanja-font text-indigo-400 font-bold opacity-80">${it.hanja}</span>
+                    </div>
+                    <p class="text-[13px] text-gray-700 font-semibold break-keep leading-relaxed">${it.mean}</p>
+                `;
+                el.onclick = () => showSearchDetail(it);
+                listEl.appendChild(el);
+            });
+        }
+
+        function showSearchDetail(it) {
+            document.getElementById('modal-sd-index').innerText = `Index ${String(it.index).padStart(3, '0')} · Ch.${Math.ceil(it.index / 10)}`;
+            document.getElementById('modal-sd-text').innerText = it.text;
+            document.getElementById('modal-sd-hanja').innerText = it.hanja;
+            document.getElementById('modal-sd-mean').innerText = it.mean;
+            showModal(els.modals.searchDetail, 'modal-search-detail-inner');
+        }
+
         // 🚀 피드백 건너뛰기 쿨타임 최적화: 0.3초
         function skipFeedback() { 
             if (state.quiz.timer) { 
@@ -820,6 +912,7 @@
             window.onpopstate = (e) => {
                 if (els.modals.stop.classList.contains('show')) { hideModal(els.modals.stop, 'modal-stop-inner'); return; }
                 if (els.modals.trash.classList.contains('show')) { hideModal(els.modals.trash, 'modal-confirm-inner'); return; }
+                if (els.modals.searchDetail.classList.contains('show')) { hideModal(els.modals.searchDetail, 'modal-search-detail-inner'); return; }
                 if (e.state && e.state.view) {
                     if (state.view === e.state.view) return;
                     if (state.view === 'quiz' && e.state.view === 'menu') { showModal(els.modals.stop, 'modal-stop-inner'); history.pushState({ view: 'quiz' }, ""); return; }
@@ -877,7 +970,76 @@
             safeSetOnclick('btn-modal-confirm', () => { state.savedWrongs = []; localStorage.setItem('idiom_seung_opt_v1', '[]'); hideModal(els.modals.trash, 'modal-confirm-inner'); setTimeout(() => updateUI(), 200); });
             safeSetOnclick('btn-stop-cancel', () => hideModal(els.modals.stop, 'modal-stop-inner'));
             safeSetOnclick('btn-stop-confirm', () => { hideModal(els.modals.stop, 'modal-stop-inner'); setTimeout(() => navigateTo('menu'), 150); });
-            if (els.header.back) { els.header.back.onclick = () => { if (state.view === 'quiz') showModal(els.modals.stop, 'modal-stop-inner'); else navigateTo('menu'); }; }
+            safeSetOnclick('btn-sd-close', () => hideModal(els.modals.searchDetail, 'modal-search-detail-inner'));
+            if (els.header.back) { els.header.back.onclick = () => { 
+                if (state.view === 'quiz') showModal(els.modals.stop, 'modal-stop-inner'); 
+                else if (state.view === 'search') {
+                    document.getElementById('search-input').value = '';
+                    state.searchQuery = '';
+                    navigateTo('menu');
+                }
+                else navigateTo('menu'); 
+            }; }
+
+            const searchInput = document.getElementById('search-input');
+            const searchClear = document.getElementById('search-clear');
+
+            function doSearch() {
+                const q = searchInput.value;
+                state.searchQuery = q;
+                searchClear.classList.toggle('hidden', !q);
+                if (q) {
+                    if (state.view !== 'search') {
+                        const prevEl = els.views[state.view];
+                        prevEl.classList.add('hidden');
+                        prevEl.style.opacity = '';
+                        prevEl.style.transform = '';
+                        prevEl.style.transition = '';
+                        els.views.search.classList.remove('hidden');
+                        void els.views.search.offsetWidth;
+                        els.views.search.classList.add('fade-enter-active');
+                        history.pushState({ view: 'search' }, '');
+                        state.view = 'search';
+                        els.header.title.classList.add('opacity-0');
+                        els.header.back.classList.remove('hidden');
+                        els.header.icon.innerHTML = ICONS.back;
+                        els.footer.classList.add('translate-y-[150%]');
+                    }
+                    renderSearch();
+                } else {
+                    navigateTo('menu');
+                }
+            }
+
+            if (searchInput) {
+                // X 버튼 표시는 입력 중에도 업데이트
+                searchInput.oninput = (e) => {
+                    searchClear.classList.toggle('hidden', !e.target.value);
+                };
+                // 실제 검색은 엔터키에만 실행
+                searchInput.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        searchInput.blur(); // 모바일 키보드 닫기
+                        doSearch();
+                    } else if (e.key === 'Escape') {
+                        searchInput.value = '';
+                        state.searchQuery = '';
+                        searchClear.classList.add('hidden');
+                        navigateTo('menu');
+                    }
+                };
+            }
+            if (searchClear) {
+                searchClear.onclick = () => {
+                    searchInput.value = '';
+                    state.searchQuery = '';
+                    searchClear.classList.add('hidden');
+                    if (state.view === 'search') navigateTo('menu');
+                    setTimeout(() => searchInput.focus(), 400);
+                };
+            }
+
             updateUI();
         }
         init();
