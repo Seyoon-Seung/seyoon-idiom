@@ -9,7 +9,6 @@
     <meta property="og:image" content="thumbnail.png">
     <meta name="google-site-verification" content="sXvS_-JQ95k897LDs_ew5sdgg7cLsQI5DKne3MdpSbI" />
     <title>승세윤의 사자성어 암기앱</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -422,7 +421,7 @@
                             <p id="quiz-q-wrapper" class="text-pop text-6xl sm:text-7xl font-black text-gray-900 tracking-tighter leading-tight flex justify-center gap-2">
                                 <span id="quiz-q-text">??</span><span class="text-gray-400">??</span>
                             </p>
-                            <div id="quiz-hint" class="opacity-0 transition-all duration-500 transform translate-y(1rem) h-20 flex flex-col items-center justify-center gap-1.5"></div>
+                            <div id="quiz-hint" class="opacity-0 transition-all duration-500 transform translateY(1rem) h-20 flex flex-col items-center justify-center gap-1.5"></div>
                         </div>
                         <div class="w-full max-w-[240px] space-y-6">
                             <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" class="w-full bg-transparent border-b-[3px] border-gray-300 focus:border-indigo-600 text-center text-5xl font-black outline-none pb-2 text-indigo-600 transition-all duration-300 placeholder:text-gray-400 caret-indigo-500" placeholder="??">
@@ -1253,7 +1252,7 @@
             safeSetOnclick('btn-modal-cancel', () => hideModal(els.modals.trash, 'modal-confirm-inner'));
             safeSetOnclick('btn-modal-confirm', () => { state.savedWrongs = []; localStorage.setItem('idiom_seung_opt_v1', '[]'); hideModal(els.modals.trash, 'modal-confirm-inner'); setTimeout(() => updateUI(), 200); });
             safeSetOnclick('btn-stop-cancel', () => hideModal(els.modals.stop, 'modal-stop-inner'));
-            safeSetOnclick('btn-stop-confirm', () => { hideModal(els.modals.stop, 'modal-stop-inner'); setTimeout(() => { history.back(); }, 150); });
+            safeSetOnclick('btn-stop-confirm', () => { hideModal(els.modals.stop, 'modal-stop-inner'); setTimeout(() => { navigateTo('menu'); }, 150); });
             safeSetOnclick('btn-sd-close', () => hideModal(els.modals.searchDetail, 'modal-search-detail-inner'));
             if (els.header.back) { els.header.back.onclick = () => { 
                 if (state.view === 'quiz') {
