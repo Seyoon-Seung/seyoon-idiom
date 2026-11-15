@@ -257,15 +257,15 @@
         .stat-pill.xp .ic { color: #B27A00; fill: var(--gold); }
         .stat-pill.notes .ic { color: var(--bad-text); }
         button.stat-pill:disabled { opacity: 0.6; }
-        .path { display: flex; flex-direction: column; align-items: center; padding: 4px 0 16px; }
-        .path-row { position: relative; padding-top: 30px; display: flex; flex-direction: column; align-items: center; }
+        .path { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 8px; padding: 4px 0 16px; }
+        .path-row { position: relative; display: flex; flex-direction: column; align-items: center; }
         .chapter-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; background: none; border: 0; color: var(--t1); }
-        .node { position: relative; width: 84px; height: 84px; }
-        .node svg { position: absolute; inset: 0; width: 84px; height: 84px; transform: rotate(-90deg); }
+        .node { position: relative; width: 72px; height: 72px; }
+        .node svg { position: absolute; inset: 0; width: 72px; height: 72px; transform: rotate(-90deg); }
         .node .trk { fill: none; stroke: var(--surface-2); stroke-width: 5; }
         .node .prg { fill: none; stroke: var(--gold); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset var(--d-enter) var(--ease); }
-        .node .disc { position: absolute; inset: 11px; border-radius: 50%; background: var(--c); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 var(--cd);
-            font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1; transition: transform 90ms var(--ease), box-shadow 90ms var(--ease); }
+        .node .disc { position: absolute; inset: 9px; border-radius: 50%; background: var(--c); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 var(--cd);
+            font-family: var(--serif); font-weight: 700; font-size: 24px; line-height: 1; transition: transform 90ms var(--ease), box-shadow 90ms var(--ease); }
         .chapter-btn:active .disc { transform: translateY(4px); box-shadow: 0 1px 0 var(--cd); }
         .chapter-btn .ch-range { font-size: 12px; line-height: 16px; font-weight: 700; color: var(--t2); padding: 2px 10px; border-radius: 10px; }
         .chapter-btn .ch-done { position: absolute; top: 0; right: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--gold); color: var(--on-gold); border: 2px solid var(--surface); display: none; align-items: center; justify-content: center; }
@@ -1019,7 +1019,6 @@
                     const row = document.createElement('div');
                     row.className = 'path-row';
                     row.id = `row-${ch.id}`;
-                    row.style.transform = `translateX(${Math.round(Math.sin(i * 0.95) * 64)}px)`;
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.id = `tile-${ch.id}`;
@@ -1042,15 +1041,6 @@
                 const knownCnt = items.filter((it) => state.known.has(it.index)).length;
                 btn.querySelector('.prg').style.strokeDashoffset = 175.9 * (1 - knownCnt / items.length);
                 btn.classList.toggle('is-done', knownCnt === items.length);
-                const row = $(`row-${ch.id}`);
-                const oldB = row.querySelector('.bubble');
-                if (oldB) oldB.remove();
-                if (isActive && state.selectedChapters[state.selectedChapters.length - 1] === ch.id) {
-                    const bb = document.createElement('button');
-                    bb.type = 'button'; bb.className = 'bubble'; bb.innerText = '시작'; bb.setAttribute('aria-label', `챕터 ${ch.id} 퀴즈 시작`);
-                    bb.onclick = () => startQuiz('normal');
-                    row.appendChild(bb);
-                }
                 btn.setAttribute('aria-label', `챕터 ${ch.id}, ${(ch.id - 1) * 10 + 1}번부터 ${ch.id * 10}번, 외운 성어 ${knownCnt}/${items.length}${isActive ? ', 선택됨' : ''}`);
             });
             state.isMenuFirstLoad = false;
