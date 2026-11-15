@@ -61,14 +61,23 @@
             --t1: #26221E;
             --t2: #5A544C;
             --t3: #6E675E;
-            --accent: #B3382C;
-            --accent-hover: #A63227;
-            --accent-edge: #7E241B;
-            --accent-text: #A3322A;
-            --accent-wash: #F6EBE9;
+            --accent: #17855F;
+            --accent-hover: #137553;
+            --accent-edge: #0C5A3F;
+            --accent-text: #0F7452;
+            --accent-wash: #E0F3EA;
             --on-accent: #FFFFFF;
-            --good: #2F6B45;
-            --good-wash: #E6F0E8;
+            --stamp: #D93F30;
+            --gold: #F5B82E;
+            --gold-edge: #C48A0E;
+            --on-gold: #3A2A00;
+            --good: #17855F;
+            --good-wash: #DDF3E7;
+            --good-text: #0B5A3F;
+            --bad: #D93F30;
+            --bad-edge: #A22A1E;
+            --bad-wash: #FDE7E4;
+            --bad-text: #A3261A;
             --ink: #2B2622;
             --on-ink: #F6F1E8;
             --paper: #F6F1E8;
@@ -78,8 +87,8 @@
             --d-fast: 120ms;
             --d-base: 160ms;
             --d-enter: 200ms;
-            --r-card: 16px;
-            --r-ctl: 12px;
+            --r-card: 20px;
+            --r-ctl: 14px;
             --r-tag: 6px;
             --sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
             --serif: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', serif;
@@ -96,14 +105,23 @@
             --t1: #ECE7E0;
             --t2: #B3ACA2;
             --t3: #968F85;
-            --accent: #C0463A;
-            --accent-hover: #CC5044;
-            --accent-edge: #6E2019;
-            --accent-text: #EE8577;
-            --accent-wash: #392724;
-            --on-accent: #FFFFFF;
-            --good: #7CC293;
-            --good-wash: #1F3326;
+            --accent: #3CC59A;
+            --accent-hover: #4FD1A8;
+            --accent-edge: #1B7D5F;
+            --accent-text: #5FDDB4;
+            --accent-wash: #16342B;
+            --on-accent: #062A1E;
+            --stamp: #D6473A;
+            --gold: #F5B82E;
+            --gold-edge: #A87608;
+            --on-gold: #3A2A00;
+            --good: #3CC59A;
+            --good-wash: #16342B;
+            --good-text: #8FE8C8;
+            --bad: #C8453A;
+            --bad-edge: #8E2B22;
+            --bad-wash: #3A1F1C;
+            --bad-text: #FF9E92;
             --ink: #0E0C0B;
             --on-ink: #F1EBE0;
             --paper: #F1EBE0;
@@ -163,7 +181,7 @@
         .t1 { color: var(--t1); }
         .t2 { color: var(--t2); }
         .t3 { color: var(--t3); }
-        .label { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--t2); }
+        .label { font-size: 13px; line-height: 16px; font-weight: 700; color: var(--t2); }
         .note { font-size: 12px; line-height: 16px; color: var(--t3); }
         .tag { display: inline-block; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--t2); background: var(--surface-2); padding: 2px 8px; border-radius: var(--r-tag); }
         .tag.ch-tag { color: #fff; background: var(--c); }
@@ -173,8 +191,8 @@
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             height: 44px; padding: 0 16px; border-radius: var(--r-ctl);
-            font-size: 14px; line-height: 20px; font-weight: 600; color: var(--t1);
-            background: var(--surface); border: 1px solid var(--line);
+            font-size: 15px; line-height: 20px; font-weight: 700; color: var(--t1);
+            background: var(--surface); border: 2px solid var(--edge);
             box-shadow: 0 4px 0 var(--edge);
             transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
         }
@@ -216,10 +234,10 @@
         .action-card:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
         @media (hover: hover) { .action-card:not(:disabled):hover { background: var(--surface-2); } }
         .icon-block { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 10px; background: var(--c); color: #fff; box-shadow: 0 3px 0 var(--cd); }
-        .stamp-block { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 4px; background: var(--accent); color: #fff; transform: rotate(-6deg);
-            font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1; box-shadow: inset 0 0 0 3px var(--accent), inset 0 0 0 4px rgba(255,255,255,0.6); }
+        .stamp-block { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 4px; background: var(--stamp); color: #fff; transform: rotate(-6deg);
+            font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1; box-shadow: inset 0 0 0 3px var(--stamp), inset 0 0 0 4px rgba(255,255,255,0.6); }
         .action-card:disabled .stamp-block { background: var(--t3); box-shadow: inset 0 0 0 3px var(--t3), inset 0 0 0 4px rgba(255,255,255,0.5); }
-        .count-badge { position: absolute; top: 10px; right: 10px; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 12px; background: var(--accent); color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+        .count-badge { position: absolute; top: 10px; right: 10px; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 12px; background: var(--stamp); color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
         .count-badge.hidden { display: none; }
         .icon-tile { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--r-ctl); background: var(--surface-2); color: var(--t2); }
         .icon-tile.is-accent { background: var(--accent-wash); color: var(--accent-text); }
@@ -242,28 +260,30 @@
         @media (hover: hover) { .seg-btn:not(.selected):hover { background: var(--surface-2); } }
         .seg-btn.selected { background: var(--accent); border-color: var(--accent-edge); color: var(--on-accent); box-shadow: 0 1px 0 var(--accent-edge); transform: translateY(2px); }
 
-        /* 챕터 타일: 챕터 색이 가득 찬 카드. 점 10개 = 그 챕터의 성어 10개, 외운 만큼 채워진다 */
+        /* 챕터 노드: 둥근 원 + 바깥 진행도 링. 링은 그 챕터에서 외운 성어 비율 */
         .chapter-btn {
-            position: relative; height: 92px; padding: 10px 10px 12px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; text-align: left;
-            background: var(--c); border: 1px solid var(--cd); border-radius: 14px; color: #fff;
-            box-shadow: 0 4px 0 var(--cd);
-            transition: transform 120ms var(--ease), box-shadow 120ms var(--ease), outline-color var(--d-fast) var(--ease);
+            position: relative; padding: 10px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            background: var(--surface); border: 2px solid var(--line); border-radius: 20px; color: var(--t1);
+            box-shadow: 0 4px 0 var(--edge);
+            transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), border-color var(--d-fast) var(--ease);
         }
-        .chapter-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--cd); }
-        .chapter-btn .ch-num { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 30px; }
-        .chapter-btn .ch-range { font-size: 12px; line-height: 16px; font-weight: 500; }
-        .chapter-btn .ch-dots { display: flex; gap: 2px; width: 100%; }
-        .chapter-btn .ch-dots i { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.28); }
-        .chapter-btn .ch-dots i.on { background: #fff; }
-        .chapter-btn .ch-check { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-radius: 50%; background: #fff; color: var(--cd); display: none; align-items: center; justify-content: center; }
-        .chapter-btn .ch-check .ic { width: 12px; height: 12px; stroke-width: 2.5; }
-        .chapter-btn:not(.selected) { opacity: 1; box-shadow: 0 3px 0 var(--cd); }
-        .chapter-btn.selected { transform: translateY(-3px); box-shadow: 0 8px 0 var(--cd); outline: 3px solid var(--t1); outline-offset: 2px; }
-        .chapter-btn.selected:active { transform: translateY(0); box-shadow: 0 3px 0 var(--cd); }
+        .chapter-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
+        .node { position: relative; width: 64px; height: 64px; }
+        .node svg { position: absolute; inset: 0; width: 64px; height: 64px; transform: rotate(-90deg); }
+        .node .trk { fill: none; stroke: var(--surface-2); stroke-width: 5; }
+        .node .prg { fill: none; stroke: var(--c); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset var(--d-enter) var(--ease); }
+        .node .disc { position: absolute; inset: 9px; border-radius: 50%; background: var(--c); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 var(--cd);
+            font-family: var(--serif); font-weight: 700; font-size: 22px; line-height: 1; }
+        .chapter-btn .ch-range { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--t2); }
+        .chapter-btn .ch-check { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--c); color: #fff; display: none; align-items: center; justify-content: center; }
+        .chapter-btn .ch-check .ic { width: 12px; height: 12px; stroke-width: 3; }
+        .chapter-btn.selected { border-color: var(--c); background: var(--surface); box-shadow: 0 4px 0 var(--c); }
+        .chapter-btn.selected .ch-range { color: var(--t1); font-weight: 700; }
         .chapter-btn.selected .ch-check { display: flex; }
 
-        .progress { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line-soft); box-sizing: border-box; overflow: hidden; }
-        .progress > div { height: 100%; background: var(--c); border-radius: 4px; transition: width var(--d-enter) var(--ease); }
+        .progress { flex: 1; height: 16px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); box-sizing: border-box; overflow: hidden; padding: 2px; }
+        .progress > div { position: relative; height: 100%; min-width: 8px; background: var(--c); border-radius: 6px; transition: width var(--d-enter) var(--ease); }
+        .progress > div::after { content: ''; position: absolute; left: 4px; right: 4px; top: 1px; height: 2px; border-radius: 1px; background: rgba(255,255,255,0.45); }
 
         /* ===== 학습 카드 ===== */
         .flip-scene { position: relative; width: 100%; perspective: 1400px; cursor: pointer; border-radius: var(--r-card); }
@@ -283,9 +303,9 @@
         .back-seal { width: 48px; height: 48px; border-radius: 4px; background: var(--c); color: #fff; font-family: var(--serif); font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 3px var(--c), inset 0 0 0 4px rgba(255,255,255,0.6); }
         .stamp-known {
             position: absolute; right: 14px; bottom: 44px; width: 64px; height: 64px; z-index: 5; pointer-events: none;
-            display: none; align-items: center; justify-content: center; background: var(--accent); color: #fff; border-radius: 4px;
+            display: none; align-items: center; justify-content: center; background: var(--stamp); color: #fff; border-radius: 4px;
             font-family: var(--serif); font-weight: 700; font-size: 34px; line-height: 1; transform: rotate(-8deg);
-            box-shadow: inset 0 0 0 4px var(--accent), inset 0 0 0 5px rgba(255,255,255,0.65);
+            box-shadow: inset 0 0 0 4px var(--stamp), inset 0 0 0 5px rgba(255,255,255,0.65);
         }
         .stamp-known.on { display: flex; }
         .stamp-known.thud { animation: thud 180ms var(--thud) both; }
@@ -297,11 +317,12 @@
         .chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; font-size: 13px; line-height: 16px; font-weight: 600; background: var(--surface-2); color: var(--t2); box-sizing: border-box; }
         .chip.ch-chip { background: var(--c); color: #fff; }
         .chip.combo { background: var(--surface-2); color: var(--t2); }
-        .chip.combo.hot { background: var(--accent); color: #fff; }
-        .chip.combo .num { font-size: 15px; }
+        .chip.combo.hot { background: var(--gold); color: var(--on-gold); box-shadow: 0 2px 0 var(--gold-edge); }
+        .chip.combo .num { font-size: 16px; }
+        .chip { font-weight: 700; }
         .chip.bump { animation: bump 220ms var(--thud) both; }
         @keyframes bump { from { transform: scale(1); } 40% { transform: scale(1.28); } to { transform: scale(1); } }
-        .combo-banner { position: absolute; left: 50%; top: 56px; z-index: 60; transform: translateX(-50%); pointer-events: none; opacity: 0; padding: 0 16px; height: 36px; border-radius: 18px; background: var(--ink); color: var(--on-ink); font-family: var(--serif); font-weight: 700; font-size: 18px; display: flex; align-items: center; white-space: nowrap; border: 1px solid var(--line); }
+        .combo-banner { position: absolute; left: 50%; top: -18px; z-index: 60; transform: translateX(-50%); pointer-events: none; opacity: 0; padding: 0 16px; height: 36px; border-radius: 18px; background: var(--ink); color: var(--on-ink); font-family: var(--serif); font-weight: 700; font-size: 18px; display: flex; align-items: center; white-space: nowrap; border: 1px solid var(--line); }
         .combo-banner.go { animation: banner 1100ms var(--ease) both; }
         @keyframes banner { 0% { opacity: 0; transform: translateX(-50%) scale(0.6); } 14% { opacity: 1; transform: translateX(-50%) scale(1.1); } 24% { transform: translateX(-50%) scale(1); } 78% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(1); } }
 
@@ -309,12 +330,13 @@
         .quiz-card.q-out { opacity: 0; transition-duration: var(--d-fast); }
         .quiz-card.shake { animation: shake 240ms linear both; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 50% { transform: translateX(0); } 75% { transform: translateX(7px); } }
-        .quiz-stage { position: relative; width: 100%; min-height: 176px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .quiz-stage { position: relative; width: 100%; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .q-mask { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 64px; color: var(--t1); display: flex; justify-content: center; gap: 8px; }
         .q-mask .q-rest { color: var(--t3); }
         .quiz-meaning { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 8px; }
         .quiz-hanja { font-family: var(--serif); font-weight: 700; font-size: 48px; line-height: 56px; color: var(--t1); letter-spacing: 0.1em; }
-        #quiz-hint { opacity: 0; transition: opacity var(--d-base) var(--ease); height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+        #quiz-hint:empty { display: none; }
+        #quiz-hint { opacity: 0; transition: opacity var(--d-base) var(--ease); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
         .hint-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; color: var(--t2); display: block; }
         .hint-mean { font-size: 14px; line-height: 20px; color: var(--t2); display: block; word-break: keep-all; padding: 0 16px; }
         #quiz-input {
@@ -343,31 +365,35 @@
         .choice-btn.is-miss { background: var(--accent-wash); border-color: var(--accent); box-shadow: 0 3px 0 var(--accent); }
         .choice-btn.is-miss .choice-key { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-        /* 정답: 낙관(正)이 쾅 / 오답: 먹색 판에 정답 공개 */
+        /* 정답 낙관(正)은 카드 위에 쾅, 정오답 패널은 하단에서 올라온다 */
+        #quiz-stamp { position: absolute; z-index: 40; right: -10px; top: -30px; display: none; width: 64px; height: 64px; align-items: center; justify-content: center; background: var(--stamp); color: #fff; border-radius: 4px; transform: rotate(-8deg);
+            font-family: var(--serif); font-weight: 700; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 4px var(--stamp), inset 0 0 0 5px rgba(255,255,255,0.65); pointer-events: none; }
+        #quiz-stamp.go { display: flex; animation: thud 200ms var(--thud) both; }
         #quiz-feedback {
-            position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 12px;
-            background: var(--surface); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity var(--d-fast) var(--ease);
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+            background: var(--good-wash); border-top: 2px solid var(--good); color: var(--good-text);
+            transform: translateY(105%); visibility: hidden; transition: transform 220ms var(--ease), visibility 0s linear 220ms;
         }
-        #quiz-feedback.show { opacity: 1; pointer-events: auto; }
-        #quiz-feedback.wrong-feedback { background: var(--ink); color: var(--on-ink); }
-        #feedback-stamp { display: none; width: 84px; height: 84px; align-items: center; justify-content: center; background: var(--accent); color: #fff; border-radius: 4px; transform: rotate(-8deg);
-            font-family: var(--serif); font-weight: 700; font-size: 52px; line-height: 1; box-shadow: inset 0 0 0 5px var(--accent), inset 0 0 0 6px rgba(255,255,255,0.65); }
-        #quiz-feedback.correct-feedback #feedback-stamp { display: flex; }
-        #quiz-feedback.show.correct-feedback #feedback-stamp { animation: thud 200ms var(--thud) both; }
-        #feedback-label { display: none; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--on-ink); opacity: 0.8; }
-        #quiz-feedback.wrong-feedback #feedback-label { display: block; }
-        #feedback-answer { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; color: var(--t1); }
-        #quiz-feedback.wrong-feedback #feedback-answer { color: var(--on-ink); }
-        #feedback-mean { font-size: 15px; line-height: 22px; color: var(--t2); word-break: keep-all; min-height: 22px; }
-        #quiz-feedback.wrong-feedback #feedback-mean { color: var(--on-ink); opacity: 0.85; }
-        #quiz-feedback.correct-feedback #feedback-answer { font-size: 32px; line-height: 40px; }
+        #quiz-feedback.show { transform: translateY(0); visibility: visible; transition-delay: 0s; }
+        #quiz-feedback.wrong-feedback { background: var(--bad-wash); border-top-color: var(--bad); color: var(--bad-text); }
+        .fb-inner { max-width: 448px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        @media (min-width: 640px) { .fb-inner { max-width: 472px; } }
+        .fb-head { display: flex; align-items: center; gap: 12px; }
+        #feedback-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--good); color: var(--on-accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        #feedback-icon .ic { width: 20px; height: 20px; stroke-width: 3; }
+        #quiz-feedback.wrong-feedback #feedback-icon { background: var(--bad); color: #fff; }
+        #feedback-answer { font-weight: 700; font-size: 18px; line-height: 24px; word-break: keep-all; }
+        #feedback-answer .serif { font-family: var(--serif); font-weight: 700; font-size: 22px; }
+        #feedback-mean { font-size: 14px; line-height: 20px; color: var(--t2); word-break: keep-all; min-height: 20px; }
+        #btn-feedback-next { background: var(--accent); border-color: var(--accent-edge); color: var(--on-accent); box-shadow: 0 4px 0 var(--accent-edge); }
+        #quiz-feedback.wrong-feedback #btn-feedback-next { background: var(--bad); border-color: var(--bad-edge); color: #fff; box-shadow: 0 4px 0 var(--bad-edge); }
 
         /* ===== 결과 ===== */
-        .grade-seal { width: 112px; height: 112px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: var(--accent); color: #fff; border-radius: 6px; transform: rotate(-6deg);
-            font-family: var(--serif); font-weight: 700; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 5px var(--accent), inset 0 0 0 6px rgba(255,255,255,0.65); }
+        .grade-seal { width: 112px; height: 112px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: var(--stamp); color: #fff; border-radius: 6px; transform: rotate(-6deg);
+            font-family: var(--serif); font-weight: 700; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 5px var(--stamp), inset 0 0 0 6px rgba(255,255,255,0.65); }
         .grade-seal.is-ink { background: var(--ink); box-shadow: inset 0 0 0 5px var(--ink), inset 0 0 0 6px rgba(255,255,255,0.5); }
         .grade-seal.thud { animation: thud 220ms var(--thud) both; }
-        #result-title { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--t2); }
+        #result-title { font-size: 20px; line-height: 28px; font-weight: 700; color: var(--t1); word-break: keep-all; }
         .score { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 64px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
         .score #result-score { color: var(--accent-text); }
         .score .score-sep, .score #result-total { color: var(--t3); font-size: 32px; }
@@ -501,7 +527,7 @@
                             <button id="btn-select-all" type="button" class="btn btn-sm hidden">전체선택</button>
                         </div>
                     </div>
-                    <div id="chapter-grid" class="grid grid-cols-4 gap-3 pb-2"></div>
+                    <div id="chapter-grid" class="grid grid-cols-4 gap-2 pb-2"></div>
                 </section>
 
                 <div class="flex justify-center gap-2">
@@ -576,14 +602,7 @@
                 <div id="quiz-card" class="card quiz-card">
                     <div id="combo-banner" class="combo-banner" aria-hidden="true">3연속</div>
                     <div class="quiz-stage">
-                        <div id="quiz-feedback" role="status" aria-live="polite">
-                            <div id="feedback-stamp" aria-hidden="true">正</div>
-                            <p id="feedback-label">정답은</p>
-                            <div id="feedback-text-box" class="text-center px-6 space-y-1">
-                                <p id="feedback-answer"></p>
-                                <p id="feedback-mean"></p>
-                            </div>
-                        </div>
+                        <div id="quiz-stamp" aria-hidden="true">正</div>
                         <div class="text-center w-full space-y-3">
                             <p id="quiz-q-wrapper" class="q-mask">
                                 <span id="quiz-q-text">??</span><span class="q-rest" aria-hidden="true">??</span>
@@ -680,6 +699,19 @@
             </div>
         </footer>
     </div>
+
+    <div id="quiz-feedback" role="status" aria-live="polite">
+            <div class="fb-inner">
+                <div class="fb-head">
+                    <span id="feedback-icon" aria-hidden="true"></span>
+                    <div class="min-w-0">
+                        <p id="feedback-answer"></p>
+                        <p id="feedback-mean"></p>
+                    </div>
+                </div>
+                <button id="btn-feedback-next" type="button" class="btn btn-lg w-full">계속</button>
+            </div>
+        </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -921,10 +953,8 @@
                 $('search-list').innerHTML = '';
                 $('search-clear').classList.add('hidden');
             }
-            if (state.view === 'quiz' && newView !== 'result') {
-                clearQuizTimer();
-                $('quiz-feedback').classList.remove('show', 'correct-feedback', 'wrong-feedback');
-            }
+            if (state.view === 'quiz') $('quiz-feedback').classList.remove('show', 'correct-feedback', 'wrong-feedback'); // 패널은 화면 고정이라 퀴즈를 떠나면 항상 닫는다
+            if (state.view === 'quiz' && newView !== 'result') clearQuizTimer();
 
             const currentEl = els.views[state.view];
             currentEl.style.opacity = '0';
@@ -1010,8 +1040,8 @@
                     btn.className = `chapter-btn ${chc(ch.id)}`;
                     btn.innerHTML = `
                         <span class="ch-check" aria-hidden="true">${ico('check')}</span>
-                        <span><span class="ch-num block">${ch.id}</span><span class="ch-range block">${(ch.id - 1) * 10 + 1}-${ch.id * 10}번</span></span>
-                        <span class="ch-dots" aria-hidden="true">${'<i></i>'.repeat(10)}</span>`;
+                        <span class="node" aria-hidden="true"><svg viewBox="0 0 64 64"><circle class="trk" cx="32" cy="32" r="28"/><circle class="prg" cx="32" cy="32" r="28" stroke-dasharray="175.9" stroke-dashoffset="175.9"/></svg><span class="disc">${ch.id}</span></span>
+                        <span class="ch-range">${(ch.id - 1) * 10 + 1}-${ch.id * 10}</span>`;
                     btn.onclick = () => handleChapterClick(ch.id);
                     grid.appendChild(btn);
                 });
@@ -1024,7 +1054,7 @@
                 btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
                 const items = chapterItems([ch.id]);
                 const knownCnt = items.filter((it) => state.known.has(it.index)).length;
-                btn.querySelectorAll('.ch-dots i').forEach((d, i) => d.classList.toggle('on', i < Math.round((knownCnt / items.length) * 10)));
+                btn.querySelector('.prg').style.strokeDashoffset = 175.9 * (1 - knownCnt / items.length);
                 btn.setAttribute('aria-label', `챕터 ${ch.id}, ${(ch.id - 1) * 10 + 1}번부터 ${ch.id * 10}번, 외운 성어 ${knownCnt}/${items.length}${isActive ? ', 선택됨' : ''}`);
             });
             state.isMenuFirstLoad = false;
@@ -1270,6 +1300,12 @@
             overlay.classList.add('show');
             overlay.classList.toggle('correct-feedback', isCorrect);
             overlay.classList.toggle('wrong-feedback', !isCorrect);
+            const fbIcon = $('feedback-icon');
+            fbIcon.innerHTML = ico(isCorrect ? 'check' : 'x');
+            $('btn-feedback-next').innerText = qz.idx + 1 >= qz.qs.length ? '결과 보기' : '계속';
+            const stampEl = $('quiz-stamp');
+            stampEl.classList.remove('go');
+            if (isCorrect) playOnce(stampEl, 'go');
             if (isCorrect) { sfx('correct'); sfx('stamp'); } else if (!skipped) sfx('wrong'); // 건너뛰기는 소리 없음
             if (isCorrect) {
                 qz.combo++; qz.maxCombo = Math.max(qz.maxCombo, qz.combo);
@@ -1287,16 +1323,15 @@
 
             let extra = '';
             if (!isCorrect) {
-                $('feedback-answer').innerText = item.text;
+                $('feedback-answer').innerHTML = `정답: <span class="serif">${esc(item.text)}</span>`;
                 $('feedback-mean').innerText = `${item.hanja} · ${item.mean}`;
-                $('feedback-label').innerText = skipped ? '정답은' : '아쉬워요, 정답은';
                 // 이미 있으면 맨 앞으로 옮기고 날짜를 갱신, 연속 정답 횟수는 0으로 되돌린다.
                 state.savedWrongs = state.savedWrongs.filter((w) => w.index !== item.index);
                 state.savedWrongs.unshift({ index: item.index, date: new Date().toISOString(), streak: 0 });
                 saveWrongs();
                 if (!qz.wrongs.some((it) => it.index === item.index)) qz.wrongs.push(item);
             } else {
-                $('feedback-answer').innerText = item.text;
+                $('feedback-answer').innerHTML = '정답이에요!';
                 if (qz.mode === 'review') {
                     const w = state.savedWrongs.find((x) => x.index === item.index);
                     if (w) {
@@ -1309,10 +1344,10 @@
                         saveWrongs();
                     }
                 }
-                $('feedback-mean').innerText = extra || item.hanja;
+                $('feedback-mean').innerText = extra || `${item.text} ${item.hanja}`;
             }
             // 정답 0.6초(졸업·연속 안내가 있으면 1.1초), 오답 1.5초 뒤 자동으로 다음 문제로 넘어간다.
-            qz.timer = setTimeout(nextQuestion, isCorrect ? (extra ? 1100 : 600) : 1500);
+            qz.timer = setTimeout(nextQuestion, isCorrect ? (extra ? 1400 : 900) : 2200);
         }
 
         function nextQuestion() {
@@ -1327,6 +1362,7 @@
                 qz.idx++; qz.val = ''; qz.hints = false; qz.feedback = null;
                 $('quiz-feedback').classList.remove('show', 'correct-feedback', 'wrong-feedback');
                 $('quiz-card').classList.remove('shake');
+                $('quiz-stamp').classList.remove('go');
                 renderQuiz();
                 card.classList.remove('q-out');
             }, 140);
@@ -1363,7 +1399,7 @@
             const pct = total ? score / total : 0;
             $('result-total').innerText = total;
             countUp($('result-score'), score);
-            $('result-title').innerText = isPerfect ? '모두 맞혔어요' : '학습 완료';
+            $('result-title').innerText = isPerfect ? '완벽해요! 모두 맞혔어요' : pct >= 0.8 ? '아주 잘했어요!' : pct >= 0.6 ? '좋아요, 거의 다 왔어요' : '틀린 것만 다시 풀면 금방 외워요';
             const seal = $('grade-seal');
             seal.innerText = isPerfect ? '만점' : pct >= 0.8 ? '우수' : pct >= 0.6 ? '합격' : '도전';
             seal.classList.toggle('is-ink', pct < 0.6);
@@ -1674,7 +1710,7 @@
             on('btn-quiz-hint', () => { state.quiz.hints = !state.quiz.hints; renderQuiz(); });
             on('btn-quiz-check', () => submitAnswer());
             on('btn-quiz-skip', () => submitAnswer({ skipped: true }));
-            $('quiz-feedback').addEventListener('click', skipFeedback);
+            $('btn-feedback-next').onclick = skipFeedback;
 
             on('btn-result-home', () => navigateTo('menu'));
             on('btn-result-again', () => { if (state.lastRun) startQuiz(state.lastRun.mode, state.lastRun.items); });
