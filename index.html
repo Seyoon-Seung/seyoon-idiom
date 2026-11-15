@@ -42,7 +42,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Jua&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
     <!-- 유틸리티 CSS: `npm run build:css`로 index.html을 스캔해 생성 (직접 수정 금지) -->
     <link rel="stylesheet" href="tailwind.css">
@@ -96,6 +96,7 @@
             --r-tag: 6px;
             --sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
             --serif: 'Jua', 'Gowun Dodum', 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Serif KR', sans-serif;
+            --num: 'Do Hyeon', 'Jua', 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
             --hanja: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', serif;
             --c: var(--accent);
             --cd: var(--accent-edge);
@@ -173,9 +174,8 @@
         }
         input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
         .hidden { display: none !important; }
-        html { font-synthesis: none; }
         .serif { font-family: var(--serif); }
-        .num { font-family: var(--serif); font-weight: 700; }
+        .num { font-family: var(--num); font-weight: 400; }
 
         .ic { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
         .ic-lg { width: 24px; height: 24px; stroke-width: 1.75; }
@@ -263,7 +263,7 @@
         .path-row { position: relative; display: block; }
         .chapter-btn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 100%; height: 88px; padding: 8px 4px 14px; background: var(--surface); color: var(--c); border: 2px solid var(--border); border-radius: 16px; box-shadow: 0 4px 0 var(--border); overflow: hidden; transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease); }
         .chapter-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--border); }
-        .chapter-btn .ch-num { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 32px; }
+        .chapter-btn .ch-num { font-family: var(--num); font-weight: 400; font-size: 28px; line-height: 32px; }
         .chapter-btn .ch-range { font-size: 12px; line-height: 16px; font-weight: 700; color: var(--t2); }
         .chapter-btn .ch-bar { position: absolute; left: 10px; right: 10px; bottom: 8px; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
         .chapter-btn .ch-bar i { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--c); transition: width var(--d-enter) var(--ease); }
@@ -303,19 +303,19 @@
         .flip-face { grid-area: 1 / 1; display: flex; flex-direction: column; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 4px 0 var(--edge); }
         .flip-back { transform: rotateY(180deg); }
         .face-band { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 16px; background: var(--c); color: #fff; font-size: 13px; font-weight: 600; }
-        .seal-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 4px; border-radius: 3px; background: #fff; color: var(--cd); font-family: var(--serif); font-weight: 700; font-size: 15px; line-height: 1; box-sizing: border-box; }
+        .seal-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 4px; border-radius: 3px; background: #fff; color: var(--cd); font-family: var(--serif); font-weight: 400; font-size: 15px; line-height: 1; box-sizing: border-box; }
         .face-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 24px 20px; }
         .face-hint { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px 14px; font-size: 12px; line-height: 16px; color: var(--t3); }
-        .study-idiom { font-family: var(--serif); font-weight: 700; font-size: 52px; line-height: 60px; color: var(--t1); word-break: keep-all; }
+        .study-idiom { font-family: var(--serif); font-weight: 400; font-size: 52px; line-height: 60px; color: var(--t1); word-break: keep-all; }
         .study-hanja { font-family: var(--hanja); font-weight: 400; font-size: 26px; line-height: 34px; letter-spacing: 0.1em; color: var(--t2); }
-        .back-idiom { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 36px; color: var(--t1); }
+        .back-idiom { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 36px; color: var(--t1); }
         .back-hanja { font-family: var(--hanja); font-size: 16px; line-height: 24px; letter-spacing: 0.1em; color: var(--t2); }
         .study-mean { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 4px; }
-        .back-seal { width: 48px; height: 48px; border-radius: 4px; background: var(--c); color: #fff; font-family: var(--serif); font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 3px var(--c), inset 0 0 0 4px rgba(255,255,255,0.6); }
+        .back-seal { width: 48px; height: 48px; border-radius: 4px; background: var(--c); color: #fff; font-family: var(--serif); font-weight: 400; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 3px var(--c), inset 0 0 0 4px rgba(255,255,255,0.6); }
         .stamp-known {
             position: absolute; right: 14px; bottom: 44px; width: 64px; height: 64px; z-index: 5; pointer-events: none;
             display: none; align-items: center; justify-content: center; background: var(--stamp); color: #fff; border-radius: 4px;
-            font-family: var(--serif); font-weight: 700; font-size: 34px; line-height: 1; transform: rotate(-8deg);
+            font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1; transform: rotate(-8deg);
             box-shadow: inset 0 0 0 4px var(--stamp), inset 0 0 0 5px rgba(255,255,255,0.65);
         }
         .stamp-known.on { display: flex; }
@@ -333,7 +333,7 @@
         .chip { font-weight: 700; }
         .chip.bump { animation: bump 220ms var(--thud) both; }
         @keyframes bump { from { transform: scale(1); } 40% { transform: scale(1.28); } to { transform: scale(1); } }
-        .combo-banner { position: absolute; left: 50%; top: -18px; z-index: 60; transform: translateX(-50%); pointer-events: none; opacity: 0; padding: 0 16px; height: 36px; border-radius: 18px; background: var(--ink); color: var(--on-ink); font-family: var(--serif); font-weight: 700; font-size: 18px; display: flex; align-items: center; white-space: nowrap; border: 1px solid var(--line); }
+        .combo-banner { position: absolute; left: 50%; top: -18px; z-index: 60; transform: translateX(-50%); pointer-events: none; opacity: 0; padding: 0 16px; height: 36px; border-radius: 18px; background: var(--ink); color: var(--on-ink); font-family: var(--num); font-weight: 400; font-size: 18px; display: flex; align-items: center; white-space: nowrap; border: 1px solid var(--line); }
         .combo-banner.go { animation: banner 1100ms var(--ease) both; }
         @keyframes banner { 0% { opacity: 0; transform: translateX(-50%) scale(0.6); } 14% { opacity: 1; transform: translateX(-50%) scale(1.1); } 24% { transform: translateX(-50%) scale(1); } 78% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(1); } }
 
@@ -342,7 +342,7 @@
         .quiz-card.shake { animation: shake 240ms linear both; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 50% { transform: translateX(0); } 75% { transform: translateX(7px); } }
         .quiz-stage { position: relative; width: 100%; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .q-mask { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 64px; color: var(--t1); display: flex; justify-content: center; gap: 8px; }
+        .q-mask { font-family: var(--serif); font-weight: 400; font-size: 56px; line-height: 64px; color: var(--t1); display: flex; justify-content: center; gap: 8px; }
         .q-mask .q-rest { color: var(--t3); }
         .quiz-meaning { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 8px; }
         .quiz-hanja { font-family: var(--hanja); font-weight: 700; font-size: 48px; line-height: 56px; color: var(--t1); letter-spacing: 0.1em; }
@@ -352,7 +352,7 @@
         .hint-mean { font-size: 14px; line-height: 20px; color: var(--t2); display: block; word-break: keep-all; padding: 0 16px; }
         #quiz-input {
             width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-bottom: 3px solid var(--t3); border-radius: 10px; outline: none;
-            text-align: center; font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; padding: 6px 0 4px;
+            text-align: center; font-family: var(--serif); font-weight: 400; font-size: 40px; line-height: 48px; padding: 6px 0 4px;
             color: var(--accent-text); caret-color: var(--accent-text);
             transition: border-color var(--d-base) var(--ease);
         }
@@ -378,7 +378,7 @@
 
         /* 정답 낙관(正)은 카드 위에 쾅, 정오답 패널은 하단에서 올라온다 */
         #quiz-stamp { position: absolute; z-index: 40; right: -10px; top: -30px; display: none; width: 64px; height: 64px; align-items: center; justify-content: center; background: var(--stamp); color: #fff; border-radius: 4px; transform: rotate(-8deg);
-            font-family: var(--serif); font-weight: 700; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 4px var(--stamp), inset 0 0 0 5px rgba(255,255,255,0.65); pointer-events: none; }
+            font-family: var(--serif); font-weight: 400; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 4px var(--stamp), inset 0 0 0 5px rgba(255,255,255,0.65); pointer-events: none; }
         #quiz-stamp.go { display: flex; animation: thud 200ms var(--thud) both; }
         #quiz-feedback {
             position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px));
@@ -394,18 +394,18 @@
         #feedback-icon .ic { width: 20px; height: 20px; stroke-width: 3; }
         #quiz-feedback.wrong-feedback #feedback-icon { background: var(--bad); color: var(--on-bad); }
         #feedback-answer { font-weight: 700; font-size: 18px; line-height: 24px; word-break: keep-all; }
-        #feedback-answer .serif { font-family: var(--serif); font-weight: 700; font-size: 22px; }
+        #feedback-answer .serif { font-family: var(--serif); font-weight: 400; font-size: 22px; }
         #feedback-mean { font-size: 14px; line-height: 20px; color: var(--t2); word-break: keep-all; min-height: 20px; }
         #btn-feedback-next { background: var(--accent); border-color: var(--accent-edge); color: var(--on-accent); box-shadow: 0 4px 0 var(--accent-edge); }
         #quiz-feedback.wrong-feedback #btn-feedback-next { background: var(--bad); border-color: var(--bad-edge); color: var(--on-bad); box-shadow: 0 4px 0 var(--bad-edge); }
 
         /* ===== 결과 ===== */
         .grade-seal { width: 112px; height: 112px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: var(--stamp); color: #fff; border-radius: 6px; transform: rotate(-6deg);
-            font-family: var(--serif); font-weight: 700; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 5px var(--stamp), inset 0 0 0 6px rgba(255,255,255,0.65); }
+            font-family: var(--serif); font-weight: 400; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 5px var(--stamp), inset 0 0 0 6px rgba(255,255,255,0.65); }
         .grade-seal.is-ink { background: var(--ink); box-shadow: inset 0 0 0 5px var(--ink), inset 0 0 0 6px rgba(255,255,255,0.5); }
         .grade-seal.thud { animation: thud 220ms var(--thud) both; }
         #result-title { font-size: 20px; line-height: 28px; font-weight: 700; color: var(--t1); word-break: keep-all; }
-        .score { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 64px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+        .score { font-family: var(--num); font-weight: 400; font-size: 56px; line-height: 64px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
         .score #result-score { color: var(--accent-text); }
         .score .score-sep, .score #result-total { color: var(--t3); font-size: 32px; }
         .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -431,7 +431,7 @@
         .modal-card h3 { font-size: 18px; line-height: 28px; font-weight: 600; color: var(--t1); margin: 0 0 8px; }
         .modal-card p.desc { font-size: 14px; line-height: 20px; color: var(--t2); margin: 0 0 24px; word-break: keep-all; }
         #modal-search-detail-inner { max-width: 360px; }
-        .sd-idiom { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; color: var(--t1); word-break: keep-all; }
+        .sd-idiom { font-family: var(--serif); font-weight: 400; font-size: 40px; line-height: 48px; color: var(--t1); word-break: keep-all; }
         .sd-hanja { font-family: var(--hanja); font-size: 20px; line-height: 28px; letter-spacing: 0.1em; color: var(--t2); }
 
 
