@@ -1,0 +1,11 @@
+{
+  "name": "seyoon-idiom",
+  "private": true,
+  "description": "승세윤의 사자성어 암기앱 (정적 사이트). tailwind.css 재생성용 스크립트만 포함.",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i tailwind.input.css -o tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}
