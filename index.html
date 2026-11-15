@@ -43,55 +43,97 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
     <!-- 유틸리티 CSS: `npm run build:css`로 index.html을 스캔해 생성 (직접 수정 금지) -->
     <link rel="stylesheet" href="tailwind.css">
 
     <style>
         /* ===== 디자인 토큰 =====
-           종이(hanji) 위의 먹과 낙관. 포인트 색은 주홍 하나뿐이고, 나머지는 따뜻한 회색 단계. */
+           책 속의 먹과 낙관, 오방색. 챕터마다 고유한 평면 색(--c)이 있고, 포인트는 주홍 낙관 하나. */
         :root {
             --bg: #F6F4F0;
             --surface: #FCFBF9;
             --surface-2: #EFECE6;
-            --line: rgba(38, 30, 22, 0.10);
-            --line-soft: rgba(38, 30, 22, 0.06);
+            --line: rgba(38, 30, 22, 0.12);
+            --line-soft: rgba(38, 30, 22, 0.07);
+            --edge: #D3CCC0;
             --t1: #26221E;
             --t2: #5A544C;
             --t3: #6E675E;
             --accent: #B3382C;
-            --accent-hover: #9E2F25;
+            --accent-hover: #A63227;
+            --accent-edge: #7E241B;
             --accent-text: #A3322A;
             --accent-wash: #F6EBE9;
             --on-accent: #FFFFFF;
+            --good: #2F6B45;
+            --good-wash: #E6F0E8;
+            --ink: #2B2622;
+            --on-ink: #F6F1E8;
+            --paper: #F6F1E8;
             --overlay: rgba(24, 18, 12, 0.40);
             --ease: cubic-bezier(0.2, 0, 0, 1);
+            --thud: cubic-bezier(0.34, 1.56, 0.64, 1);
             --d-fast: 120ms;
             --d-base: 160ms;
             --d-enter: 200ms;
             --r-card: 16px;
-            --r-ctl: 10px;
-            --r-tag: 4px;
+            --r-ctl: 12px;
+            --r-tag: 6px;
             --sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
             --serif: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', serif;
+            --c: var(--accent);
+            --cd: var(--accent-edge);
         }
         .dark-theme {
             --bg: #151311;
             --surface: #1D1A18;
             --surface-2: #282421;
-            --line: rgba(255, 240, 225, 0.10);
-            --line-soft: rgba(255, 240, 225, 0.06);
+            --line: rgba(255, 240, 225, 0.12);
+            --line-soft: rgba(255, 240, 225, 0.07);
+            --edge: #0B0A09;
             --t1: #ECE7E0;
             --t2: #B3ACA2;
             --t3: #968F85;
             --accent: #C0463A;
-            --accent-hover: #B33D32;
+            --accent-hover: #CC5044;
+            --accent-edge: #6E2019;
             --accent-text: #EE8577;
             --accent-wash: #392724;
             --on-accent: #FFFFFF;
+            --good: #7CC293;
+            --good-wash: #1F3326;
+            --ink: #0E0C0B;
+            --on-ink: #F1EBE0;
+            --paper: #F1EBE0;
             --overlay: rgba(0, 0, 0, 0.56);
         }
+        /* 챕터 색: 12개 모두 흰 글자 4.5:1 이상. --c 면, --cd 아래 가장자리 */
+        .chc-1 { --c: #2F5D8A; --cd: #214161; }
+        .chc-2 { --c: #B3382C; --cd: #7D271F; }
+        .chc-3 { --c: #8A6A12; --cd: #614A0D; }
+        .chc-4 { --c: #3B3733; --cd: #292724; }
+        .chc-5 { --c: #3F6B4A; --cd: #2C4B34; }
+        .chc-6 { --c: #6B4A7A; --cd: #4B3455; }
+        .chc-7 { --c: #26696B; --cd: #1B4A4B; }
+        .chc-8 { --c: #7A4A2C; --cd: #55341F; }
+        .chc-9 { --c: #A23F67; --cd: #712C48; }
+        .chc-10 { --c: #5E6420; --cd: #424616; }
+        .chc-11 { --c: #434E7A; --cd: #2F3755; }
+        .chc-12 { --c: #A04F24; --cd: #703719; }
+        .dark-theme .chc-1 { --c: #3A6C9C; --cd: #23415E; }
+        .dark-theme .chc-2 { --c: #BF4336; --cd: #732820; }
+        .dark-theme .chc-3 { --c: #8A6A12; --cd: #53400B; }
+        .dark-theme .chc-4 { --c: #57514A; --cd: #34312C; }
+        .dark-theme .chc-5 { --c: #487A55; --cd: #2B4933; }
+        .dark-theme .chc-6 { --c: #7E5A8F; --cd: #4C3656; }
+        .dark-theme .chc-7 { --c: #2C7577; --cd: #1A4647; }
+        .dark-theme .chc-8 { --c: #8C5733; --cd: #54341F; }
+        .dark-theme .chc-9 { --c: #B04A75; --cd: #6A2C46; }
+        .dark-theme .chc-10 { --c: #697021; --cd: #3F4314; }
+        .dark-theme .chc-11 { --c: #53609A; --cd: #323A5C; }
+        .dark-theme .chc-12 { --c: #B05A2B; --cd: #6A361A; }
 
         html, body { margin: 0; padding: 0; background-color: var(--bg); }
         body {
@@ -104,13 +146,13 @@
         input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
         .hidden { display: none !important; }
         .serif { font-family: var(--serif); }
+        .num { font-family: var(--serif); font-weight: 700; }
 
-        /* 아이콘: 16px, 선 1.5, 글자색을 따른다 */
         .ic { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        .ic-lg { width: 24px; height: 24px; stroke-width: 1.75; }
 
-        /* 포커스 */
         button:focus-visible, [tabindex]:focus-visible, .field:focus-within {
-            outline: 2px solid var(--accent-text); outline-offset: 2px;
+            outline: 2px solid var(--accent-text); outline-offset: 3px;
         }
         input:focus-visible { outline: none; }
 
@@ -118,33 +160,36 @@
         .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); }
         .rule { border-top: 1px solid var(--line-soft); }
 
-        /* ===== 텍스트 역할 ===== */
         .t1 { color: var(--t1); }
         .t2 { color: var(--t2); }
         .t3 { color: var(--t3); }
-        .label { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--t2); }
+        .label { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--t2); }
         .note { font-size: 12px; line-height: 16px; color: var(--t3); }
         .tag { display: inline-block; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--t2); background: var(--surface-2); padding: 2px 8px; border-radius: var(--r-tag); }
+        .tag.ch-tag { color: #fff; background: var(--c); }
         .hl { font-weight: 600; color: var(--accent-text); }
 
-        /* ===== 버튼 ===== */
+        /* ===== 도장 같은 버튼: 아래 단단한 모서리, 누르면 내려앉는다 ===== */
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            height: 40px; padding: 0 16px; border-radius: var(--r-ctl);
-            font-size: 14px; line-height: 20px; font-weight: 500; color: var(--t1);
+            height: 44px; padding: 0 16px; border-radius: var(--r-ctl);
+            font-size: 14px; line-height: 20px; font-weight: 600; color: var(--t1);
             background: var(--surface); border: 1px solid var(--line);
-            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease), opacity var(--d-fast) var(--ease);
+            box-shadow: 0 4px 0 var(--edge);
+            transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
         }
-        .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; }
-        .btn-lg { height: 48px; }
-        .btn:disabled { color: var(--t3); opacity: 0.5; cursor: default; }
-        .btn[aria-pressed="true"], .btn.selected { background: var(--accent-wash); border-color: var(--accent); color: var(--accent-text); }
-        .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+        .btn-sm { height: 36px; padding: 0 12px; font-size: 13px; box-shadow: 0 3px 0 var(--edge); }
+        .btn-lg { height: 52px; font-size: 16px; }
+        .btn:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
+        .btn-sm:not(:disabled):active { transform: translateY(2px); box-shadow: 0 1px 0 var(--edge); }
+        .btn:disabled { color: var(--t3); opacity: 0.55; cursor: default; box-shadow: none; transform: translateY(3px); }
+        .btn[aria-pressed="true"], .btn.selected { background: var(--accent-wash); border-color: var(--accent); color: var(--accent-text); box-shadow: 0 3px 0 var(--accent); }
+        .btn-primary { background: var(--accent); border-color: var(--accent-edge); color: var(--on-accent); box-shadow: 0 4px 0 var(--accent-edge); }
         .btn-primary:disabled { background: var(--surface-2); border-color: var(--line); color: var(--t3); opacity: 1; }
         @media (hover: hover) {
-            .btn:not(:disabled):hover { background: var(--surface-2); }
+            .btn:not(:disabled):not(.btn-primary):hover { background: var(--surface-2); }
             .btn[aria-pressed="true"]:not(:disabled):hover { background: var(--accent-wash); }
-            .btn-primary:not(:disabled):hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+            .btn-primary:not(:disabled):hover { background: var(--accent-hover); }
         }
         .btn-icon {
             display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
@@ -152,122 +197,185 @@
             transition: background-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
         }
         @media (hover: hover) { .btn-icon:hover { background: var(--surface-2); color: var(--t1); } }
-        .btn-icon.is-bordered { background: var(--surface); border: 1px solid var(--line); }
+        .btn-icon.is-bordered { background: var(--surface); border: 1px solid var(--line); box-shadow: 0 3px 0 var(--edge); }
 
-        /* 메뉴의 큰 버튼 두 개 */
+        /* ===== 메뉴 ===== */
+        .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+        .hero-count { font-size: 14px; line-height: 20px; color: var(--t2); }
+        .hero-count .num { font-size: 32px; line-height: 36px; color: var(--t1); }
+        .segs { display: flex; gap: 3px; width: 100%; margin-top: 12px; }
+        .segs i { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; border: 1px solid var(--line-soft); box-sizing: border-box; }
+        .segs b { display: block; height: 100%; width: 0; background: var(--c); transition: width var(--d-enter) var(--ease); }
+
         .action-card {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-            height: 128px; padding: 16px; text-align: center;
-            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), opacity var(--d-fast) var(--ease);
+            position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 12px;
+            height: 132px; padding: 14px; text-align: left; border-radius: 14px; box-shadow: 0 4px 0 var(--edge);
+            transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease);
         }
-        .action-card:disabled { opacity: 0.5; cursor: default; }
+        .action-card:disabled { opacity: 0.6; cursor: default; box-shadow: none; transform: translateY(4px); }
+        .action-card:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
         @media (hover: hover) { .action-card:not(:disabled):hover { background: var(--surface-2); } }
+        .icon-block { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 10px; background: var(--c); color: #fff; box-shadow: 0 3px 0 var(--cd); }
+        .stamp-block { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 4px; background: var(--accent); color: #fff; transform: rotate(-6deg);
+            font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1; box-shadow: inset 0 0 0 3px var(--accent), inset 0 0 0 4px rgba(255,255,255,0.6); }
+        .action-card:disabled .stamp-block { background: var(--t3); box-shadow: inset 0 0 0 3px var(--t3), inset 0 0 0 4px rgba(255,255,255,0.5); }
+        .count-badge { position: absolute; top: 10px; right: 10px; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 12px; background: var(--accent); color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+        .count-badge.hidden { display: none; }
         .icon-tile { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--r-ctl); background: var(--surface-2); color: var(--t2); }
         .icon-tile.is-accent { background: var(--accent-wash); color: var(--accent-text); }
 
-        /* 검색 진입 / 검색 입력 */
         .field {
-            display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px;
+            display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px;
             background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-ctl); color: var(--t3);
-            transition: border-color var(--d-fast) var(--ease), background-color var(--d-fast) var(--ease);
+            box-shadow: 0 3px 0 var(--edge);
+            transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease);
         }
+        button.field:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--edge); }
         @media (hover: hover) { button.field:hover { background: var(--surface-2); } }
 
-        /* 문제 유형 */
         .seg-btn {
-            height: 40px; border-radius: var(--r-ctl); font-size: 13px; font-weight: 500; color: var(--t2);
-            background: var(--surface); border: 1px solid var(--line);
-            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+            height: 44px; border-radius: var(--r-ctl); font-size: 13px; font-weight: 600; color: var(--t2);
+            background: var(--surface); border: 1px solid var(--line); box-shadow: 0 3px 0 var(--edge);
+            transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
         }
+        .seg-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--edge); }
         @media (hover: hover) { .seg-btn:not(.selected):hover { background: var(--surface-2); } }
-        .seg-btn.selected { background: var(--accent-wash); border-color: var(--accent); color: var(--accent-text); }
+        .seg-btn.selected { background: var(--accent); border-color: var(--accent-edge); color: var(--on-accent); box-shadow: 0 1px 0 var(--accent-edge); transform: translateY(2px); }
 
-        /* 챕터 타일 */
+        /* 챕터 타일: 챕터 색이 가득 찬 카드. 점 10개 = 그 챕터의 성어 10개, 외운 만큼 채워진다 */
         .chapter-btn {
-            position: relative; height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-            background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-ctl); color: var(--t1);
-            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+            position: relative; height: 92px; padding: 10px 10px 12px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; text-align: left;
+            background: var(--c); border: 1px solid var(--cd); border-radius: 14px; color: #fff;
+            box-shadow: 0 4px 0 var(--cd);
+            transition: transform 120ms var(--ease), box-shadow 120ms var(--ease), outline-color var(--d-fast) var(--ease);
         }
-        .chapter-btn .ch-name { font-size: 12px; line-height: 16px; color: var(--t3); }
-        .chapter-btn .ch-range { font-size: 14px; line-height: 20px; font-weight: 500; }
-        @media (hover: hover) { .chapter-btn:not(.selected):hover { background: var(--surface-2); } }
-        .chapter-btn.selected { background: var(--accent-wash); border-color: var(--accent); color: var(--accent-text); }
-        .chapter-btn.selected .ch-name { color: var(--accent-text); }
-        .tile-bar { position: absolute; left: 12px; right: 12px; bottom: 8px; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
-        .tile-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width var(--d-enter) var(--ease); }
+        .chapter-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--cd); }
+        .chapter-btn .ch-num { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 30px; }
+        .chapter-btn .ch-range { font-size: 12px; line-height: 16px; font-weight: 500; }
+        .chapter-btn .ch-dots { display: flex; gap: 2px; width: 100%; }
+        .chapter-btn .ch-dots i { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.28); }
+        .chapter-btn .ch-dots i.on { background: #fff; }
+        .chapter-btn .ch-check { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border-radius: 50%; background: #fff; color: var(--cd); display: none; align-items: center; justify-content: center; }
+        .chapter-btn .ch-check .ic { width: 12px; height: 12px; stroke-width: 2.5; }
+        .chapter-btn:not(.selected) { opacity: 1; box-shadow: 0 3px 0 var(--cd); }
+        .chapter-btn.selected { transform: translateY(-3px); box-shadow: 0 8px 0 var(--cd); outline: 3px solid var(--t1); outline-offset: 2px; }
+        .chapter-btn.selected:active { transform: translateY(0); box-shadow: 0 3px 0 var(--cd); }
+        .chapter-btn.selected .ch-check { display: flex; }
 
-        /* 진행 막대 */
-        .progress { flex: 1; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
-        .progress > div { height: 100%; background: var(--accent); transition: width var(--d-enter) var(--ease); }
+        .progress { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line-soft); box-sizing: border-box; overflow: hidden; }
+        .progress > div { height: 100%; background: var(--c); border-radius: 4px; transition: width var(--d-enter) var(--ease); }
 
-        /* ===== 학습 카드: 이 앱의 중심 화면 ===== */
-        .study-card { width: 100%; min-height: 380px; padding: 24px; display: flex; flex-direction: column; transition: opacity var(--d-fast) var(--ease); }
-        .study-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 16px 0; }
-        .study-idiom { font-family: var(--serif); font-weight: 600; font-size: 48px; line-height: 56px; color: var(--t1); word-break: keep-all; }
-        .study-hanja { font-family: var(--serif); font-weight: 400; font-size: 24px; line-height: 32px; letter-spacing: 0.1em; color: var(--t2); }
-        .study-mean { font-size: 18px; line-height: 28px; color: var(--t1); word-break: keep-all; padding: 8px 8px 0; }
-        #study-mean-container { min-height: 84px; display: flex; align-items: flex-start; justify-content: center; width: 100%; border-top: 1px solid var(--line-soft); padding-top: 16px; margin-top: 8px; }
-        @media (min-width: 640px) { .study-idiom { font-size: 56px; line-height: 64px; } }
-
-        /* 낙관: 번호 도장. 학습 카드에서만 쓴다 */
-        .seal {
-            display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
-            background: var(--accent); color: var(--on-accent); border-radius: 2px;
-            font-family: var(--serif); font-weight: 600; font-size: 16px; line-height: 1;
-            box-shadow: inset 0 0 0 3px var(--accent), inset 0 0 0 4px rgba(255, 255, 255, 0.55);
+        /* ===== 학습 카드 ===== */
+        .flip-scene { position: relative; width: 100%; perspective: 1400px; cursor: pointer; border-radius: var(--r-card); }
+        .flip-card { display: grid; width: 100%; min-height: 400px; transform-style: preserve-3d; transition: transform 350ms var(--ease); }
+        .flip-card.flipped { transform: rotateY(180deg); }
+        .flip-face { grid-area: 1 / 1; display: flex; flex-direction: column; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 4px 0 var(--edge); }
+        .flip-back { transform: rotateY(180deg); }
+        .face-band { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 16px; background: var(--c); color: #fff; font-size: 13px; font-weight: 600; }
+        .seal-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding: 0 4px; border-radius: 3px; background: #fff; color: var(--cd); font-family: var(--serif); font-weight: 700; font-size: 15px; line-height: 1; box-sizing: border-box; }
+        .face-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 24px 20px; }
+        .face-hint { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px 14px; font-size: 12px; line-height: 16px; color: var(--t3); }
+        .study-idiom { font-family: var(--serif); font-weight: 700; font-size: 52px; line-height: 60px; color: var(--t1); word-break: keep-all; }
+        .study-hanja { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 34px; letter-spacing: 0.1em; color: var(--t2); }
+        .back-idiom { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 36px; color: var(--t1); }
+        .back-hanja { font-family: var(--serif); font-size: 16px; line-height: 24px; letter-spacing: 0.1em; color: var(--t2); }
+        .study-mean { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 4px; }
+        .back-seal { width: 48px; height: 48px; border-radius: 4px; background: var(--c); color: #fff; font-family: var(--serif); font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 3px var(--c), inset 0 0 0 4px rgba(255,255,255,0.6); }
+        .stamp-known {
+            position: absolute; right: 14px; bottom: 44px; width: 64px; height: 64px; z-index: 5; pointer-events: none;
+            display: none; align-items: center; justify-content: center; background: var(--accent); color: #fff; border-radius: 4px;
+            font-family: var(--serif); font-weight: 700; font-size: 34px; line-height: 1; transform: rotate(-8deg);
+            box-shadow: inset 0 0 0 4px var(--accent), inset 0 0 0 5px rgba(255,255,255,0.65);
         }
+        .stamp-known.on { display: flex; }
+        .stamp-known.thud { animation: thud 180ms var(--thud) both; }
+        @keyframes thud { from { transform: scale(1.6) rotate(-8deg); opacity: 0; } 60% { opacity: 1; } to { transform: scale(1) rotate(-8deg); opacity: 1; } }
+        .study-card-fade { transition: opacity var(--d-fast) var(--ease); }
+        .sr-only-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
         /* ===== 퀴즈 ===== */
-        .quiz-card { position: relative; width: 100%; min-height: 380px; padding: 24px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; transition: opacity var(--d-base) var(--ease); }
+        .chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; font-size: 13px; line-height: 16px; font-weight: 600; background: var(--surface-2); color: var(--t2); box-sizing: border-box; }
+        .chip.ch-chip { background: var(--c); color: #fff; }
+        .chip.combo { background: var(--surface-2); color: var(--t2); }
+        .chip.combo.hot { background: var(--accent); color: #fff; }
+        .chip.combo .num { font-size: 15px; }
+        .chip.bump { animation: bump 220ms var(--thud) both; }
+        @keyframes bump { from { transform: scale(1); } 40% { transform: scale(1.28); } to { transform: scale(1); } }
+        .combo-banner { position: absolute; left: 50%; top: 56px; z-index: 60; transform: translateX(-50%); pointer-events: none; opacity: 0; padding: 0 16px; height: 36px; border-radius: 18px; background: var(--ink); color: var(--on-ink); font-family: var(--serif); font-weight: 700; font-size: 18px; display: flex; align-items: center; white-space: nowrap; border: 1px solid var(--line); }
+        .combo-banner.go { animation: banner 1100ms var(--ease) both; }
+        @keyframes banner { 0% { opacity: 0; transform: translateX(-50%) scale(0.6); } 14% { opacity: 1; transform: translateX(-50%) scale(1.1); } 24% { transform: translateX(-50%) scale(1); } 78% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(1); } }
+
+        .quiz-card { position: relative; width: 100%; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 4px 0 var(--edge); transition: opacity var(--d-base) var(--ease); }
         .quiz-card.q-out { opacity: 0; transition-duration: var(--d-fast); }
-        .q-mask { font-family: var(--serif); font-weight: 600; font-size: 56px; line-height: 64px; color: var(--t1); display: flex; justify-content: center; gap: 8px; }
+        .quiz-card.shake { animation: shake 240ms linear both; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 50% { transform: translateX(0); } 75% { transform: translateX(7px); } }
+        .quiz-stage { position: relative; width: 100%; min-height: 176px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .q-mask { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 64px; color: var(--t1); display: flex; justify-content: center; gap: 8px; }
         .q-mask .q-rest { color: var(--t3); }
         .quiz-meaning { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 8px; }
-        .quiz-hanja { font-family: var(--serif); font-weight: 600; font-size: 48px; line-height: 56px; color: var(--t1); letter-spacing: 0.1em; }
-        #quiz-hint { opacity: 0; transition: opacity var(--d-base) var(--ease); height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .quiz-hanja { font-family: var(--serif); font-weight: 700; font-size: 48px; line-height: 56px; color: var(--t1); letter-spacing: 0.1em; }
+        #quiz-hint { opacity: 0; transition: opacity var(--d-base) var(--ease); height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
         .hint-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; color: var(--t2); display: block; }
         .hint-mean { font-size: 14px; line-height: 20px; color: var(--t2); display: block; word-break: keep-all; padding: 0 16px; }
         #quiz-input {
-            width: 100%; background: transparent; border: 0; border-bottom: 2px solid var(--line); border-radius: 0; outline: none;
-            text-align: center; font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 48px; padding-bottom: 8px;
+            width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-bottom: 3px solid var(--t3); border-radius: 10px; outline: none;
+            text-align: center; font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; padding: 6px 0 4px;
             color: var(--accent-text); caret-color: var(--accent-text);
             transition: border-color var(--d-base) var(--ease);
         }
         #quiz-input::placeholder { color: var(--t3); }
         #quiz-input:focus { border-bottom-color: var(--accent-text); }
-        #quiz-input.is-wrong { border-bottom-color: var(--accent); color: var(--accent-text); }
+        #quiz-input.is-wrong { border-color: var(--accent); border-bottom-color: var(--accent); }
 
         .choice-btn {
-            display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 8px 16px;
-            background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-ctl);
-            font-size: 16px; line-height: 24px; font-weight: 500; color: var(--t1); text-align: left;
-            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+            display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 14px;
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-ctl); box-shadow: 0 3px 0 var(--edge);
+            font-size: 16px; line-height: 24px; font-weight: 600; color: var(--t1); text-align: left;
+            transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
         }
-        @media (hover: hover) { .choice-btn:hover { background: var(--surface-2); } }
-        .choice-key { flex-shrink: 0; width: 24px; height: 24px; border-radius: var(--r-tag); display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--t2); font-size: 12px; font-weight: 500; }
+        .choice-btn:not(:disabled):active { transform: translateY(2px); box-shadow: 0 1px 0 var(--edge); }
+        @media (hover: hover) { .choice-btn:not(:disabled):hover { background: var(--surface-2); } }
+        .choice-key { flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); border: 1px solid var(--line); color: var(--t2); font-size: 13px; font-weight: 600; }
         .choice-label { flex: 1; word-break: keep-all; }
+        .choice-btn.is-locked { pointer-events: none; }
+        .choice-btn.is-right { background: var(--good-wash); border-color: var(--good); box-shadow: 0 3px 0 var(--good); color: var(--t1); }
+        .choice-btn.is-right .choice-key { background: var(--good); border-color: var(--good); color: var(--bg); }
+        .choice-btn.is-miss { background: var(--accent-wash); border-color: var(--accent); box-shadow: 0 3px 0 var(--accent); }
+        .choice-btn.is-miss .choice-key { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-        /* 정답 / 오답 피드백: 카드 위를 덮는 평평한 면 */
+        /* 정답: 낙관(正)이 쾅 / 오답: 먹색 판에 정답 공개 */
         #quiz-feedback {
-            position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
-            background: var(--surface); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity var(--d-base) var(--ease);
+            position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 12px;
+            background: var(--surface); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity var(--d-fast) var(--ease);
         }
         #quiz-feedback.show { opacity: 1; pointer-events: auto; }
-        #quiz-feedback.wrong-feedback { background: var(--accent-wash); }
-        #feedback-icon-box { width: 40px; height: 40px; border-radius: var(--r-ctl); display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--t1); }
-        #feedback-icon-box.wrong { background: var(--accent); color: var(--on-accent); }
-        #feedback-answer { font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 48px; color: var(--t1); }
-        #feedback-mean { font-size: 16px; line-height: 24px; color: var(--t2); word-break: keep-all; min-height: 24px; }
+        #quiz-feedback.wrong-feedback { background: var(--ink); color: var(--on-ink); }
+        #feedback-stamp { display: none; width: 84px; height: 84px; align-items: center; justify-content: center; background: var(--accent); color: #fff; border-radius: 4px; transform: rotate(-8deg);
+            font-family: var(--serif); font-weight: 700; font-size: 52px; line-height: 1; box-shadow: inset 0 0 0 5px var(--accent), inset 0 0 0 6px rgba(255,255,255,0.65); }
+        #quiz-feedback.correct-feedback #feedback-stamp { display: flex; }
+        #quiz-feedback.show.correct-feedback #feedback-stamp { animation: thud 200ms var(--thud) both; }
+        #feedback-label { display: none; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--on-ink); opacity: 0.8; }
+        #quiz-feedback.wrong-feedback #feedback-label { display: block; }
+        #feedback-answer { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; color: var(--t1); }
+        #quiz-feedback.wrong-feedback #feedback-answer { color: var(--on-ink); }
+        #feedback-mean { font-size: 15px; line-height: 22px; color: var(--t2); word-break: keep-all; min-height: 22px; }
+        #quiz-feedback.wrong-feedback #feedback-mean { color: var(--on-ink); opacity: 0.85; }
+        #quiz-feedback.correct-feedback #feedback-answer { font-size: 32px; line-height: 40px; }
 
         /* ===== 결과 ===== */
-        #result-icon-box { width: 40px; height: 40px; border-radius: var(--r-ctl); display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--t1); margin: 0 auto; }
-        #result-icon-box.is-perfect { background: var(--accent-wash); color: var(--accent-text); }
-        #result-title { font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 36px; color: var(--t1); }
-        .score { font-family: var(--serif); font-weight: 600; font-size: 48px; line-height: 56px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+        .grade-seal { width: 112px; height: 112px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: var(--accent); color: #fff; border-radius: 6px; transform: rotate(-6deg);
+            font-family: var(--serif); font-weight: 700; font-size: 38px; line-height: 1; box-shadow: inset 0 0 0 5px var(--accent), inset 0 0 0 6px rgba(255,255,255,0.65); }
+        .grade-seal.is-ink { background: var(--ink); box-shadow: inset 0 0 0 5px var(--ink), inset 0 0 0 6px rgba(255,255,255,0.5); }
+        .grade-seal.thud { animation: thud 220ms var(--thud) both; }
+        #result-title { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--t2); }
+        .score { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 64px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
         .score #result-score { color: var(--accent-text); }
         .score .score-sep, .score #result-total { color: var(--t3); font-size: 32px; }
+        .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat { background: var(--surface-2); border-radius: 10px; padding: 10px 8px; }
+        .stat .num { font-size: 22px; line-height: 28px; color: var(--t1); }
+        .stat .note { display: block; }
 
-        /* 목록 항목 */
         .item-card { padding: 16px; display: block; width: 100%; text-align: left; position: relative; transition: background-color var(--d-fast) var(--ease), opacity var(--d-base) var(--ease); }
         @media (hover: hover) { button.item-card:hover { background: var(--surface-2); } }
         .item-idiom { font-weight: 600; font-size: 18px; line-height: 28px; color: var(--t1); }
@@ -281,33 +389,31 @@
             opacity: 0; pointer-events: none; visibility: hidden; transition: opacity var(--d-base) var(--ease), visibility 0s linear var(--d-base);
         }
         .modal-overlay.show { opacity: 1; pointer-events: auto; visibility: visible; transition-delay: 0s; }
-        .modal-card { width: 100%; max-width: 320px; padding: 24px; text-align: center; box-sizing: border-box; transform: translateY(8px); transition: transform var(--d-base) var(--ease); }
+        .modal-card { width: 100%; max-width: 320px; padding: 24px; text-align: center; box-sizing: border-box; transform: translateY(8px); transition: transform var(--d-base) var(--ease); box-shadow: 0 4px 0 var(--edge); }
         .modal-card.is-open { transform: translateY(0); }
         .modal-card h3 { font-size: 18px; line-height: 28px; font-weight: 600; color: var(--t1); margin: 0 0 8px; }
         .modal-card p.desc { font-size: 14px; line-height: 20px; color: var(--t2); margin: 0 0 24px; word-break: keep-all; }
         #modal-search-detail-inner { max-width: 360px; }
-        .sd-idiom { font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 48px; color: var(--t1); word-break: keep-all; }
+        .sd-idiom { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; color: var(--t1); word-break: keep-all; }
         .sd-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; letter-spacing: 0.1em; color: var(--t2); }
 
-        /* ===== 토스트 ===== */
         .toast {
-            position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
+            position: fixed; left: 50%; bottom: calc(112px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
             max-width: calc(100vw - 32px); padding: 12px 16px; border-radius: var(--r-ctl); z-index: 1500;
             background: var(--t1); color: var(--bg); font-size: 14px; line-height: 20px; font-weight: 500; text-align: center;
             opacity: 0; pointer-events: none; transition: opacity var(--d-base) var(--ease), transform var(--d-base) var(--ease);
         }
         .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-        /* ===== 하단 시작 막대 ===== */
         #btn-footer-start { padding: 0 32px; }
         #footer-menu {
             position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; pointer-events: none;
             transition: transform var(--d-enter) var(--ease), visibility 0s linear 0s;
         }
         #footer-menu.is-away { transform: translateY(100%); visibility: hidden; transition: transform var(--d-enter) var(--ease), visibility 0s linear var(--d-enter); }
-        .footer-bar { pointer-events: auto; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+        .footer-bar { pointer-events: auto; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
 
-        /* ===== 모션: 화면 전환 때 한 번만 (페이드 + 살짝 올라옴) ===== */
+        /* ===== 모션: 전부 한 번만. 화면 전환(페이드 + 살짝 올라옴) ===== */
         .fade-enter-active { animation: enter var(--d-enter) var(--ease) both; }
         @keyframes enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         #header-title { transition: opacity var(--d-base) var(--ease); }
@@ -316,6 +422,13 @@
                 animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important; scroll-behavior: auto !important;
             }
+            /* 뒤집기 대신 부드러운 교차 페이드 */
+            .flip-card, .flip-card.flipped { transform: none; }
+            .flip-face { backface-visibility: visible; -webkit-backface-visibility: visible; transition: opacity 160ms linear !important; }
+            .flip-back { transform: none; opacity: 0; }
+            .flip-card.flipped .flip-front { opacity: 0; }
+            .flip-card.flipped .flip-back { opacity: 1; }
+            .flip-front, .flip-back { pointer-events: none; }
         }
     </style>
 </head>
@@ -342,18 +455,23 @@
         <main id="main-container" class="flex-1 z-10 pb-24 relative">
             <!-- 1. 메뉴 뷰 -->
             <div id="view-menu" class="space-y-6 fade-enter-active">
+                <section aria-label="외운 성어">
+                    <p class="hero-count"><span id="hero-known" class="num">0</span> / <span id="hero-total">120</span> 외웠어요</p>
+                    <div id="hero-segs" class="segs" aria-hidden="true"></div>
+                </section>
                 <div class="grid grid-cols-2 gap-3">
-                    <button id="btn-start-study" type="button" class="card action-card">
-                        <span class="icon-tile is-accent"><svg class="ic" data-ic="book" viewBox="0 0 24 24" aria-hidden="true"></svg></span>
+                    <button id="btn-start-study" type="button" class="card action-card chc-1">
+                        <span class="icon-block"><svg class="ic ic-lg" data-ic="book" viewBox="0 0 24 24" aria-hidden="true"></svg></span>
                         <span class="block">
-                            <span class="block text-sm font-medium t1">학습 카드</span>
+                            <span class="block text-base font-semibold t1">학습 카드</span>
                             <span id="study-btn-sub" class="note block mt-1">120개 성어</span>
                         </span>
                     </button>
                     <button id="btn-review" type="button" class="card action-card">
-                        <span id="review-icon-bg" class="icon-tile"><svg class="ic" data-ic="note" viewBox="0 0 24 24" aria-hidden="true"></svg></span>
+                        <span id="review-icon-bg" class="stamp-block" aria-hidden="true">誤</span>
+                        <span id="review-badge" class="count-badge hidden" aria-hidden="true">0</span>
                         <span class="block">
-                            <span id="review-btn-text" class="block text-sm font-medium t1">오답 노트</span>
+                            <span id="review-btn-text" class="block text-base font-semibold t1">오답 노트</span>
                             <span id="review-count" class="note block mt-1">기록 없음</span>
                         </span>
                     </button>
@@ -366,7 +484,7 @@
 
                 <section class="space-y-2" aria-labelledby="quiz-type-title">
                     <h3 id="quiz-type-title" class="label">문제 유형</h3>
-                    <div id="quiz-type-seg" role="radiogroup" aria-label="문제 유형" class="grid grid-cols-4 gap-2">
+                    <div id="quiz-type-seg" role="radiogroup" aria-label="문제 유형" class="grid grid-cols-4 gap-2 pb-1">
                         <button type="button" role="radio" data-type="fill" class="seg-btn">빈칸</button>
                         <button type="button" role="radio" data-type="meaning" class="seg-btn">뜻 고르기</button>
                         <button type="button" role="radio" data-type="hanja" class="seg-btn">한자 읽기</button>
@@ -378,12 +496,12 @@
                 <section class="space-y-3">
                     <div class="flex justify-between items-center">
                         <h3 class="label">챕터 선택</h3>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 pb-1">
                             <button id="btn-multi-select" type="button" aria-pressed="false" class="btn btn-sm">복수선택</button>
                             <button id="btn-select-all" type="button" class="btn btn-sm hidden">전체선택</button>
                         </div>
                     </div>
-                    <div id="chapter-grid" class="grid grid-cols-4 gap-2 min-h-[208px]"></div>
+                    <div id="chapter-grid" class="grid grid-cols-4 gap-3 pb-2"></div>
                 </section>
 
                 <div class="flex justify-center gap-2">
@@ -406,21 +524,37 @@
                     <button id="btn-study-known" type="button" aria-pressed="false" class="btn btn-sm">외웠어요?</button>
                 </div>
                 <div id="study-card-area" class="w-full">
-                    <div id="study-card-inner" class="card study-card">
-                        <div class="flex items-center justify-between">
-                            <span id="study-seal" class="seal" aria-label="번호"><span id="study-index">1</span></span>
-                            <span id="study-chapter" class="note">챕터 1</span>
-                        </div>
-                        <div class="study-body">
-                            <h3 id="study-text" class="study-idiom selectable">사자성어</h3>
-                            <p id="study-hanja" class="study-hanja selectable">漢字</p>
-                            <div id="study-mean-container">
-                                <p id="study-mean" class="study-mean selectable">성어의 뜻풀이</p>
+                    <div id="study-scene" class="flip-scene" role="button" tabindex="0" aria-label="카드 뒤집기: 뜻 보기">
+                        <div id="study-card-inner" class="flip-card study-card-fade">
+                            <div id="study-front" class="card flip-face flip-front">
+                                <div class="face-band">
+                                    <span id="study-chapter">챕터 1</span>
+                                    <span id="study-seal" class="seal-chip" aria-label="번호"><span id="study-index">1</span></span>
+                                </div>
+                                <div class="face-body">
+                                    <h3 id="study-text" class="study-idiom selectable">사자성어</h3>
+                                    <p id="study-hanja" class="study-hanja selectable">漢字</p>
+                                </div>
+                                <p class="face-hint"><svg class="ic" data-ic="flip" viewBox="0 0 24 24" aria-hidden="true"></svg>눌러서 뜻 보기</p>
+                            </div>
+                            <div id="study-back" class="card flip-face flip-back" aria-hidden="true">
+                                <div class="face-band">
+                                    <span id="study-chapter-b">챕터 1</span>
+                                    <span class="seal-chip" aria-hidden="true"><span id="study-index-b">1</span></span>
+                                </div>
+                                <div class="face-body">
+                                    <p id="study-back-idiom" class="back-idiom">사자성어</p>
+                                    <p id="study-back-hanja" class="back-hanja">漢字</p>
+                                    <p id="study-mean" class="study-mean selectable">성어의 뜻풀이</p>
+                                </div>
+                                <p class="face-hint"><svg class="ic" data-ic="flip" viewBox="0 0 24 24" aria-hidden="true"></svg>눌러서 다시 앞면으로</p>
                             </div>
                         </div>
+                        <div id="stamp-known" class="stamp-known" aria-hidden="true">記</div>
                     </div>
+                    <p id="study-live" class="sr-only-live" aria-live="polite"></p>
                 </div>
-                <p class="text-center note">카드를 좌우로 밀거나 ← → 키로 넘겨요</p>
+                <p class="text-center note">카드를 눌러 뒤집고, 좌우로 밀거나 ← → 키로 넘겨요</p>
                 <div class="flex gap-3 w-full">
                     <button id="btn-study-prev" type="button" class="btn btn-lg flex-1">이전</button>
                     <button id="btn-study-next" type="button" class="btn btn-lg btn-primary flex-1">다음 카드</button>
@@ -435,30 +569,38 @@
                     </div>
                     <p class="text-sm t2 w-14 text-right"><span id="quiz-current" class="font-medium t1">1</span>/<span id="quiz-total">10</span></p>
                 </div>
+                <div class="flex items-center justify-between">
+                    <span id="quiz-chip" class="chip ch-chip chc-1">챕터 1</span>
+                    <span id="combo-chip" class="chip combo" aria-live="off">연속 정답 <span id="combo-num" class="num">0</span></span>
+                </div>
                 <div id="quiz-card" class="card quiz-card">
-                    <div id="quiz-feedback" role="status" aria-live="polite">
-                        <div id="feedback-icon-box"></div>
-                        <div id="feedback-text-box" class="text-center px-6 space-y-2">
-                            <p id="feedback-answer"></p>
-                            <p id="feedback-mean"></p>
+                    <div id="combo-banner" class="combo-banner" aria-hidden="true">3연속</div>
+                    <div class="quiz-stage">
+                        <div id="quiz-feedback" role="status" aria-live="polite">
+                            <div id="feedback-stamp" aria-hidden="true">正</div>
+                            <p id="feedback-label">정답은</p>
+                            <div id="feedback-text-box" class="text-center px-6 space-y-1">
+                                <p id="feedback-answer"></p>
+                                <p id="feedback-mean"></p>
+                            </div>
+                        </div>
+                        <div class="text-center w-full space-y-3">
+                            <p id="quiz-q-wrapper" class="q-mask">
+                                <span id="quiz-q-text">??</span><span class="q-rest" aria-hidden="true">??</span>
+                            </p>
+                            <div id="quiz-prompt" class="hidden space-y-3">
+                                <p id="quiz-prompt-label" class="tag"></p>
+                                <p id="quiz-prompt-text"></p>
+                            </div>
                         </div>
                     </div>
-                    <div class="text-center w-full space-y-4">
-                        <p id="quiz-q-wrapper" class="q-mask">
-                            <span id="quiz-q-text">??</span><span class="q-rest" aria-hidden="true">??</span>
-                        </p>
-                        <div id="quiz-prompt" class="hidden space-y-3">
-                            <p id="quiz-prompt-label" class="tag"></p>
-                            <p id="quiz-prompt-text"></p>
-                        </div>
-                        <div id="quiz-hint"></div>
-                    </div>
+                    <div id="quiz-hint"></div>
                     <div class="w-full space-y-4">
                         <div id="quiz-fill" class="mx-auto max-w-[240px]">
                             <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="성어의 뒤 두 글자" placeholder="??">
                         </div>
-                        <div id="quiz-choices" class="hidden grid gap-2" role="group" aria-label="보기"></div>
-                        <div id="quiz-actions" class="grid grid-cols-4 gap-2">
+                        <div id="quiz-choices" class="hidden grid gap-3" role="group" aria-label="보기"></div>
+                        <div id="quiz-actions" class="grid grid-cols-4 gap-3 pb-1">
                             <button id="btn-quiz-skip" type="button" aria-label="건너뛰기 (정답 보기)" class="btn btn-lg col-span-1 px-0"><svg class="ic" data-ic="skip" viewBox="0 0 24 24" aria-hidden="true"></svg></button>
                             <button id="btn-quiz-hint" type="button" aria-pressed="false" class="btn btn-lg col-span-1 px-0">힌트</button>
                             <button id="btn-quiz-check" type="button" disabled class="btn btn-lg btn-primary col-span-2">확인</button>
@@ -469,17 +611,20 @@
 
             <!-- 4. 결과 뷰 -->
             <div id="view-result" class="hidden flex flex-col gap-6 fade-enter-active">
-                <div class="card p-6 w-full space-y-6 text-center">
-                    <div id="result-icon-box">
-                        <div id="result-icon-svg" class="flex"></div>
-                    </div>
+                <div class="card p-6 w-full space-y-6 text-center" style="box-shadow:0 4px 0 var(--edge)">
+                    <div id="grade-seal" class="grade-seal" aria-hidden="true">합격</div>
                     <div class="space-y-3">
                         <h2 id="result-title">학습 완료</h2>
-                        <div class="score">
+                        <div class="score" aria-live="polite">
                             <span id="result-score">0</span><span class="score-sep">/</span><span id="result-total">0</span>
                         </div>
                         <p id="result-extra" class="hidden text-sm t2"></p>
                     </div>
+                    <div class="stat-row">
+                        <div class="stat"><span id="stat-combo" class="num">0</span><span class="note">이번 최고 연속 정답</span></div>
+                        <div class="stat"><span id="stat-known" class="num">0</span><span class="note">외운 성어 (전체 120)</span></div>
+                    </div>
+                    <p id="stat-best" class="note"></p>
                     <div class="space-y-2">
                         <button id="btn-result-wrongs" type="button" class="hidden btn btn-lg btn-primary w-full">틀린 것만 다시 풀기</button>
                         <button id="btn-result-again" type="button" class="btn btn-lg w-full">처음부터 다시 풀기</button>
@@ -566,7 +711,7 @@
     <!-- 검색 상세 모달 -->
     <div id="modal-search-detail" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-sd-text" aria-hidden="true">
         <div class="card modal-card" id="modal-search-detail-inner">
-            <p id="modal-sd-index" class="tag mb-4">1번 · 챕터 1</p>
+            <p id="modal-sd-index" class="tag ch-tag mb-4">1번 · 챕터 1</p>
             <h3 id="modal-sd-text" class="sd-idiom selectable" style="margin:0 0 8px">사자성어</h3>
             <p id="modal-sd-hanja" class="sd-hanja selectable mb-4">漢字</p>
             <p id="modal-sd-mean" class="selectable text-base t1 break-keep leading-7 px-2 mb-6">뜻풀이</p>
@@ -583,7 +728,7 @@
         'use strict';
         // ===== 상수 · 저장소 =====
         const GRAD_STREAK = 2; // 오답 노트에서 연속 N번 맞히면 졸업
-        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1' };
+        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', best: 'idiom_best_combo_v1' };
         const QUIZ_TYPES = {
             fill: '앞 두 글자를 보고 뒤 두 글자를 써요. 4글자가 아닌 성어는 뜻 고르기로 나와요',
             meaning: '뜻을 보고 알맞은 성어를 4개 중에 골라요',
@@ -600,6 +745,7 @@
         const BY_INDEX = new Map(RAW_DATA.map((it) => [it.index, it]));
         const chapterOf = (it) => Math.ceil(it.index / 10);
         const CHAPTERS = Array.from({ length: 12 }, (_, i) => ({ id: i + 1 }));
+        const CHAPTER_HEX = ['#2F5D8A', '#B3382C', '#8A6A12', '#3B3733', '#3F6B4A', '#6B4A7A', '#26696B', '#7A4A2C', '#A23F67', '#5E6420', '#434E7A', '#A04F24']; // CSS의 .chc-N과 같은 값(라이트)
 
         const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         function shuffle(arr) { // Fisher–Yates
@@ -624,7 +770,7 @@
         const validType = (t) => (t in QUIZ_TYPES ? t : 'fill');
 
         function newQuizState() {
-            return { qs: [], idx: 0, val: '', hints: false, wrongs: [], graduated: [], feedback: null, mode: 'normal', timer: null, lastSubmitTime: 0, done: true, celebrated: false };
+            return { qs: [], idx: 0, val: '', hints: false, wrongs: [], graduated: [], feedback: null, mode: 'normal', timer: null, lastSubmitTime: 0, done: true, celebrated: false, combo: 0, maxCombo: 0 };
         }
 
         const state = {
@@ -666,6 +812,7 @@
             shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>',
             check: '<path d="M20 6 9 17l-5-5"/>',
             x: '<path d="M18 6 6 18M6 6l12 12"/>',
+            flip: '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/>',
             skip: '<path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/>',
             trash: '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
             alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
@@ -678,7 +825,12 @@
         function hydrateIcons() { document.querySelectorAll('svg[data-ic]').forEach((s) => { s.innerHTML = ICONS[s.dataset.ic] || ''; }); }
 
         // 효과음(sfx.js)이 없어도 앱은 그대로 동작한다.
-        const sfx = (name) => { try { if (window.SFX && typeof window.SFX[name] === 'function') window.SFX[name](); } catch (e) {} };
+        const sfx = (name, arg) => { try { if (window.SFX && typeof window.SFX[name] === 'function') window.SFX[name](arg); } catch (e) {} };
+        const chc = (n) => `chc-${n}`;
+        const reducedMotion = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+        // 한 번만 재생되는 애니메이션을 다시 걸기 위한 헬퍼
+        function playOnce(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+        const getBest = () => Math.max(0, parseInt(storeGet(STORE.best, '0'), 10) || 0);
         function renderSound() {
             const btn = $('btn-sound-toggle');
             if (!window.SFX || typeof window.SFX.isMuted !== 'function') { btn.classList.add('hidden'); return; }
@@ -729,10 +881,10 @@
         }
         const openModalEl = () => Object.values(els.modals).find((m) => m.classList.contains('show')) || null;
 
-        function triggerConfetti() {
+        function triggerConfetti(extraColors = []) {
             if (typeof confetti !== 'function') return; // CDN을 못 불러온 경우(오프라인 등)에도 결과 화면은 정상 동작
             const count = 200;
-            const defaults = { origin: { y: 0.7 }, zIndex: 2000, colors: ['#B3382C', '#D2584A', '#26221E', '#E6DCCB'], disableForReducedMotion: true };
+            const defaults = { origin: { y: 0.7 }, zIndex: 2000, colors: ['#B3382C', '#D2584A', '#26221E', '#E6DCCB', ...extraColors], disableForReducedMotion: true };
             const fire = (ratio, opts) => confetti({ ...defaults, ...opts, particleCount: Math.floor(count * ratio) });
             fire(0.25, { spread: 26, startVelocity: 55 });
             fire(0.2, { spread: 60 });
@@ -855,11 +1007,11 @@
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.id = `tile-${ch.id}`;
-                    btn.className = 'chapter-btn';
+                    btn.className = `chapter-btn ${chc(ch.id)}`;
                     btn.innerHTML = `
-                        <span class="ch-name">챕터 ${ch.id}</span>
-                        <span class="ch-range">${(ch.id - 1) * 10 + 1}-${ch.id * 10}</span>
-                        <span class="tile-bar" aria-hidden="true"><i></i></span>`;
+                        <span class="ch-check" aria-hidden="true">${ico('check')}</span>
+                        <span><span class="ch-num block">${ch.id}</span><span class="ch-range block">${(ch.id - 1) * 10 + 1}-${ch.id * 10}번</span></span>
+                        <span class="ch-dots" aria-hidden="true">${'<i></i>'.repeat(10)}</span>`;
                     btn.onclick = () => handleChapterClick(ch.id);
                     grid.appendChild(btn);
                 });
@@ -872,14 +1024,18 @@
                 btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
                 const items = chapterItems([ch.id]);
                 const knownCnt = items.filter((it) => state.known.has(it.index)).length;
-                btn.querySelector('.tile-bar i').style.width = `${(knownCnt / items.length) * 100}%`;
+                btn.querySelectorAll('.ch-dots i').forEach((d, i) => d.classList.toggle('on', i < Math.round((knownCnt / items.length) * 10)));
                 btn.setAttribute('aria-label', `챕터 ${ch.id}, ${(ch.id - 1) * 10 + 1}번부터 ${ch.id * 10}번, 외운 성어 ${knownCnt}/${items.length}${isActive ? ', 선택됨' : ''}`);
             });
             state.isMenuFirstLoad = false;
+            renderHero();
 
             const hasWrongs = state.savedWrongs.length > 0;
             $('btn-review').disabled = !hasWrongs;
             $('review-count').innerText = hasWrongs ? `${state.savedWrongs.length}개 저장` : '기록 없음';
+            const badge = $('review-badge');
+            badge.classList.toggle('hidden', !hasWrongs);
+            badge.innerText = state.savedWrongs.length;
             const hasSelection = state.selectedChapters.length > 0;
             $('btn-footer-start').disabled = !hasSelection;
             $('btn-start-study').disabled = !hasSelection;
@@ -887,6 +1043,18 @@
             $('study-btn-sub').innerText = hasSelection ? `${listLen}개 성어` : '챕터를 먼저 선택하세요';
             $('footer-status').innerText = hasSelection ? `${listLen}개 선택됨` : '챕터를 선택하세요';
             renderQuizType();
+        }
+
+        function renderHero() {
+            const seg = $('hero-segs');
+            if (!seg.children.length) seg.innerHTML = CHAPTERS.map((ch) => `<i class="${chc(ch.id)}"><b></b></i>`).join('');
+            $('hero-known').innerText = state.known.size;
+            $('hero-total').innerText = RAW_DATA.length;
+            CHAPTERS.forEach((ch, i) => {
+                const items = chapterItems([ch.id]);
+                const k = items.filter((it) => state.known.has(it.index)).length;
+                seg.children[i].firstChild.style.width = `${(k / items.length) * 100}%`;
+            });
         }
 
         function handleChapterClick(chapterId) {
@@ -920,20 +1088,49 @@
             }, 120);
         }
 
-        function updateStudyCardData(item) {
-            if (!item) return;
-            $('study-index').innerText = item.index;
-            $('study-chapter').innerText = `챕터 ${chapterOf(item)}`;
-            $('study-seal').setAttribute('aria-label', `${item.index}번`);
-            $('study-text').innerText = item.text;
-            $('study-hanja').innerText = item.hanja;
-            $('study-mean').innerText = item.mean;
-            $('btn-study-prev').disabled = state.studyIdx === 0;
-            $('btn-study-next').innerText = state.studyIdx === state.studyList.length - 1 ? '완료' : '다음 카드';
+        function setFlipped(on, instant = false) {
+            const card = $('study-card-inner');
+            if (instant) card.style.transition = 'none';
+            card.classList.toggle('flipped', on);
+            if (instant) { void card.offsetWidth; card.style.transition = ''; }
+            $('study-back').setAttribute('aria-hidden', on ? 'false' : 'true');
+            $('study-front').setAttribute('aria-hidden', on ? 'true' : 'false');
+            const scene = $('study-scene');
+            const it = state.studyList[state.studyIdx];
+            scene.setAttribute('aria-label', on ? '카드 뒤집기: 성어 앞면으로' : '카드 뒤집기: 뜻 보기');
+            $('study-live').innerText = on && it ? `${it.text}, 뜻: ${it.mean}` : '';
+        }
+        function toggleFlip() { setFlipped(!$('study-card-inner').classList.contains('flipped')); }
+
+        function renderKnown(item) {
             const known = state.known.has(item.index);
             const kb = $('btn-study-known');
             kb.setAttribute('aria-pressed', known ? 'true' : 'false');
             kb.innerHTML = known ? `${ico('check')}외웠어요` : '외웠어요?';
+            const st = $('stamp-known');
+            st.classList.remove('thud');
+            st.classList.toggle('on', known);
+        }
+
+        function updateStudyCardData(item) {
+            if (!item) return;
+            const ch = chapterOf(item);
+            const view = $('view-study');
+            view.className = view.className.replace(/\bchc-\d+\b/g, '').trim() + ' ' + chc(ch);
+            setFlipped(false, true);
+            $('study-index').innerText = item.index;
+            $('study-index-b').innerText = item.index;
+            $('study-chapter').innerText = `챕터 ${ch}`;
+            $('study-chapter-b').innerText = `챕터 ${ch}`;
+            $('study-seal').setAttribute('aria-label', `${item.index}번`);
+            $('study-text').innerText = item.text;
+            $('study-hanja').innerText = item.hanja;
+            $('study-back-idiom').innerText = item.text;
+            $('study-back-hanja').innerText = item.hanja;
+            $('study-mean').innerText = item.mean;
+            $('btn-study-prev').disabled = state.studyIdx === 0;
+            $('btn-study-next').innerText = state.studyIdx === state.studyList.length - 1 ? '완료' : '다음 카드';
+            renderKnown(item);
             $('btn-study-shuffle').setAttribute('aria-pressed', state.studyShuffle ? 'true' : 'false');
         }
 
@@ -980,6 +1177,12 @@
             $('quiz-current').innerText = qz.idx + 1;
             $('quiz-total').innerText = qz.qs.length;
             $('quiz-progress').style.width = `${((qz.idx + 1) / qz.qs.length) * 100}%`;
+            const ch = chapterOf(item);
+            const chip = $('quiz-chip');
+            chip.className = `chip ch-chip ${chc(ch)}`;
+            chip.innerText = `챕터 ${ch}`;
+            $('view-quiz').className = $('view-quiz').className.replace(/\bchc-\d+\b/g, '').trim() + ' ' + chc(ch);
+            renderCombo(false);
 
             $('quiz-q-wrapper').classList.toggle('hidden', !isFill);
             $('quiz-prompt').classList.toggle('hidden', isFill);
@@ -1004,7 +1207,7 @@
                     b.type = 'button';
                     b.className = 'choice-btn';
                     b.dataset.index = opt.index;
-                    b.innerHTML = `<span class="choice-key" aria-hidden="true">${i + 1}</span><span class="choice-label">${esc(opt.text)}</span>`;
+                    b.innerHTML = `<span class="choice-key" aria-hidden="true">${'ABCD'[i]}</span><span class="choice-label">${esc(opt.text)}</span>`;
                     b.onclick = () => submitAnswer({ picked: opt.index });
                     box.appendChild(b);
                 });
@@ -1035,6 +1238,20 @@
             hintBtn.setAttribute('aria-pressed', qz.hints ? 'true' : 'false');
         }
 
+        function renderCombo(bump) {
+            const n = state.quiz.combo;
+            $('combo-num').innerText = n;
+            $('combo-chip').classList.toggle('hot', n >= 3);
+            if (bump) playOnce($('combo-chip'), 'bump'); else $('combo-chip').classList.remove('bump');
+        }
+        function comboMilestone(n) {
+            if (n !== 3 && n !== 5 && n !== 10) return;
+            const b = $('combo-banner');
+            b.innerText = `${n}연속`;
+            playOnce(b, 'go');
+            sfx('combo', n);
+        }
+
         function submitAnswer({ skipped = false, picked = null } = {}) {
             const qz = state.quiz;
             if (qz.feedback || state.view !== 'quiz') return;
@@ -1053,23 +1270,33 @@
             overlay.classList.add('show');
             overlay.classList.toggle('correct-feedback', isCorrect);
             overlay.classList.toggle('wrong-feedback', !isCorrect);
-            if (isCorrect) sfx('correct'); else if (!skipped) sfx('wrong'); // 건너뛰기는 소리 없음
-
-            const iconBox = $('feedback-icon-box');
-            iconBox.className = isCorrect ? 'correct' : 'wrong';
-            iconBox.innerHTML = ico(isCorrect ? 'check' : 'x');
+            if (isCorrect) { sfx('correct'); sfx('stamp'); } else if (!skipped) sfx('wrong'); // 건너뛰기는 소리 없음
+            if (isCorrect) {
+                qz.combo++; qz.maxCombo = Math.max(qz.maxCombo, qz.combo);
+                if (qz.combo > getBest()) storeSet(STORE.best, String(qz.combo));
+                renderCombo(true); comboMilestone(qz.combo);
+            } else {
+                qz.combo = 0; renderCombo(false);
+                playOnce($('quiz-card'), 'shake');
+            }
+            document.querySelectorAll('#quiz-choices .choice-btn').forEach((b) => {
+                b.classList.add('is-locked');
+                if (Number(b.dataset.index) === item.index) b.classList.add('is-right');
+                else if (picked !== null && Number(b.dataset.index) === picked) b.classList.add('is-miss');
+            });
 
             let extra = '';
             if (!isCorrect) {
                 $('feedback-answer').innerText = item.text;
                 $('feedback-mean').innerText = `${item.hanja} · ${item.mean}`;
+                $('feedback-label').innerText = skipped ? '정답은' : '아쉬워요, 정답은';
                 // 이미 있으면 맨 앞으로 옮기고 날짜를 갱신, 연속 정답 횟수는 0으로 되돌린다.
                 state.savedWrongs = state.savedWrongs.filter((w) => w.index !== item.index);
                 state.savedWrongs.unshift({ index: item.index, date: new Date().toISOString(), streak: 0 });
                 saveWrongs();
                 if (!qz.wrongs.some((it) => it.index === item.index)) qz.wrongs.push(item);
             } else {
-                $('feedback-answer').innerText = '정답';
+                $('feedback-answer').innerText = item.text;
                 if (qz.mode === 'review') {
                     const w = state.savedWrongs.find((x) => x.index === item.index);
                     if (w) {
@@ -1082,7 +1309,7 @@
                         saveWrongs();
                     }
                 }
-                $('feedback-mean').innerText = extra;
+                $('feedback-mean').innerText = extra || item.hanja;
             }
             // 정답 0.6초(졸업·연속 안내가 있으면 1.1초), 오답 1.5초 뒤 자동으로 다음 문제로 넘어간다.
             qz.timer = setTimeout(nextQuestion, isCorrect ? (extra ? 1100 : 600) : 1500);
@@ -1099,6 +1326,7 @@
                 if (state.view !== 'quiz') { card.classList.remove('q-out'); return; }
                 qz.idx++; qz.val = ''; qz.hints = false; qz.feedback = null;
                 $('quiz-feedback').classList.remove('show', 'correct-feedback', 'wrong-feedback');
+                $('quiz-card').classList.remove('shake');
                 renderQuiz();
                 card.classList.remove('q-out');
             }, 140);
@@ -1115,20 +1343,40 @@
         }
 
         // ===== 결과 =====
+        function countUp(el, to) {
+            if (reducedMotion() || to <= 0) { el.innerText = to; return; }
+            const t0 = performance.now(), dur = 600;
+            el.innerText = 0;
+            const tick = (now) => {
+                const k = Math.min(1, (now - t0) / dur);
+                el.innerText = Math.round(to * (1 - Math.pow(1 - k, 3)));
+                if (k < 1 && state.view === 'result') requestAnimationFrame(tick); else el.innerText = to;
+            };
+            requestAnimationFrame(tick);
+        }
+
         function renderResult() {
             const qz = state.quiz;
             const total = qz.qs.length;
             const score = total - qz.wrongs.length;
             const isPerfect = score === total && total > 0;
-            $('result-score').innerText = score;
+            const pct = total ? score / total : 0;
             $('result-total').innerText = total;
-            const titleEl = $('result-title');
-            const iconBox = $('result-icon-box');
-            const iconSvg = $('result-icon-svg');
-            titleEl.innerText = isPerfect ? '모두 맞혔어요' : '학습 완료';
-            iconBox.classList.toggle('is-perfect', isPerfect);
-            iconSvg.innerHTML = ico(isPerfect ? 'award' : 'check');
-            if (isPerfect && !qz.celebrated) { qz.celebrated = true; triggerConfetti(); }
+            countUp($('result-score'), score);
+            $('result-title').innerText = isPerfect ? '모두 맞혔어요' : '학습 완료';
+            const seal = $('grade-seal');
+            seal.innerText = isPerfect ? '만점' : pct >= 0.8 ? '우수' : pct >= 0.6 ? '합격' : '도전';
+            seal.classList.toggle('is-ink', pct < 0.6);
+            playOnce(seal, 'thud');
+            if (!qz.celebrated) { qz.celebrated = true; sfx('stamp'); }
+            if (isPerfect && !qz.confettiDone) {
+                qz.confettiDone = true;
+                const cols = [...new Set(qz.qs.map((q) => chapterOf(q.item)))].slice(0, 4).map((n) => (CHAPTER_HEX[n - 1]));
+                triggerConfetti(cols);
+            }
+            $('stat-combo').innerText = qz.maxCombo;
+            $('stat-known').innerText = state.known.size;
+            $('stat-best').innerText = `역대 최고 연속 정답 ${getBest()}`;
 
             const extra = $('result-extra');
             extra.classList.toggle('hidden', !qz.graduated.length);
@@ -1171,7 +1419,7 @@
                 el.innerHTML = `
                     <div class="flex justify-between items-start pr-10">
                         <div>
-                            <span class="tag">${it.index}번</span>
+                            <span class="tag ch-tag ${chc(chapterOf(it))}">${it.index}번</span>
                             ${w.date ? `<span class="note ml-2">${esc(formatRelativeTime(w.date))}</span>` : ''}${streakBadge}
                             <h3 class="selectable item-idiom mt-2">${esc(it.text)}</h3>
                         </div>
@@ -1242,7 +1490,7 @@
                 el.innerHTML = `
                     <div class="flex justify-between items-start gap-3">
                         <div>
-                            <span class="tag">챕터 ${chapterOf(it)} · ${it.index}번</span>
+                            <span class="tag ch-tag ${chc(chapterOf(it))}">챕터 ${chapterOf(it)} · ${it.index}번</span>
                             <h3 class="item-idiom mt-2">${highlight(it.text, q)}</h3>
                         </div>
                         <span class="item-hanja">${highlight(it.hanja, q)}</span>
@@ -1256,6 +1504,7 @@
         function showSearchDetail(it) {
             state.detailItem = it;
             $('modal-sd-index').innerText = `${it.index}번 · 챕터 ${chapterOf(it)}`;
+            $('modal-sd-index').className = `tag ch-tag mb-4 ${chc(chapterOf(it))}`;
             $('modal-sd-text').innerText = it.text;
             $('modal-sd-hanja').innerText = it.hanja;
             $('modal-sd-mean').innerText = it.mean;
@@ -1351,14 +1600,15 @@
                     return;
                 }
                 if (state.view === 'study') {
-                    if (e.target.tagName === 'INPUT') return;
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') { if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return; }
                     if (e.key === 'ArrowLeft') studyStep(-1);
                     else if (e.key === 'ArrowRight') studyStep(1);
                 } else if (state.view === 'quiz') {
                     const q = state.quiz.qs[state.quiz.idx];
                     if (state.quiz.feedback && (e.key === 'Enter' || e.key === ' ') && e.target.id !== 'quiz-input') { e.preventDefault(); skipFeedback(); }
-                    else if (!state.quiz.feedback && q && q.type !== 'fill' && /^[1-4]$/.test(e.key)) {
-                        const opt = q.options[Number(e.key) - 1];
+                    else if (!state.quiz.feedback && q && q.type !== 'fill' && /^([1-4]|[a-dA-D])$/.test(e.key)) {
+                        const k = e.key.toLowerCase();
+                        const opt = q.options[/\d/.test(k) ? Number(k) - 1 : k.charCodeAt(0) - 97];
                         if (opt) submitAnswer({ picked: opt.index });
                     }
                 }
@@ -1387,9 +1637,15 @@
             on('btn-study-known', () => {
                 const it = state.studyList[state.studyIdx];
                 if (!it) return;
-                if (state.known.has(it.index)) state.known.delete(it.index); else state.known.add(it.index);
-                saveKnown(); updateStudyCardData(it);
+                const nowKnown = !state.known.has(it.index);
+                if (nowKnown) state.known.add(it.index); else state.known.delete(it.index);
+                saveKnown();
+                renderKnown(it);
+                if (nowKnown) { playOnce($('stamp-known'), 'thud'); sfx('stamp'); }
             });
+            const scene = $('study-scene');
+            scene.onclick = toggleFlip;
+            scene.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFlip(); } };
             // 학습 카드 스와이프
             let sx = 0, sy = 0;
             const area = $('study-card-area');
