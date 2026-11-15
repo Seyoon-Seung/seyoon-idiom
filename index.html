@@ -42,7 +42,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
     <!-- 유틸리티 CSS: `npm run build:css`로 index.html을 스캔해 생성 (직접 수정 금지) -->
     <link rel="stylesheet" href="tailwind.css">
@@ -95,7 +95,8 @@
             --r-ctl: 14px;
             --r-tag: 6px;
             --sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
-            --serif: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', serif;
+            --serif: 'Jua', 'Gowun Dodum', 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Serif KR', sans-serif;
+            --hanja: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', serif;
             --c: var(--accent);
             --cd: var(--accent-edge);
         }
@@ -172,6 +173,7 @@
         }
         input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
         .hidden { display: none !important; }
+        html { font-synthesis: none; }
         .serif { font-family: var(--serif); }
         .num { font-family: var(--serif); font-weight: 700; }
 
@@ -305,9 +307,9 @@
         .face-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 24px 20px; }
         .face-hint { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 16px 14px; font-size: 12px; line-height: 16px; color: var(--t3); }
         .study-idiom { font-family: var(--serif); font-weight: 700; font-size: 52px; line-height: 60px; color: var(--t1); word-break: keep-all; }
-        .study-hanja { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 34px; letter-spacing: 0.1em; color: var(--t2); }
+        .study-hanja { font-family: var(--hanja); font-weight: 400; font-size: 26px; line-height: 34px; letter-spacing: 0.1em; color: var(--t2); }
         .back-idiom { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 36px; color: var(--t1); }
-        .back-hanja { font-family: var(--serif); font-size: 16px; line-height: 24px; letter-spacing: 0.1em; color: var(--t2); }
+        .back-hanja { font-family: var(--hanja); font-size: 16px; line-height: 24px; letter-spacing: 0.1em; color: var(--t2); }
         .study-mean { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 4px; }
         .back-seal { width: 48px; height: 48px; border-radius: 4px; background: var(--c); color: #fff; font-family: var(--serif); font-weight: 700; font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 3px var(--c), inset 0 0 0 4px rgba(255,255,255,0.6); }
         .stamp-known {
@@ -343,10 +345,10 @@
         .q-mask { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 64px; color: var(--t1); display: flex; justify-content: center; gap: 8px; }
         .q-mask .q-rest { color: var(--t3); }
         .quiz-meaning { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 8px; }
-        .quiz-hanja { font-family: var(--serif); font-weight: 700; font-size: 48px; line-height: 56px; color: var(--t1); letter-spacing: 0.1em; }
+        .quiz-hanja { font-family: var(--hanja); font-weight: 700; font-size: 48px; line-height: 56px; color: var(--t1); letter-spacing: 0.1em; }
         #quiz-hint:empty { display: none; }
         #quiz-hint { opacity: 0; transition: opacity var(--d-base) var(--ease); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
-        .hint-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; color: var(--t2); display: block; }
+        .hint-hanja { font-family: var(--hanja); font-size: 20px; line-height: 28px; color: var(--t2); display: block; }
         .hint-mean { font-size: 14px; line-height: 20px; color: var(--t2); display: block; word-break: keep-all; padding: 0 16px; }
         #quiz-input {
             width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-bottom: 3px solid var(--t3); border-radius: 10px; outline: none;
@@ -414,7 +416,7 @@
         .item-card { padding: 16px; display: block; width: 100%; text-align: left; position: relative; transition: background-color var(--d-fast) var(--ease), opacity var(--d-base) var(--ease); }
         @media (hover: hover) { button.item-card:hover { background: var(--surface-2); } }
         .item-idiom { font-weight: 600; font-size: 18px; line-height: 28px; color: var(--t1); }
-        .item-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; color: var(--t2); }
+        .item-hanja { font-family: var(--hanja); font-size: 20px; line-height: 28px; color: var(--t2); }
         .item-mean { font-size: 14px; line-height: 20px; color: var(--t2); word-break: keep-all; }
 
         /* ===== 모달 ===== */
@@ -430,7 +432,7 @@
         .modal-card p.desc { font-size: 14px; line-height: 20px; color: var(--t2); margin: 0 0 24px; word-break: keep-all; }
         #modal-search-detail-inner { max-width: 360px; }
         .sd-idiom { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; color: var(--t1); word-break: keep-all; }
-        .sd-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; letter-spacing: 0.1em; color: var(--t2); }
+        .sd-hanja { font-family: var(--hanja); font-size: 20px; line-height: 28px; letter-spacing: 0.1em; color: var(--t2); }
 
 
         #btn-footer-start { padding: 0 32px; }
