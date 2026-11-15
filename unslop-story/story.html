@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="unslop-steps" content="Spacing, Color and icons, Type and copy, Details">
+<meta name="unslop-frame" content="240 0 960">
+<title>unslop story</title>
+<style>
+/* ===== ORIGINAL STYLES (verbatim from the old index.html) ===== */
+        :root {
+            --accent: #5E5CE6;
+            --accent-dark: #4442B1;
+            --bg: #F5F5F7;
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --glass-shadow: 0 12px 40px -8px rgba(31, 38, 135, 0.08);
+            --ease-fluid: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg); overflow-x: hidden; overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+            -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+            letter-spacing: -0.02em; color: #1d1d1f;
+            -webkit-touch-callout: none;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+        .hanja-font { font-family: 'Noto Serif KR', serif; }
+        .hidden { display: none !important; }
+
+        .aurora-container { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #F5F5F7; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; animation: float 14s infinite ease-in-out; will-change: transform; }
+        .blob-1 { top: -10%; left: -5%; width: 50vw; height: 50vw; background: #E0E7FF; }
+        .blob-2 { bottom: -10%; right: -5%; width: 40vw; height: 40vw; background: #FAE8FF; animation-delay: -7s; }
+        .blob-3 { top: 30%; left: 20%; width: 30vw; height: 30vw; background: #F0F9FF; animation-delay: -4s; opacity: 0.35; }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.35);
+            transition: all 0.4s var(--ease-bounce);
+            position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        @media (hover: hover) {
+            .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px -4px rgba(99, 102, 241, 0.5); }
+        }
+        .primary-btn:active { transform: scale(0.92) translateY(2px); opacity: 0.9; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); transition: all 0.1s; }
+        .primary-btn:disabled { opacity: 0.4; transform: none; box-shadow: none; background: #c7c8f0; pointer-events: none; }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 15px 30px -2px rgba(99, 102, 241, 0.6); transform: scale(1.02); }
+        }
+        .btn-pulse:not(:disabled) { animation: pulseGlow 2s infinite var(--ease-fluid); }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUpFade 0.6s var(--ease-bounce) both; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+
+        @keyframes textPop {
+            0% { opacity: 0; transform: translateY(15px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .text-pop { animation: textPop 0.5s var(--ease-bounce) both; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake-error { animation: shake 0.4s var(--ease-fluid); color: #f43f5e !important; border-bottom-color: #f43f5e !important; }
+
+        @keyframes hoverFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .icon-float { animation: hoverFloat 3s ease-in-out infinite; }
+        .icon-float-hover { transition: transform 0.3s ease-in-out; }
+        @media (hover: hover) {
+            .group:hover .icon-float-hover {
+                animation: hoverFloat 3s ease-in-out infinite;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+            }
+            .blob { animation: none !important; }
+        }
+
+        .chapter-btn { 
+            transition: transform 0.4s var(--ease-bounce), background-color 0.3s var(--ease-fluid), border-color 0.3s var(--ease-fluid), box-shadow 0.4s var(--ease-bounce);
+            position: relative;
+            will-change: transform, box-shadow;
+        }
+        
+        @keyframes tilePopUp {
+            0% { opacity: 0; transform: translateY(40px) scale(0.7) rotate(-3deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-entry { animation: tilePopUp 0.6s var(--ease-bounce) backwards; }
+
+        .chapter-btn.selected {
+            background: var(--accent); border-color: var(--accent); color: white;
+            box-shadow: 0 15px 30px -8px rgba(94, 92, 230, 0.4);
+            transform: translateY(-2px) scale(1.05); z-index: 10;
+        }
+        .card-fixed-size { 
+            width: 100%; 
+            max-width: 340px; 
+            min-height: 380px; 
+            margin: 0 auto; 
+            flex-shrink: 0; 
+        }
+        @media (min-width: 640px) {
+            .card-fixed-size { max-width: 400px; min-height: 420px; }
+            #study-mean-container { min-height: 100px !important; }
+        }
+        #study-mean-container { min-height: 80px; display: flex; align-items: center; justify-content: center; width: 100%; }
+
+        .fade-enter-active { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .fluid-card-exit { animation: fluidExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .fluid-card-enter { animation: fluidEnter 0.4s var(--ease-bounce) forwards; }
+        @keyframes fluidExit { 0% { transform: translateX(0) scale(1); opacity: 1; } 100% { transform: translateX(-40px) scale(0.95); opacity: 0; } }
+        @keyframes fluidEnter { 0% { transform: translateX(40px) scale(0.95); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
+
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.3); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; visibility: visible; transition-delay: 0s; }
+
+        #modal-search-detail-inner {
+            width: 340px;
+            max-width: calc(100vw - 40px);
+            padding: 35px 30px 30px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-sizing: border-box;
+        }
+        #modal-search-detail #btn-sd-close, #modal-search-detail #btn-sd-study {
+            height: 52px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .dark-theme #modal-search-detail-inner {
+            background: rgba(30, 30, 32, 0.92);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- 🚀 퀴즈 피드백 애니메이션 강화 --- */
+        #quiz-feedback { 
+            transition: opacity 0.25s var(--ease-fluid); 
+            opacity: 0; pointer-events: none; backdrop-filter: blur(16px); z-index: 100; 
+        }
+        #quiz-feedback.show { opacity: 1; pointer-events: auto; }
+
+        @keyframes feedbackPop {
+            0% { transform: scale(0.4); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes feedbackShake {
+            0%, 100% { transform: translateX(0) scale(1); }
+            20% { transform: translateX(-15px) scale(1.05); }
+            40% { transform: translateX(15px) scale(1.05); }
+            60% { transform: translateX(-10px) scale(1.02); }
+            80% { transform: translateX(10px) scale(1.02); }
+        }
+        @keyframes feedbackTextSlideUp {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        #quiz-feedback.show #feedback-icon-box.correct { animation: feedbackPop 0.5s var(--ease-bounce) both; box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); }
+        #quiz-feedback.show #feedback-icon-box.wrong { animation: feedbackShake 0.5s var(--ease-fluid) both; box-shadow: 0 0 40px rgba(244, 63, 94, 0.4); }
+        #quiz-feedback.show #feedback-text-box { animation: feedbackTextSlideUp 0.4s var(--ease-fluid) 0.05s both; }
+        
+        /* 다크 모드 스타일 */
+        .dark-theme {
+            --accent: #706DFF; /* Brighter for better contrast */
+            --accent-dark: #5E5CE6;
+            --bg: #121212; /* Switched from black to off-black */
+            --glass-border: rgba(255, 255, 255, 0.15); /* Brighter border */
+            --glass-shadow: none;
+        }
+
+        .dark-theme, .dark-theme body {
+            background-color: var(--bg);
+            color: rgba(255, 255, 255, 0.87); /* Standard material dark text color */
+        }
+
+        .dark-theme .glass {
+            background: rgba(36, 36, 38, 0.8); /* Slightly lighter glass bg */
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 60px -20px rgba(0,0,0,0.5); /* subtle dark glow for depth */
+        }
+
+        .dark-theme .aurora-container { background: var(--bg); }
+        .dark-theme .blob { filter: blur(100px); opacity: 0.15; } /* even more subtle */
+        .dark-theme .blob-1 { background: #5E5CE6; animation-duration: 22s; }
+        .dark-theme .blob-2 { background: #9A3EAF; animation-duration: 22s; }
+        .dark-theme .blob-3 { background: #006AB5; animation-duration: 26s; opacity: 0.12;}
+        
+        /* --- Refined Overrides with better contrast and depth --- */
+
+        /* Removing all shadows first */
+        .dark-theme .shadow-xl, .dark-theme .shadow-lg, .dark-theme .shadow-md, .dark-theme .shadow-sm, .dark-theme .sm\:hover\:shadow-xl:hover, .dark-theme .sm\:hover\:shadow-md:hover { box-shadow: none !important; }
+        
+        /* Adding back controlled glows for elevated surfaces */
+        .dark-theme #study-card-inner, .dark-theme #quiz-card, .dark-theme #view-result .glass {
+            box-shadow: 0 0 50px -15px rgba(0,0,0,0.6) !important;
+            border: 1.5px solid var(--glass-border) !important;
+        }
+        .dark-theme #footer-menu .glass {
+            box-shadow: 0 25px 50px -15px rgba(0,0,0,0.6) !important;
+            border-top: 1.5px solid var(--glass-border) !important;
+        }
+        .dark-theme .chapter-btn.selected {
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            border-color: var(--accent);
+            box-shadow: 0 0 30px 0px rgba(112, 109, 255, 0.5);
+        }
+        .dark-theme .chapter-btn {
+            background: rgba(36, 36, 38, 0.8);
+        }
+
+        /* Text colors for contrast */
+        .dark-theme .text-gray-900 { color: rgba(255, 255, 255, 0.95) !important; }
+        .dark-theme .text-gray-800, .dark-theme .sm\:hover\:text-indigo-600:hover { color: rgba(255, 255, 255, 0.87) !important; }
+        .dark-theme .text-gray-700 { color: rgba(255, 255, 255, 0.8) !important; }
+        .dark-theme .text-gray-600 { color: rgba(255, 255, 255, 0.7) !important; }
+        .dark-theme .text-gray-500 { color: rgba(255, 255, 255, 0.62) !important; }
+        .dark-theme .text-gray-400, .dark-theme .placeholder\:text-gray-400::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
+        
+        .dark-theme .text-indigo-600 { color: var(--accent) !important; }
+        .dark-theme .text-indigo-500 { color: #9D9BFF !important; }
+        .dark-theme .text-indigo-400 { color: #A09EFF !important; }
+        .dark-theme .text-rose-500 { color: #ff8fa3 !important; }
+        .dark-theme .hanja-font { color: rgba(255, 255, 255, 0.62) !important; }
+        .dark-theme #quiz-prompt-text.hanja-font { color: rgba(255, 255, 255, 0.92) !important; }
+
+        /* Background colors for contrast */
+        .dark-theme .bg-white\/50 { background-color: rgba(36, 36, 38, 0.5) !important; }
+        .dark-theme .bg-white\/70 { background-color: rgba(36, 36, 38, 0.7) !important; }
+        .dark-theme .bg-gray-50, .dark-theme .sm\:hover\:bg-white:hover { background-color: #2a2a2c !important; }
+        .dark-theme .bg-gray-100, .dark-theme .sm\:hover\:bg-gray-200:hover { background-color: #38383a !important; }
+        .dark-theme .bg-gray-200\/50 { background-color: rgba(58, 58, 60, 0.5) !important; }
+        .dark-theme .bg-indigo-50, .dark-theme .bg-indigo-50\/50, .dark-theme .sm\:hover\:bg-indigo-100:hover { background-color: rgba(94, 92, 230, 0.12) !important; }
+        .dark-theme .bg-indigo-100, .dark-theme .hover\:bg-indigo-100:hover { background-color: rgba(94, 92, 230, 0.18) !important; }
+        .dark-theme .bg-rose-50 { background-color: rgba(255, 102, 128, 0.1) !important; }
+        
+        /* Borders for definition */
+        .dark-theme .border-transparent { border-color: transparent !important; }
+        .dark-theme .border-gray-300 { border-color: #444446 !important; }
+        .dark-theme .border-indigo-100, .dark-theme .focus-within\:border-indigo-300:focus-within { border-color: rgba(94, 92, 230, 0.4) !important; }
+        .dark-theme .focus\:border-indigo-600:focus { border-color: var(--accent) !important; }
+        
+        /* Button glows */
+        .dark-theme .primary-btn { box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.4); }
+        .dark-theme .primary-btn:disabled { background: #38383a; color: rgba(255, 255, 255, 0.45); box-shadow: none; }
+        @media (hover: hover) { .dark-theme .primary-btn:hover { box-shadow: 0 8px 25px -2px rgba(99, 102, 241, 0.5); } }
+        
+        .dark-theme #quiz-feedback.show #feedback-icon-box.correct { box-shadow: 0 0 40px rgba(16, 185, 129, 0.5); }
+        .dark-theme #quiz-feedback.show #feedback-icon-box.wrong { box-shadow: 0 0 40px rgba(244, 63, 94, 0.5); }
+        .dark-theme #quiz-feedback.show { background-color: rgba(22, 22, 24, 0.85) !important; }
+        .dark-theme #quiz-feedback.show.correct-feedback { background-color: rgba(6, 38, 26, 0.85) !important; }
+        .dark-theme #quiz-feedback.show.wrong-feedback { background-color: rgba(40, 18, 22, 0.85) !important; }
+        .dark-theme #feedback-answer { color: rgba(255, 255, 255, 0.95) !important; }
+        .dark-theme #feedback-mean { color: rgba(255, 255, 255, 0.8) !important; }
+        .dark-theme .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(16px); }
+
+        /* ===== 추가 스타일 (접근성 · 신규 기능) ===== */
+        input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
+
+        button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+            outline: 3px solid var(--accent); outline-offset: 2px;
+        }
+        input:focus-visible { outline: none; }
+
+        #footer-menu { bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); }
+        #btn-start-study:disabled { opacity: 0.5; pointer-events: none; }
+
+        /* 문제 유형 선택 */
+        .seg-btn {
+            height: 44px; border-radius: 16px; font-size: 12px; font-weight: 800; color: #374151;
+            border: 1px solid transparent; transition: transform 0.3s var(--ease-bounce), background-color 0.3s var(--ease-fluid);
+        }
+        .seg-btn:active { transform: scale(0.94); }
+        .seg-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .dark-theme .seg-btn { color: rgba(255, 255, 255, 0.7); }
+        .dark-theme .seg-btn.selected { color: #fff; }
+
+        /* 챕터 타일의 외운 개수 진행 막대 */
+        .tile-bar { position: absolute; left: 14px; right: 14px; bottom: 7px; height: 3px; border-radius: 3px; background: rgba(120, 120, 140, 0.2); overflow: hidden; }
+        .tile-bar i { display: block; height: 100%; width: 0; background: #10b981; transition: width 0.5s var(--ease-fluid); }
+        .chapter-btn.selected .tile-bar { background: rgba(255, 255, 255, 0.3); }
+        .chapter-btn.selected .tile-bar i { background: #fff; }
+
+        /* 객관식 보기 */
+        .choice-btn {
+            display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 10px 16px;
+            border-radius: 18px; font-weight: 800; font-size: 1.05rem; text-align: left;
+            transition: transform 0.3s var(--ease-bounce), background-color 0.2s;
+        }
+        .choice-btn:active { transform: scale(0.96); }
+        @media (hover: hover) { .choice-btn:hover { background: rgba(255, 255, 255, 0.97); } .dark-theme .choice-btn:hover { background: #2a2a2c; } }
+        .choice-key {
+            flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            background: rgba(94, 92, 230, 0.12); color: var(--accent); font-size: 12px; font-weight: 900;
+        }
+        .choice-label { flex: 1; word-break: keep-all; }
+
+        /* 토글형 작은 버튼 (섞기 / 외웠어요 / 백업) */
+        .pill-btn { font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 12px; transition: transform 0.3s var(--ease-bounce), background-color 0.3s; color: #4b5563; }
+        .pill-btn:active { transform: scale(0.92); }
+        .pill-btn[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .dark-theme .pill-btn { color: rgba(255, 255, 255, 0.7); }
+        .dark-theme .pill-btn[aria-pressed="true"] { color: #fff; }
+
+        /* 토스트 */
+        .toast {
+            position: fixed; left: 50%; bottom: calc(7rem + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 12px);
+            max-width: calc(100vw - 40px); padding: 12px 20px; border-radius: 9999px; z-index: 1500;
+            background: rgba(29, 29, 31, 0.92); color: #fff; font-size: 13px; font-weight: 700; text-align: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s var(--ease-fluid);
+        }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        /* 저사양 모바일: 무거운 블러 배경 애니메이션 완화 */
+        @media (max-width: 640px) {
+            .blob { animation: none; filter: blur(60px); }
+            .dark-theme .blob { filter: blur(70px); }
+        }
+</style>
+<link rel="stylesheet" href="tailwind.css">
+<style>
+/* ===== STORY HARNESS ===== */
+html, body { height: auto; overflow: hidden; }
+body { position: relative; width: 1440px; height: 1200px; }
+#frame-bg { position: absolute; left: 240px; top: 0; width: 960px; height: 960px; overflow: hidden; }
+#frame-bg .aurora-container { position: absolute; inset: 0; z-index: 0; }
+#frame-bg .blob-1 { width: 50%; height: 50%; }
+#frame-bg .blob-2 { width: 42%; height: 42%; }
+#frame-bg .blob-3 { width: 32%; height: 32%; }
+#stage { position: absolute; left: 0; top: 0; width: 1252px; zoom: 1.15; z-index: 2; }
+#app { padding-top: 20px; }
+#app .animate-slide-up, #app .fade-enter-active { animation: none !important; }
+.blob { animation: none !important; }
+.footer-stub { display: none; }
+#credit { position: absolute; left: 1188px; top: 940px; transform: translateX(-100%); z-index: 90; font-size: 12px; letter-spacing: .01em; color: #8A857F; font-family: 'Pretendard Variable', 'Noto Sans KR', sans-serif; }
+#hairline { position: absolute; left: 0; right: 0; bottom: -12px; height: 1px; background: rgba(28,27,26,.08); opacity: 0; }
+
+/* ===== TRANSITIONS: every step only changes values ===== */
+html, body, .aurora-container { transition: background-color 700ms ease, opacity 700ms ease; }
+#app *, #app *::before {
+  transition-property: padding, gap, row-gap, column-gap, margin, color, background-color, border-color, border-radius,
+    box-shadow, opacity, font-size, letter-spacing, font-weight, height, transform, backdrop-filter, -webkit-backdrop-filter, stroke-width, left, right, bottom;
+  transition-duration: 700ms; transition-timing-function: ease; transition-delay: 0s;
+}
+html.static *, html.static *::before { transition: none !important; }
+
+/* ===== swaps ===== */
+.swap { display: inline-grid; vertical-align: baseline; }
+.swap > .from, .swap > .to { grid-area: 1 / 1; white-space: pre; }
+#app .swap .l { display: inline-block; white-space: pre; transition: opacity 380ms ease, filter 380ms ease, transform 380ms ease; transition-delay: calc(var(--i) * 30ms); }
+#app .swap .from .l { opacity: 1; filter: blur(0); transform: none; }
+#app .swap .to .l { opacity: 0; filter: blur(6px); transform: translateY(.7em); }
+#app .swap.on .from .l { opacity: 0; filter: blur(7px); transform: translateY(-.4em); }
+#app .swap.on .to .l { opacity: 1; filter: blur(0); transform: none; transition-delay: calc(var(--i) * 30ms + 260ms); }
+
+/* icon crossfade (symbol -> line icon) */
+.xfade { position: relative; display: inline-flex; width: 14px; height: 14px; align-items: center; justify-content: center; margin-right: 4px; vertical-align: -2px; }
+.xfade > * { position: absolute; transition: opacity 600ms ease, transform 600ms ease; }
+.xfade .sym { opacity: 1; font-size: 13px; line-height: 1; }
+.xfade svg { opacity: 0; transform: scale(.7); }
+html.s2 .xfade .sym { opacity: 0; transform: scale(.7); }
+html.s2 .xfade svg { opacity: 1; transform: none; }
+
+/* appear / vanish */
+[data-in] { opacity: 0; }
+[data-in].in { opacity: 1; }
+[data-out].out { opacity: 0; }
+
+/* ===== STEP 1: SPACING ===== */
+html.s1 #app { padding-left: 32px; padding-right: 32px; }
+html.s1 #app #view-menu > :not([hidden]) ~ :not([hidden]) { margin-top: 24px; }
+html.s1 #app section.space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 12px; }
+html.s1 #app section.space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 12px; }
+html.s1 #app #btn-start-study, html.s1 #app #btn-review { padding: 24px; height: 152px; }
+html.s1 #app #chapter-grid { gap: 8px; padding: 0; }
+html.s1 #app .tile-bar { left: 12px; right: 12px; bottom: 8px; }
+html.s1 #app #btn-multi-select { padding-top: 8px; padding-bottom: 8px; }
+html.s1 #app .px-1 { padding-left: 0; padding-right: 0; }
+
+/* ===== STEP 2: COLOR AND ICONS ===== */
+html.s2, html.s2 body { background-color: #F6F4F1; color: #1C1B1A; }
+html.s2 .aurora-container { opacity: 0; background-color: #F6F4F1; }
+html.s2 #app .glass { background-color: #FFFFFF; border-color: rgba(28,27,26,.08); backdrop-filter: blur(0px) saturate(100%); -webkit-backdrop-filter: blur(0px) saturate(100%); }
+html.s2 #app .text-gray-900, html.s2 #app .text-gray-800, html.s2 #app .text-gray-700 { color: #1C1B1A; }
+html.s2 #app .text-gray-600, html.s2 #app .text-gray-500 { color: #5E5A55; }
+html.s2 #app .text-gray-400 { color: #8A857F; }
+html.s2 #app .bg-indigo-50 { background-color: #F8EAE8; }
+html.s2 #app .text-indigo-600 { color: #B3382C; }
+html.s2 #app .bg-gray-50 { background-color: #F6F4F1; }
+html.s2 #app .border-indigo-100 { border-color: rgba(28,27,26,.08); }
+html.s2 #app .bg-indigo-500 { background-color: #B3382C; }
+html.s2 #app .seg-btn { color: #5E5A55; }
+html.s2 #app .seg-btn.selected { background-color: #B3382C; border-color: #B3382C; color: #fff; }
+html.s2 #app .chapter-btn.selected { background-color: #B3382C; border-color: #B3382C; box-shadow: 0 0 0 0 rgba(179,56,44,0); color: #fff; }
+html.s2 #app .tile-bar i { background-color: #B3382C; }
+html.s2 #app .chapter-btn.selected .tile-bar i { background-color: #fff; }
+html.s2 #app svg { stroke-width: 1.75; }
+html.s2 #app .pill-btn { color: #5E5A55; }
+
+/* ===== STEP 3: TYPE AND COPY ===== */
+html.s3 #app h1 { font-weight: 500; font-size: 22px; letter-spacing: -0.01em; }
+html.s3 #app .font-extrabold, html.s3 #app .font-black, html.s3 #app .font-bold, html.s3 #app .seg-btn, html.s3 #app .pill-btn { font-weight: 500; }
+html.s3 #app .font-medium { font-weight: 400; }
+html.s3 #app .text-\[11px\] { font-size: 12px; }
+html.s3 #app .tracking-tight, html.s3 #app .tracking-tighter { letter-spacing: 0; }
+html.s3 #app .uppercase { letter-spacing: 0; }
+html.s3 #app .text-sm { font-size: 15px; }
+html.s3 #app .seg-btn { font-size: 13px; }
+html.s3 #app .chapter-btn .text-\[13px\] { font-size: 14px; }
+
+/* ===== STEP 4: DETAILS ===== */
+html.s4 #app #btn-start-study, html.s4 #app #btn-review { border-radius: 16px; box-shadow: 0 1px 2px rgba(28,27,26,.04); }
+html.s4 #app #btn-show-search { border-radius: 10px; box-shadow: 0 1px 2px rgba(28,27,26,.04); }
+html.s4 #app .seg-btn { border-radius: 10px; box-shadow: 0 1px 2px rgba(28,27,26,.04); }
+html.s4 #app .chapter-btn { border-radius: 10px; box-shadow: 0 1px 2px rgba(28,27,26,.04); }
+html.s4 #app .chapter-btn.selected { box-shadow: 0 0 0 0 rgba(179,56,44,0); transform: none; }
+html.s4 #app .w-14.h-14 { border-radius: 12px; box-shadow: none; }
+html.s4 #app .pill-btn, html.s4 #app #btn-multi-select, html.s4 #app #btn-theme-toggle { border-radius: 10px; box-shadow: 0 1px 2px rgba(28,27,26,.04); }
+html.s4 #app .tile-bar { height: 2px; border-radius: 1px; }
+
+/* ===== REDLINE OVERLAY ===== */
+#redline { position: absolute; left: 0; top: 0; width: 1440px; height: 1200px; pointer-events: none; z-index: 60; font-family: 'Pretendard Variable', 'Noto Sans KR', 'Noto Sans CJK KR', sans-serif; }
+#redline > * { position: absolute; opacity: 0; transition: opacity 450ms ease; }
+#redline > .vis { opacity: 1; }
+#redline > .slop.vis { transition-delay: 500ms; }
+.rl-fill { background: rgba(229,56,43,.16); border-top: 1px solid #E5382B; border-bottom: 1px solid #E5382B; box-sizing: border-box; transition: background-color 500ms ease, border-color 500ms ease, opacity 450ms ease; }
+.rl-fill.fixed { background: rgba(255,255,255,.0); border-color: rgba(229,56,43,.35); }
+.rl-tag { font-size: 13px; font-weight: 700; line-height: 1; padding: 4px 7px; border-radius: 4px; background: #E5382B; color: #fff; white-space: nowrap; transform: translate(0, -50%); transition: background-color 500ms ease, color 500ms ease, opacity 450ms ease; font-variant-numeric: tabular-nums; }
+.rl-tag.fixed { background: #fff; color: #E5382B; box-shadow: 0 0 0 1px #E5382B inset, 0 2px 8px rgba(0,0,0,.12); }
+.rl-box { border: 1.5px solid #E5382B; box-sizing: border-box; transition: border-color 500ms ease, opacity 450ms ease; }
+.rl-box.fixed { border-color: rgba(229,56,43,.4); }
+.slop { font-size: 13px; font-weight: 700; line-height: 1; padding: 5px 8px; border-radius: 4px; background: #E5382B; color: #fff; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.15); transform: translate(-50%, -50%); }
+html.s4 #redline > .rl-r { transition-delay: 1100ms; }
+html.s4 #redline > .rl-r:not(.vis) { transition-delay: 0s; }
+</style>
+</head>
+<body>
+<div id="frame-bg" aria-hidden="true">
+  <div class="aurora-container">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+</div>
+
+<div id="stage">
+<div id="app" class="max-w-md sm:max-w-[520px] mx-auto flex flex-col p-5 sm:p-10 relative">
+  <header class="relative flex items-center justify-center mb-6 shrink-0 z-20 h-12">
+    <button type="button" aria-label="다크 모드로 전환" class="absolute right-0 w-10 h-10 rounded-xl flex items-center justify-center hover:bg-gray-200/50 text-gray-800" id="btn-theme-toggle">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <div id="header-title" class="flex flex-col justify-center">
+      <h1 class="text-2xl font-extrabold text-gray-900 leading-tight tracking-tight">승세윤의 사자성어</h1>
+    </div>
+    <div id="hairline" data-in="4"></div>
+  </header>
+
+  <main id="main-container" class="flex-1 z-10 relative">
+    <div id="view-menu" class="space-y-8">
+      <div class="grid grid-cols-2 gap-4" data-gap="g1">
+        <button id="btn-start-study" type="button" data-radius="1" class="glass p-5 rounded-[32px] flex flex-col items-center gap-3 h-40 justify-center group">
+          <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center shadow-inner">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V5H6.5A2.5 2.5 0 0 0 4 7.5v12z"/></svg>
+          </div>
+          <div class="text-center">
+            <span class="block font-extrabold text-sm text-gray-800">학습 카드</span>
+            <span id="study-btn-sub" class="text-[11px] text-gray-500 font-bold mt-1 block tracking-tight"><span class="swap" data-at="3"><span class="from">10개 성어</span><span class="to">성어 10개</span></span></span>
+          </div>
+        </button>
+        <button id="btn-review" type="button" class="glass p-5 rounded-[32px] flex flex-col items-center gap-3 h-40 justify-center group">
+          <div id="review-icon-bg" class="w-14 h-14 bg-gray-50 text-gray-500 rounded-[22px] flex items-center justify-center shadow-inner">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9.5 12.5 5 5"/><path d="m14.5 12.5-5 5"/></svg>
+          </div>
+          <div class="text-center">
+            <span id="review-btn-text" class="block font-extrabold text-sm text-gray-800">오답 노트</span>
+            <span id="review-count" class="text-[11px] text-gray-500 font-bold mt-1 block tracking-tight">7개 저장</span>
+          </div>
+        </button>
+      </div>
+
+      <div data-gap="g1 g2">
+        <button id="btn-show-search" type="button" data-radius="2" class="w-full glass rounded-[24px] flex items-center gap-3 px-4 py-3 border border-indigo-100 text-left">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <span class="flex-1 text-sm font-medium text-gray-500">성어, 한자, 뜻, 초성으로 검색…</span>
+        </button>
+      </div>
+
+      <section class="space-y-3" aria-labelledby="quiz-type-title" data-gap="g2 g3">
+        <div class="flex items-center gap-2 px-1">
+          <div class="w-1 h-3.5 bg-indigo-500 rounded-full" data-out="2"></div>
+          <h3 id="quiz-type-title" class="text-[11px] font-black text-gray-600 uppercase tracking-[0.15em]"><span class="swap" data-at="3"><span class="from">Quiz Type</span><span class="to">문제 유형</span></span></h3>
+        </div>
+        <div id="quiz-type-seg" role="radiogroup" aria-label="문제 유형" class="grid grid-cols-4 gap-2">
+          <button type="button" role="radio" data-type="fill" class="seg-btn glass">빈칸</button>
+          <button type="button" role="radio" data-type="meaning" class="seg-btn glass">뜻 고르기</button>
+          <button type="button" role="radio" data-type="hanja" class="seg-btn glass">한자 읽기</button>
+          <button type="button" role="radio" data-type="mixed" data-radius="4" class="seg-btn glass selected">혼합</button>
+        </div>
+        <p id="quiz-type-desc" class="text-[11px] text-gray-500 font-bold px-1">위 세 가지 유형이 무작위로 섞여 나와요.</p>
+      </section>
+
+      <section class="space-y-4" data-gap="g3">
+        <div class="flex justify-between items-center px-1" data-gap="g5">
+          <div class="flex items-center gap-2">
+            <div class="w-1 h-3.5 bg-indigo-500 rounded-full" data-out="2"></div>
+            <h3 class="text-[11px] font-black text-gray-600 uppercase tracking-[0.15em]"><span class="swap" data-at="3"><span class="from">Chapter Selection</span><span class="to">챕터 선택</span></span></h3>
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-multi-select" type="button" class="text-[11px] font-bold text-gray-600 bg-white/50 glass px-3 py-1.5 rounded-lg">복수선택</button>
+          </div>
+        </div>
+        <div id="chapter-grid" class="grid grid-cols-4 gap-3 p-1" data-gap="g5">
+          <button type="button" id="tile-1" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm selected" data-gap="g4">
+<span class="text-[11px] font-black opacity-80 uppercase tracking-tighter mb-0.5">CH 1</span>
+<span class="text-[13px] font-extrabold tracking-tight">1-10</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:70%"></i></span></button>
+<button type="button" id="tile-2" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm" data-radius="3">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 2</span>
+<span class="text-[13px] font-extrabold tracking-tight">11-20</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:40%"></i></span></button>
+<button type="button" id="tile-3" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 3</span>
+<span class="text-[13px] font-extrabold tracking-tight">21-30</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:10%"></i></span></button>
+<button type="button" id="tile-4" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 4</span>
+<span class="text-[13px] font-extrabold tracking-tight">31-40</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-5" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm" data-gap="g4">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 5</span>
+<span class="text-[13px] font-extrabold tracking-tight">41-50</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-6" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 6</span>
+<span class="text-[13px] font-extrabold tracking-tight">51-60</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-7" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 7</span>
+<span class="text-[13px] font-extrabold tracking-tight">61-70</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-8" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 8</span>
+<span class="text-[13px] font-extrabold tracking-tight">71-80</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-9" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 9</span>
+<span class="text-[13px] font-extrabold tracking-tight">81-90</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-10" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 10</span>
+<span class="text-[13px] font-extrabold tracking-tight">91-100</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-11" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 11</span>
+<span class="text-[13px] font-extrabold tracking-tight">101-110</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+<button type="button" id="tile-12" data-radius-x class="h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm">
+<span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5">CH 12</span>
+<span class="text-[13px] font-extrabold tracking-tight">111-120</span>
+<span class="tile-bar" aria-hidden="true"><i style="width:0%"></i></span></button>
+        </div>
+      </section>
+
+      <div class="flex justify-center gap-3">
+        <button type="button" class="pill-btn glass"><span class="xfade"><span class="sym">⬇</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>데이터 백업</button>
+        <button type="button" class="pill-btn glass"><span class="xfade"><span class="sym">⬆</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>데이터 복원</button>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+<div id="redline"></div>
+<div id="credit">unslop by @heydamir</div>
+
+<script>
+(function () {
+  var html = document.documentElement;
+  var meta = function (n) { var m = document.querySelector('meta[name="' + n + '"]'); return m ? m.content : ''; };
+  var steps = meta('unslop-steps').split(',').map(function (s) { return s.trim(); });
+  var STEP_AT = [1400, 3500, 5600, 7700];   // ms at which step 1..4 begins
+  var TOTAL = 10000;
+  var APP_W = 520;                          // css width of #app (unzoomed)
+  var cur = 0, ready = false;
+
+  // --- swaps: split into letters ---
+  document.querySelectorAll('.swap').forEach(function (sw) {
+    ['from', 'to'].forEach(function (k) {
+      var el = sw.querySelector('.' + k), t = el.textContent; el.textContent = '';
+      Array.from(t).forEach(function (ch, i) {
+        var s = document.createElement('span'); s.className = 'l'; s.style.setProperty('--i', i);
+        s.textContent = ch === ' ' ? ' ' : ch; el.appendChild(s);
+      });
+    });
+  });
+
+  // --- redline overlay ---
+  var rl = document.getElementById('redline');
+  var factor = function () { return document.getElementById('app').getBoundingClientRect().width / APP_W; };
+  var groups = {};
+  document.querySelectorAll('[data-gap]').forEach(function (el) {
+    el.getAttribute('data-gap').split(/\s+/).forEach(function (g) { (groups[g] = groups[g] || []).push(el); });
+  });
+  var gapObjs = Object.keys(groups).filter(function (g) { return groups[g].length === 2; }).map(function (g) {
+    var fill = document.createElement('div'); fill.className = 'rl-fill';
+    var tag = document.createElement('div'); tag.className = 'rl-tag';
+    rl.appendChild(fill); rl.appendChild(tag);
+    return { els: groups[g], fill: fill, tag: tag };
+  });
+  var radObjs = Array.from(document.querySelectorAll('[data-radius]')).map(function (el) {
+    var box = document.createElement('div'); box.className = 'rl-box rl-r';
+    var tag = document.createElement('div'); tag.className = 'rl-tag rl-r';
+    rl.appendChild(box); rl.appendChild(tag);
+    return { el: el, box: box, tag: tag };
+  });
+  // slop tags: [text, anchor selector or frame-relative point, relative x,y (0-1), appears during step before n]
+  var slopDefs = [
+    { t: 'Aurora blobs', n: 2, pt: function () { return [240 + 960 * .86, 960 * .88]; } },
+    { t: 'Glass blur', n: 2, el: '#btn-review', rx: .5, ry: .08 },
+    { t: 'Uppercase tracking', n: 3, el: '#quiz-type-title', rx: .55, ry: -.35 },
+    { t: 'Heavy shadow', n: 4, el: '#chapter-grid .chapter-btn.selected', rx: 1.0, ry: .9 }
+  ];
+  var slopObjs = slopDefs.map(function (d) {
+    var el = document.createElement('div'); el.className = 'slop'; el.textContent = d.t; rl.appendChild(el);
+    return { d: d, el: el };
+  });
+
+  function updateOverlay() {
+    var f = factor();
+    gapObjs.forEach(function (g) {
+      var a = g.els[0].getBoundingClientRect(), b = g.els[1].getBoundingClientRect();
+      if (a.top > b.top) { var t = a; a = b; b = t; }
+      var y1 = a.bottom, y2 = b.top, h = Math.max(0, y2 - y1);
+      var x = Math.max(a.left, b.left), w = Math.min(a.right, b.right) - x;
+      // narrow groups (tile rows) show tag beside the box
+      g.fill.style.cssText = 'left:' + x + 'px;top:' + y1 + 'px;width:' + w + 'px;height:' + h + 'px;';
+      g.tag.style.left = (x + w / 2 - 14) + 'px'; g.tag.style.top = (y1 + h / 2) + 'px';
+      g.tag.textContent = Math.round(h / f) + 'px';
+      var fixed = cur >= 1;
+      g.fill.classList.toggle('fixed', fixed); g.tag.classList.toggle('fixed', fixed);
+      var vis = cur <= 1;
+      g.fill.classList.toggle('vis', vis); g.tag.classList.toggle('vis', vis);
+    });
+    radObjs.forEach(function (r) {
+      var rc = r.el.getBoundingClientRect(), cs = getComputedStyle(r.el);
+      var rad = parseFloat(cs.borderTopLeftRadius) || 0;
+      r.box.style.cssText = 'left:' + rc.left + 'px;top:' + rc.top + 'px;width:' + rc.width + 'px;height:' + rc.height + 'px;border-radius:' + (rad * f) + 'px;';
+      r.tag.style.left = (rc.left + 10) + 'px'; r.tag.style.top = (rc.top + 2) + 'px';
+      r.tag.textContent = 'r ' + Math.round(rad);
+      var fixed = cur >= 4;
+      r.box.classList.toggle('fixed', fixed); r.tag.classList.toggle('fixed', fixed);
+      var vis = cur >= 3 && cur <= 4;
+      r.box.classList.toggle('vis', vis); r.tag.classList.toggle('vis', vis);
+    });
+    slopObjs.forEach(function (s) {
+      var x, y;
+      if (s.d.pt) { var p = s.d.pt(); x = p[0]; y = p[1]; }
+      else {
+        var r = document.querySelector(s.d.el).getBoundingClientRect();
+        x = r.left + r.width * s.d.rx; y = r.top + r.height * s.d.ry;
+      }
+      s.el.style.left = x + 'px'; s.el.style.top = y + 'px';
+      s.el.classList.toggle('vis', cur === s.d.n - 1);
+    });
+  }
+
+  // --- apply step n ---
+  function applyStep(n) {
+    cur = n;
+    for (var i = 1; i <= 4; i++) html.classList.toggle('s' + i, n >= i);
+    document.querySelectorAll('.swap').forEach(function (s) { s.classList.toggle('on', n >= +s.dataset.at); });
+    document.querySelectorAll('[data-out]').forEach(function (e) { e.classList.toggle('out', n >= +e.dataset.out); });
+    document.querySelectorAll('[data-in]').forEach(function (e) { e.classList.toggle('in', n >= +e.dataset.in); });
+  }
+
+  // --- real-time player ---
+  var timers = [];
+  function setStep(n) { applyStep(n); updateOverlay(); }
+  function play() {
+    timers.forEach(clearTimeout); timers = [];
+    setStep(0);
+    var base = STEP_AT[0];
+    for (var i = 1; i <= 4; i++) (function (k) {
+      timers.push(setTimeout(function () { setStep(k); }, base + (k - 1) * 2100));
+    })(i);
+  }
+  (function loop() { updateOverlay(); requestAnimationFrame(loop); })();
+
+  // --- deterministic virtual clock ---
+  var t0map = new WeakMap(), lastStep = 0;
+  function seek(ms) {
+    var n = 0;
+    for (var i = 0; i < STEP_AT.length; i++) if (ms >= STEP_AT[i]) n = i + 1;
+    if (n !== lastStep) {
+      // set (possibly several) steps at their exact start times, then record transition origins
+      for (var k = lastStep + 1; k <= n; k++) {
+        applyStep(k); getComputedStyle(document.body).opacity; updateOverlay();
+        document.getAnimations().forEach(function (a) { if (!t0map.has(a)) t0map.set(a, STEP_AT[k - 1]); });
+      }
+      lastStep = n;
+    }
+    document.getAnimations().forEach(function (a) {
+      var o = t0map.has(a) ? t0map.get(a) : 0, t = ms - o;
+      var end = a.effect.getComputedTiming().endTime;
+      if (t >= end) { try { a.finish(); } catch (e) {} } else { a.pause(); a.currentTime = Math.max(0, t); }
+    });
+    updateOverlay();
+    return n;
+  }
+
+  window.__story = { steps: steps, setStep: setStep, play: play, seek: seek, total: TOTAL, stepAt: STEP_AT };
+
+  var q = new URLSearchParams(location.search);
+  if (q.has('step')) { html.classList.add('static'); setStep(Math.max(0, Math.min(4, +q.get('step') || 0))); }
+  else if (!q.has('manual')) { setTimeout(play, 300); }
+  else { applyStep(0); updateOverlay(); }
+})();
+</script>
+</body>
+</html>
