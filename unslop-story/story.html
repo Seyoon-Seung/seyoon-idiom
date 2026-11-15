@@ -663,9 +663,9 @@ html.s4 #redline > .rl-r:not(.vis) { transition-delay: 0s; }
   // slop tags: [text, anchor selector or frame-relative point, relative x,y (0-1), appears during step before n]
   var slopDefs = [
     { t: 'Aurora blobs', n: 2, pt: function () { return [240 + 960 * .86, 960 * .88]; } },
-    { t: 'Glass blur', n: 2, el: '#btn-review', rx: .5, ry: .08 },
-    { t: 'Uppercase tracking', n: 3, el: '#quiz-type-title', rx: .55, ry: -.35 },
-    { t: 'Heavy shadow', n: 4, el: '#chapter-grid .chapter-btn.selected', rx: 1.0, ry: .9 }
+    { t: 'Glass blur', n: 2, el: '#btn-review', rx: .78, ry: 0 },
+    { t: 'Uppercase tracking', n: 3, el: '#quiz-type-title', rx: 1, ry: .5, dx: 95 },
+    { t: 'Heavy shadow', n: 4, el: '#btn-start-study', rx: .5, ry: 1.0 }
   ];
   var slopObjs = slopDefs.map(function (d) {
     var el = document.createElement('div'); el.className = 'slop'; el.textContent = d.t; rl.appendChild(el);
@@ -704,7 +704,7 @@ html.s4 #redline > .rl-r:not(.vis) { transition-delay: 0s; }
       if (s.d.pt) { var p = s.d.pt(); x = p[0]; y = p[1]; }
       else {
         var r = document.querySelector(s.d.el).getBoundingClientRect();
-        x = r.left + r.width * s.d.rx; y = r.top + r.height * s.d.ry;
+        x = r.left + r.width * s.d.rx + (s.d.dx || 0); y = r.top + r.height * s.d.ry;
       }
       s.el.style.left = x + 'px'; s.el.style.top = y + 'px';
       s.el.classList.toggle('vis', cur === s.d.n - 1);
