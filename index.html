@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="승세윤이 만든 사자성어 암기 도우미">
-    <meta name="theme-color" content="#F5F5F7">
+    <meta name="description" content="고사성어 120개를 학습 카드와 퀴즈로 외우는 암기 앱">
+    <meta name="theme-color" content="#F6F4F0">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="승세윤의 사자성어 암기앱">
     <meta property="og:title" content="승세윤의 사자성어 암기앱">
-    <meta property="og:description" content="120개의 핵심 사자성어를 퀴즈로 완벽하게 마스터하세요!">
+    <meta property="og:description" content="사자성어 120개를 학습 카드와 퀴즈로 외우는 암기 앱">
     <meta property="og:url" content="https://seyoon-seung.github.io/seyoon-idiom/">
     <meta property="og:image" content="https://seyoon-seung.github.io/seyoon-idiom/thumbnail.png">
     <meta property="og:image:width" content="1100">
     <meta property="og:image:height" content="1429">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="승세윤의 사자성어 암기앱">
-    <meta name="twitter:description" content="120개의 핵심 사자성어를 퀴즈로 완벽하게 마스터하세요!">
+    <meta name="twitter:description" content="사자성어 120개를 학습 카드와 퀴즈로 외우는 암기 앱">
     <meta name="twitter:image" content="https://seyoon-seung.github.io/seyoon-idiom/thumbnail.png">
     <meta name="google-site-verification" content="sXvS_-JQ95k897LDs_ew5sdgg7cLsQI5DKne3MdpSbI" />
     <title>승세윤의 사자성어 암기앱</title>
@@ -24,7 +24,7 @@
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="manifest" href="manifest.webmanifest">
 
-    <!-- 다크모드 사용자가 첫 화면에서 흰 화면을 보지 않도록 스타일보다 먼저 테마를 적용 -->
+    <!-- 다크모드 사용자가 첫 화면에서 밝은 화면을 보지 않도록 스타일보다 먼저 테마를 적용 -->
     <script>
         (function () {
             try {
@@ -33,7 +33,7 @@
                 if (t === 'dark') {
                     document.documentElement.classList.add('dark-theme');
                     var m = document.querySelector('meta[name="theme-color"]');
-                    if (m) m.setAttribute('content', '#121212');
+                    if (m) m.setAttribute('content', '#151311');
                 }
             } catch (e) {}
         })();
@@ -43,602 +43,495 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+    <!-- 유틸리티 CSS: `npm run build:css`로 index.html을 스캔해 생성 (직접 수정 금지) -->
+    <link rel="stylesheet" href="tailwind.css">
 
     <style>
+        /* ===== 디자인 토큰 =====
+           종이(hanji) 위의 먹과 낙관. 포인트 색은 주홍 하나뿐이고, 나머지는 따뜻한 회색 단계. */
         :root {
-            --accent: #5E5CE6;
-            --accent-dark: #4442B1;
-            --bg: #F5F5F7;
-            --glass-border: rgba(255, 255, 255, 0.45);
-            --glass-shadow: 0 12px 40px -8px rgba(31, 38, 135, 0.08);
-            --ease-fluid: cubic-bezier(0.23, 1, 0.32, 1);
-            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --bg: #F6F4F0;
+            --surface: #FCFBF9;
+            --surface-2: #EFECE6;
+            --line: rgba(38, 30, 22, 0.10);
+            --line-soft: rgba(38, 30, 22, 0.06);
+            --t1: #26221E;
+            --t2: #5A544C;
+            --t3: #6E675E;
+            --accent: #B3382C;
+            --accent-hover: #9E2F25;
+            --accent-text: #A3322A;
+            --accent-wash: #F6EBE9;
+            --on-accent: #FFFFFF;
+            --overlay: rgba(24, 18, 12, 0.40);
+            --ease: cubic-bezier(0.2, 0, 0, 1);
+            --d-fast: 120ms;
+            --d-base: 160ms;
+            --d-enter: 200ms;
+            --r-card: 16px;
+            --r-ctl: 10px;
+            --r-tag: 4px;
+            --sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+            --serif: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', serif;
         }
-        
-        html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: var(--bg); overflow-x: hidden; overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+        .dark-theme {
+            --bg: #151311;
+            --surface: #1D1A18;
+            --surface-2: #282421;
+            --line: rgba(255, 240, 225, 0.10);
+            --line-soft: rgba(255, 240, 225, 0.06);
+            --t1: #ECE7E0;
+            --t2: #B3ACA2;
+            --t3: #968F85;
+            --accent: #C0463A;
+            --accent-hover: #B33D32;
+            --accent-text: #EE8577;
+            --accent-wash: #392724;
+            --on-accent: #FFFFFF;
+            --overlay: rgba(0, 0, 0, 0.56);
+        }
+
+        html, body { margin: 0; padding: 0; background-color: var(--bg); }
+        body {
+            font-family: var(--sans); color: var(--t1);
+            font-variant-numeric: tabular-nums; letter-spacing: 0;
+            overflow-x: hidden;
             -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
-            letter-spacing: -0.02em; color: #1d1d1f;
             -webkit-touch-callout: none;
         }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-        }
-        .hanja-font { font-family: 'Noto Serif KR', serif; }
+        input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
         .hidden { display: none !important; }
+        .serif { font-family: var(--serif); }
 
-        .aurora-container { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #F5F5F7; }
-        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; animation: float 14s infinite ease-in-out; will-change: transform; }
-        .blob-1 { top: -10%; left: -5%; width: 50vw; height: 50vw; background: #E0E7FF; }
-        .blob-2 { bottom: -10%; right: -5%; width: 40vw; height: 40vw; background: #FAE8FF; animation-delay: -7s; }
-        .blob-3 { top: 30%; left: 20%; width: 30vw; height: 30vw; background: #F0F9FF; animation-delay: -4s; opacity: 0.35; }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -20px) scale(1.05); }
-            66% { transform: translate(-20px, 20px) scale(0.95); }
-        }
+        /* 아이콘: 16px, 선 1.5, 글자색을 따른다 */
+        .ic { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-        .primary-btn {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: white;
-            box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.35);
-            transition: all 0.4s var(--ease-bounce);
-            position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
+        /* 포커스 */
+        button:focus-visible, [tabindex]:focus-visible, .field:focus-within {
+            outline: 2px solid var(--accent-text); outline-offset: 2px;
         }
+        input:focus-visible { outline: none; }
+
+        /* ===== 표면 ===== */
+        .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); }
+        .rule { border-top: 1px solid var(--line-soft); }
+
+        /* ===== 텍스트 역할 ===== */
+        .t1 { color: var(--t1); }
+        .t2 { color: var(--t2); }
+        .t3 { color: var(--t3); }
+        .label { font-size: 12px; line-height: 16px; font-weight: 500; color: var(--t2); }
+        .note { font-size: 12px; line-height: 16px; color: var(--t3); }
+        .tag { display: inline-block; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--t2); background: var(--surface-2); padding: 2px 8px; border-radius: var(--r-tag); }
+        .hl { font-weight: 600; color: var(--accent-text); }
+
+        /* ===== 버튼 ===== */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            height: 40px; padding: 0 16px; border-radius: var(--r-ctl);
+            font-size: 14px; line-height: 20px; font-weight: 500; color: var(--t1);
+            background: var(--surface); border: 1px solid var(--line);
+            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease), opacity var(--d-fast) var(--ease);
+        }
+        .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; }
+        .btn-lg { height: 48px; }
+        .btn:disabled { color: var(--t3); opacity: 0.5; cursor: default; }
+        .btn[aria-pressed="true"], .btn.selected { background: var(--accent-wash); border-color: var(--accent); color: var(--accent-text); }
+        .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+        .btn-primary:disabled { background: var(--surface-2); border-color: var(--line); color: var(--t3); opacity: 1; }
         @media (hover: hover) {
-            .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px -4px rgba(99, 102, 241, 0.5); }
+            .btn:not(:disabled):hover { background: var(--surface-2); }
+            .btn[aria-pressed="true"]:not(:disabled):hover { background: var(--accent-wash); }
+            .btn-primary:not(:disabled):hover { background: var(--accent-hover); border-color: var(--accent-hover); }
         }
-        .primary-btn:active { transform: scale(0.92) translateY(2px); opacity: 0.9; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); transition: all 0.1s; }
-        .primary-btn:disabled { opacity: 0.4; transform: none; box-shadow: none; background: #c7c8f0; pointer-events: none; }
+        .btn-icon {
+            display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+            border-radius: var(--r-ctl); color: var(--t2);
+            transition: background-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+        }
+        @media (hover: hover) { .btn-icon:hover { background: var(--surface-2); color: var(--t1); } }
+        .btn-icon.is-bordered { background: var(--surface); border: 1px solid var(--line); }
 
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.4); }
-            50% { box-shadow: 0 15px 30px -2px rgba(99, 102, 241, 0.6); transform: scale(1.02); }
+        /* 메뉴의 큰 버튼 두 개 */
+        .action-card {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+            height: 128px; padding: 16px; text-align: center;
+            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), opacity var(--d-fast) var(--ease);
         }
-        .btn-pulse:not(:disabled) { animation: pulseGlow 2s infinite var(--ease-fluid); }
+        .action-card:disabled { opacity: 0.5; cursor: default; }
+        @media (hover: hover) { .action-card:not(:disabled):hover { background: var(--surface-2); } }
+        .icon-tile { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--r-ctl); background: var(--surface-2); color: var(--t2); }
+        .icon-tile.is-accent { background: var(--accent-wash); color: var(--accent-text); }
 
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0); }
+        /* 검색 진입 / 검색 입력 */
+        .field {
+            display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px;
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-ctl); color: var(--t3);
+            transition: border-color var(--d-fast) var(--ease), background-color var(--d-fast) var(--ease);
         }
-        .animate-slide-up { animation: slideUpFade 0.6s var(--ease-bounce) both; }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
+        @media (hover: hover) { button.field:hover { background: var(--surface-2); } }
 
-        @keyframes textPop {
-            0% { opacity: 0; transform: translateY(15px) scale(0.9); }
-            100% { opacity: 1; transform: translateY(0); }
+        /* 문제 유형 */
+        .seg-btn {
+            height: 40px; border-radius: var(--r-ctl); font-size: 13px; font-weight: 500; color: var(--t2);
+            background: var(--surface); border: 1px solid var(--line);
+            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
         }
-        .text-pop { animation: textPop 0.5s var(--ease-bounce) both; }
+        @media (hover: hover) { .seg-btn:not(.selected):hover { background: var(--surface-2); } }
+        .seg-btn.selected { background: var(--accent-wash); border-color: var(--accent); color: var(--accent-text); }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
+        /* 챕터 타일 */
+        .chapter-btn {
+            position: relative; height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-ctl); color: var(--t1);
+            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
         }
-        .shake-error { animation: shake 0.4s var(--ease-fluid); color: #f43f5e !important; border-bottom-color: #f43f5e !important; }
+        .chapter-btn .ch-name { font-size: 12px; line-height: 16px; color: var(--t3); }
+        .chapter-btn .ch-range { font-size: 14px; line-height: 20px; font-weight: 500; }
+        @media (hover: hover) { .chapter-btn:not(.selected):hover { background: var(--surface-2); } }
+        .chapter-btn.selected { background: var(--accent-wash); border-color: var(--accent); color: var(--accent-text); }
+        .chapter-btn.selected .ch-name { color: var(--accent-text); }
+        .tile-bar { position: absolute; left: 12px; right: 12px; bottom: 8px; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+        .tile-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width var(--d-enter) var(--ease); }
 
-        @keyframes hoverFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        /* 진행 막대 */
+        .progress { flex: 1; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+        .progress > div { height: 100%; background: var(--accent); transition: width var(--d-enter) var(--ease); }
+
+        /* ===== 학습 카드: 이 앱의 중심 화면 ===== */
+        .study-card { width: 100%; min-height: 380px; padding: 24px; display: flex; flex-direction: column; transition: opacity var(--d-fast) var(--ease); }
+        .study-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 16px 0; }
+        .study-idiom { font-family: var(--serif); font-weight: 600; font-size: 48px; line-height: 56px; color: var(--t1); word-break: keep-all; }
+        .study-hanja { font-family: var(--serif); font-weight: 400; font-size: 24px; line-height: 32px; letter-spacing: 0.1em; color: var(--t2); }
+        .study-mean { font-size: 18px; line-height: 28px; color: var(--t1); word-break: keep-all; padding: 8px 8px 0; }
+        #study-mean-container { min-height: 84px; display: flex; align-items: flex-start; justify-content: center; width: 100%; border-top: 1px solid var(--line-soft); padding-top: 16px; margin-top: 8px; }
+        @media (min-width: 640px) { .study-idiom { font-size: 56px; line-height: 64px; } }
+
+        /* 낙관: 번호 도장. 학습 카드에서만 쓴다 */
+        .seal {
+            display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+            background: var(--accent); color: var(--on-accent); border-radius: 2px;
+            font-family: var(--serif); font-weight: 600; font-size: 16px; line-height: 1;
+            box-shadow: inset 0 0 0 3px var(--accent), inset 0 0 0 4px rgba(255, 255, 255, 0.55);
         }
-        .icon-float { animation: hoverFloat 3s ease-in-out infinite; }
-        .icon-float-hover { transition: transform 0.3s ease-in-out; }
-        @media (hover: hover) {
-            .group:hover .icon-float-hover {
-                animation: hoverFloat 3s ease-in-out infinite;
-            }
+
+        /* ===== 퀴즈 ===== */
+        .quiz-card { position: relative; width: 100%; min-height: 380px; padding: 24px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; transition: opacity var(--d-base) var(--ease); }
+        .quiz-card.q-out { opacity: 0; transition-duration: var(--d-fast); }
+        .q-mask { font-family: var(--serif); font-weight: 600; font-size: 56px; line-height: 64px; color: var(--t1); display: flex; justify-content: center; gap: 8px; }
+        .q-mask .q-rest { color: var(--t3); }
+        .quiz-meaning { font-size: 20px; line-height: 32px; font-weight: 500; color: var(--t1); word-break: keep-all; padding: 0 8px; }
+        .quiz-hanja { font-family: var(--serif); font-weight: 600; font-size: 48px; line-height: 56px; color: var(--t1); letter-spacing: 0.1em; }
+        #quiz-hint { opacity: 0; transition: opacity var(--d-base) var(--ease); height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .hint-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; color: var(--t2); display: block; }
+        .hint-mean { font-size: 14px; line-height: 20px; color: var(--t2); display: block; word-break: keep-all; padding: 0 16px; }
+        #quiz-input {
+            width: 100%; background: transparent; border: 0; border-bottom: 2px solid var(--line); border-radius: 0; outline: none;
+            text-align: center; font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 48px; padding-bottom: 8px;
+            color: var(--accent-text); caret-color: var(--accent-text);
+            transition: border-color var(--d-base) var(--ease);
         }
+        #quiz-input::placeholder { color: var(--t3); }
+        #quiz-input:focus { border-bottom-color: var(--accent-text); }
+        #quiz-input.is-wrong { border-bottom-color: var(--accent); color: var(--accent-text); }
+
+        .choice-btn {
+            display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 8px 16px;
+            background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-ctl);
+            font-size: 16px; line-height: 24px; font-weight: 500; color: var(--t1); text-align: left;
+            transition: background-color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+        }
+        @media (hover: hover) { .choice-btn:hover { background: var(--surface-2); } }
+        .choice-key { flex-shrink: 0; width: 24px; height: 24px; border-radius: var(--r-tag); display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--t2); font-size: 12px; font-weight: 500; }
+        .choice-label { flex: 1; word-break: keep-all; }
+
+        /* 정답 / 오답 피드백: 카드 위를 덮는 평평한 면 */
+        #quiz-feedback {
+            position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+            background: var(--surface); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity var(--d-base) var(--ease);
+        }
+        #quiz-feedback.show { opacity: 1; pointer-events: auto; }
+        #quiz-feedback.wrong-feedback { background: var(--accent-wash); }
+        #feedback-icon-box { width: 40px; height: 40px; border-radius: var(--r-ctl); display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--t1); }
+        #feedback-icon-box.wrong { background: var(--accent); color: var(--on-accent); }
+        #feedback-answer { font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 48px; color: var(--t1); }
+        #feedback-mean { font-size: 16px; line-height: 24px; color: var(--t2); word-break: keep-all; min-height: 24px; }
+
+        /* ===== 결과 ===== */
+        #result-icon-box { width: 40px; height: 40px; border-radius: var(--r-ctl); display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--t1); margin: 0 auto; }
+        #result-icon-box.is-perfect { background: var(--accent-wash); color: var(--accent-text); }
+        #result-title { font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 36px; color: var(--t1); }
+        .score { font-family: var(--serif); font-weight: 600; font-size: 48px; line-height: 56px; display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+        .score #result-score { color: var(--accent-text); }
+        .score .score-sep, .score #result-total { color: var(--t3); font-size: 32px; }
+
+        /* 목록 항목 */
+        .item-card { padding: 16px; display: block; width: 100%; text-align: left; position: relative; transition: background-color var(--d-fast) var(--ease), opacity var(--d-base) var(--ease); }
+        @media (hover: hover) { button.item-card:hover { background: var(--surface-2); } }
+        .item-idiom { font-weight: 600; font-size: 18px; line-height: 28px; color: var(--t1); }
+        .item-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; color: var(--t2); }
+        .item-mean { font-size: 14px; line-height: 20px; color: var(--t2); word-break: keep-all; }
+
+        /* ===== 모달 ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 1000; background: var(--overlay);
+            display: flex; align-items: center; justify-content: center; padding: 16px;
+            opacity: 0; pointer-events: none; visibility: hidden; transition: opacity var(--d-base) var(--ease), visibility 0s linear var(--d-base);
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; visibility: visible; transition-delay: 0s; }
+        .modal-card { width: 100%; max-width: 320px; padding: 24px; text-align: center; box-sizing: border-box; transform: translateY(8px); transition: transform var(--d-base) var(--ease); }
+        .modal-card.is-open { transform: translateY(0); }
+        .modal-card h3 { font-size: 18px; line-height: 28px; font-weight: 600; color: var(--t1); margin: 0 0 8px; }
+        .modal-card p.desc { font-size: 14px; line-height: 20px; color: var(--t2); margin: 0 0 24px; word-break: keep-all; }
+        #modal-search-detail-inner { max-width: 360px; }
+        .sd-idiom { font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 48px; color: var(--t1); word-break: keep-all; }
+        .sd-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; letter-spacing: 0.1em; color: var(--t2); }
+
+        /* ===== 토스트 ===== */
+        .toast {
+            position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
+            max-width: calc(100vw - 32px); padding: 12px 16px; border-radius: var(--r-ctl); z-index: 1500;
+            background: var(--t1); color: var(--bg); font-size: 14px; line-height: 20px; font-weight: 500; text-align: center;
+            opacity: 0; pointer-events: none; transition: opacity var(--d-base) var(--ease), transform var(--d-base) var(--ease);
+        }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        /* ===== 하단 시작 막대 ===== */
+        #btn-footer-start { padding: 0 32px; }
+        #footer-menu {
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; pointer-events: none;
+            transition: transform var(--d-enter) var(--ease), visibility 0s linear 0s;
+        }
+        #footer-menu.is-away { transform: translateY(100%); visibility: hidden; transition: transform var(--d-enter) var(--ease), visibility 0s linear var(--d-enter); }
+        .footer-bar { pointer-events: auto; background: var(--bg); border-top: 1px solid var(--line); padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+
+        /* ===== 모션: 화면 전환 때 한 번만 (페이드 + 살짝 올라옴) ===== */
+        .fade-enter-active { animation: enter var(--d-enter) var(--ease) both; }
+        @keyframes enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        #header-title { transition: opacity var(--d-base) var(--ease); }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important; scroll-behavior: auto !important;
             }
-            .blob { animation: none !important; }
-        }
-
-        .chapter-btn { 
-            transition: transform 0.4s var(--ease-bounce), background-color 0.3s var(--ease-fluid), border-color 0.3s var(--ease-fluid), box-shadow 0.4s var(--ease-bounce);
-            position: relative;
-            will-change: transform, box-shadow;
-        }
-        
-        @keyframes tilePopUp {
-            0% { opacity: 0; transform: translateY(40px) scale(0.7) rotate(-3deg); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .animate-entry { animation: tilePopUp 0.6s var(--ease-bounce) backwards; }
-
-        .chapter-btn.selected {
-            background: var(--accent); border-color: var(--accent); color: white;
-            box-shadow: 0 15px 30px -8px rgba(94, 92, 230, 0.4);
-            transform: translateY(-2px) scale(1.05); z-index: 10;
-        }
-        .card-fixed-size { 
-            width: 100%; 
-            max-width: 340px; 
-            min-height: 380px; 
-            margin: 0 auto; 
-            flex-shrink: 0; 
-        }
-        @media (min-width: 640px) {
-            .card-fixed-size { max-width: 400px; min-height: 420px; }
-            #study-mean-container { min-height: 100px !important; }
-        }
-        #study-mean-container { min-height: 80px; display: flex; align-items: center; justify-content: center; width: 100%; }
-
-        .fade-enter-active { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-        .fluid-card-exit { animation: fluidExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .fluid-card-enter { animation: fluidEnter 0.4s var(--ease-bounce) forwards; }
-        @keyframes fluidExit { 0% { transform: translateX(0) scale(1); opacity: 1; } 100% { transform: translateX(-40px) scale(0.95); opacity: 0; } }
-        @keyframes fluidEnter { 0% { transform: translateX(40px) scale(0.95); opacity: 0; } 100% { transform: translateX(0) scale(1); opacity: 1; } }
-
-        .modal-overlay {
-            position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.3); backdrop-filter: blur(12px);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-        }
-        .modal-overlay.show { opacity: 1; pointer-events: auto; visibility: visible; transition-delay: 0s; }
-
-        #modal-search-detail-inner {
-            width: 340px;
-            max-width: calc(100vw - 40px);
-            padding: 35px 30px 30px;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            box-sizing: border-box;
-        }
-        #modal-search-detail #btn-sd-close, #modal-search-detail #btn-sd-study {
-            height: 52px;
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-        .dark-theme #modal-search-detail-inner {
-            background: rgba(30, 30, 32, 0.92);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        /* --- 🚀 퀴즈 피드백 애니메이션 강화 --- */
-        #quiz-feedback { 
-            transition: opacity 0.25s var(--ease-fluid); 
-            opacity: 0; pointer-events: none; backdrop-filter: blur(16px); z-index: 100; 
-        }
-        #quiz-feedback.show { opacity: 1; pointer-events: auto; }
-
-        @keyframes feedbackPop {
-            0% { transform: scale(0.4); opacity: 0; }
-            70% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes feedbackShake {
-            0%, 100% { transform: translateX(0) scale(1); }
-            20% { transform: translateX(-15px) scale(1.05); }
-            40% { transform: translateX(15px) scale(1.05); }
-            60% { transform: translateX(-10px) scale(1.02); }
-            80% { transform: translateX(10px) scale(1.02); }
-        }
-        @keyframes feedbackTextSlideUp {
-            0% { transform: translateY(30px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        #quiz-feedback.show #feedback-icon-box.correct { animation: feedbackPop 0.5s var(--ease-bounce) both; box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); }
-        #quiz-feedback.show #feedback-icon-box.wrong { animation: feedbackShake 0.5s var(--ease-fluid) both; box-shadow: 0 0 40px rgba(244, 63, 94, 0.4); }
-        #quiz-feedback.show #feedback-text-box { animation: feedbackTextSlideUp 0.4s var(--ease-fluid) 0.05s both; }
-        
-        /* 다크 모드 스타일 */
-        .dark-theme {
-            --accent: #706DFF; /* Brighter for better contrast */
-            --accent-dark: #5E5CE6;
-            --bg: #121212; /* Switched from black to off-black */
-            --glass-border: rgba(255, 255, 255, 0.15); /* Brighter border */
-            --glass-shadow: none;
-        }
-
-        .dark-theme, .dark-theme body {
-            background-color: var(--bg);
-            color: rgba(255, 255, 255, 0.87); /* Standard material dark text color */
-        }
-
-        .dark-theme .glass {
-            background: rgba(36, 36, 38, 0.8); /* Slightly lighter glass bg */
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 0 60px -20px rgba(0,0,0,0.5); /* subtle dark glow for depth */
-        }
-
-        .dark-theme .aurora-container { background: var(--bg); }
-        .dark-theme .blob { filter: blur(100px); opacity: 0.15; } /* even more subtle */
-        .dark-theme .blob-1 { background: #5E5CE6; animation-duration: 22s; }
-        .dark-theme .blob-2 { background: #9A3EAF; animation-duration: 22s; }
-        .dark-theme .blob-3 { background: #006AB5; animation-duration: 26s; opacity: 0.12;}
-        
-        /* --- Refined Overrides with better contrast and depth --- */
-
-        /* Removing all shadows first */
-        .dark-theme .shadow-xl, .dark-theme .shadow-lg, .dark-theme .shadow-md, .dark-theme .shadow-sm, .dark-theme .sm\:hover\:shadow-xl:hover, .dark-theme .sm\:hover\:shadow-md:hover { box-shadow: none !important; }
-        
-        /* Adding back controlled glows for elevated surfaces */
-        .dark-theme #study-card-inner, .dark-theme #quiz-card, .dark-theme #view-result .glass {
-            box-shadow: 0 0 50px -15px rgba(0,0,0,0.6) !important;
-            border: 1.5px solid var(--glass-border) !important;
-        }
-        .dark-theme #footer-menu .glass {
-            box-shadow: 0 25px 50px -15px rgba(0,0,0,0.6) !important;
-            border-top: 1.5px solid var(--glass-border) !important;
-        }
-        .dark-theme .chapter-btn.selected {
-            background: var(--accent);
-            color: white;
-            font-weight: 700;
-            border-color: var(--accent);
-            box-shadow: 0 0 30px 0px rgba(112, 109, 255, 0.5);
-        }
-        .dark-theme .chapter-btn {
-            background: rgba(36, 36, 38, 0.8);
-        }
-
-        /* Text colors for contrast */
-        .dark-theme .text-gray-900 { color: rgba(255, 255, 255, 0.95) !important; }
-        .dark-theme .text-gray-800, .dark-theme .sm\:hover\:text-indigo-600:hover { color: rgba(255, 255, 255, 0.87) !important; }
-        .dark-theme .text-gray-700 { color: rgba(255, 255, 255, 0.8) !important; }
-        .dark-theme .text-gray-600 { color: rgba(255, 255, 255, 0.7) !important; }
-        .dark-theme .text-gray-500 { color: rgba(255, 255, 255, 0.62) !important; }
-        .dark-theme .text-gray-400, .dark-theme .placeholder\:text-gray-400::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
-        
-        .dark-theme .text-indigo-600 { color: var(--accent) !important; }
-        .dark-theme .text-indigo-500 { color: #9D9BFF !important; }
-        .dark-theme .text-indigo-400 { color: #A09EFF !important; }
-        .dark-theme .text-rose-500 { color: #ff8fa3 !important; }
-        .dark-theme .hanja-font { color: rgba(255, 255, 255, 0.62) !important; }
-        .dark-theme #quiz-prompt-text.hanja-font { color: rgba(255, 255, 255, 0.92) !important; }
-
-        /* Background colors for contrast */
-        .dark-theme .bg-white\/50 { background-color: rgba(36, 36, 38, 0.5) !important; }
-        .dark-theme .bg-white\/70 { background-color: rgba(36, 36, 38, 0.7) !important; }
-        .dark-theme .bg-gray-50, .dark-theme .sm\:hover\:bg-white:hover { background-color: #2a2a2c !important; }
-        .dark-theme .bg-gray-100, .dark-theme .sm\:hover\:bg-gray-200:hover { background-color: #38383a !important; }
-        .dark-theme .bg-gray-200\/50 { background-color: rgba(58, 58, 60, 0.5) !important; }
-        .dark-theme .bg-indigo-50, .dark-theme .bg-indigo-50\/50, .dark-theme .sm\:hover\:bg-indigo-100:hover { background-color: rgba(94, 92, 230, 0.12) !important; }
-        .dark-theme .bg-indigo-100, .dark-theme .hover\:bg-indigo-100:hover { background-color: rgba(94, 92, 230, 0.18) !important; }
-        .dark-theme .bg-rose-50 { background-color: rgba(255, 102, 128, 0.1) !important; }
-        
-        /* Borders for definition */
-        .dark-theme .border-transparent { border-color: transparent !important; }
-        .dark-theme .border-gray-300 { border-color: #444446 !important; }
-        .dark-theme .border-indigo-100, .dark-theme .focus-within\:border-indigo-300:focus-within { border-color: rgba(94, 92, 230, 0.4) !important; }
-        .dark-theme .focus\:border-indigo-600:focus { border-color: var(--accent) !important; }
-        
-        /* Button glows */
-        .dark-theme .primary-btn { box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.4); }
-        .dark-theme .primary-btn:disabled { background: #38383a; color: rgba(255, 255, 255, 0.45); box-shadow: none; }
-        @media (hover: hover) { .dark-theme .primary-btn:hover { box-shadow: 0 8px 25px -2px rgba(99, 102, 241, 0.5); } }
-        
-        .dark-theme #quiz-feedback.show #feedback-icon-box.correct { box-shadow: 0 0 40px rgba(16, 185, 129, 0.5); }
-        .dark-theme #quiz-feedback.show #feedback-icon-box.wrong { box-shadow: 0 0 40px rgba(244, 63, 94, 0.5); }
-        .dark-theme #quiz-feedback.show { background-color: rgba(22, 22, 24, 0.85) !important; }
-        .dark-theme #quiz-feedback.show.correct-feedback { background-color: rgba(6, 38, 26, 0.85) !important; }
-        .dark-theme #quiz-feedback.show.wrong-feedback { background-color: rgba(40, 18, 22, 0.85) !important; }
-        .dark-theme #feedback-answer { color: rgba(255, 255, 255, 0.95) !important; }
-        .dark-theme #feedback-mean { color: rgba(255, 255, 255, 0.8) !important; }
-        .dark-theme .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(16px); }
-
-        /* ===== 추가 스타일 (접근성 · 신규 기능) ===== */
-        input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
-
-        button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
-            outline: 3px solid var(--accent); outline-offset: 2px;
-        }
-        input:focus-visible { outline: none; }
-
-        #footer-menu { bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); }
-        #btn-start-study:disabled { opacity: 0.5; pointer-events: none; }
-
-        /* 문제 유형 선택 */
-        .seg-btn {
-            height: 44px; border-radius: 16px; font-size: 12px; font-weight: 800; color: #374151;
-            border: 1px solid transparent; transition: transform 0.3s var(--ease-bounce), background-color 0.3s var(--ease-fluid);
-        }
-        .seg-btn:active { transform: scale(0.94); }
-        .seg-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
-        .dark-theme .seg-btn { color: rgba(255, 255, 255, 0.7); }
-        .dark-theme .seg-btn.selected { color: #fff; }
-
-        /* 챕터 타일의 외운 개수 진행 막대 */
-        .tile-bar { position: absolute; left: 14px; right: 14px; bottom: 7px; height: 3px; border-radius: 3px; background: rgba(120, 120, 140, 0.2); overflow: hidden; }
-        .tile-bar i { display: block; height: 100%; width: 0; background: #10b981; transition: width 0.5s var(--ease-fluid); }
-        .chapter-btn.selected .tile-bar { background: rgba(255, 255, 255, 0.3); }
-        .chapter-btn.selected .tile-bar i { background: #fff; }
-
-        /* 객관식 보기 */
-        .choice-btn {
-            display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 10px 16px;
-            border-radius: 18px; font-weight: 800; font-size: 1.05rem; text-align: left;
-            transition: transform 0.3s var(--ease-bounce), background-color 0.2s;
-        }
-        .choice-btn:active { transform: scale(0.96); }
-        @media (hover: hover) { .choice-btn:hover { background: rgba(255, 255, 255, 0.97); } .dark-theme .choice-btn:hover { background: #2a2a2c; } }
-        .choice-key {
-            flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            background: rgba(94, 92, 230, 0.12); color: var(--accent); font-size: 12px; font-weight: 900;
-        }
-        .choice-label { flex: 1; word-break: keep-all; }
-
-        /* 토글형 작은 버튼 (섞기 / 외웠어요 / 백업) */
-        .pill-btn { font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 12px; transition: transform 0.3s var(--ease-bounce), background-color 0.3s; color: #4b5563; }
-        .pill-btn:active { transform: scale(0.92); }
-        .pill-btn[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .dark-theme .pill-btn { color: rgba(255, 255, 255, 0.7); }
-        .dark-theme .pill-btn[aria-pressed="true"] { color: #fff; }
-
-        /* 토스트 */
-        .toast {
-            position: fixed; left: 50%; bottom: calc(7rem + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 12px);
-            max-width: calc(100vw - 40px); padding: 12px 20px; border-radius: 9999px; z-index: 1500;
-            background: rgba(29, 29, 31, 0.92); color: #fff; font-size: 13px; font-weight: 700; text-align: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s var(--ease-fluid);
-        }
-        .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-        /* 저사양 모바일: 무거운 블러 배경 애니메이션 완화 */
-        @media (max-width: 640px) {
-            .blob { animation: none; filter: blur(60px); }
-            .dark-theme .blob { filter: blur(70px); }
         }
     </style>
-    <!-- 유틸리티 CSS: `npm run build:css`로 index.html을 스캔해 생성 (직접 수정 금지) -->
-    <link rel="stylesheet" href="tailwind.css">
 </head>
 <body>
-    <div class="aurora-container" aria-hidden="true">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-    </div>
-
-    <div id="app" class="max-w-md sm:max-w-[520px] mx-auto min-h-[100dvh] flex flex-col p-5 sm:p-10 relative transition-all duration-500">
+    <div id="app" class="max-w-md sm:max-w-[520px] mx-auto min-h-[100dvh] flex flex-col px-4 sm:px-6 relative">
         <!-- 헤더 -->
-        <header class="relative flex items-center justify-center mb-6 shrink-0 z-20 h-12">
-            <button id="btn-back" type="button" aria-label="뒤로" class="absolute left-0 hidden w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-gray-200/50 active:scale-90 text-gray-800">
-                <svg id="header-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+        <header class="relative flex items-center justify-center shrink-0 z-20 h-12 mt-4 mb-4">
+            <button id="btn-back" type="button" aria-label="뒤로" class="btn-icon absolute left-0 hidden">
+                <svg id="header-icon" class="ic" viewBox="0 0 24 24" aria-hidden="true"></svg>
             </button>
-            <button id="btn-theme-toggle" type="button" aria-label="다크 모드로 전환" class="absolute right-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-gray-200/50 active:scale-90 text-gray-800">
-                <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
-            </button>
-            <div id="header-title" class="flex flex-col justify-center transition-opacity duration-300">
-                <h1 class="text-2xl font-extrabold text-gray-900 leading-tight tracking-tight">승세윤의 사자성어</h1>
+            <div id="header-tools" class="absolute right-0 flex items-center gap-1">
+                <button id="btn-sound-toggle" type="button" aria-label="효과음" aria-pressed="true" class="btn-icon">
+                    <svg id="sound-icon" class="ic" viewBox="0 0 24 24" aria-hidden="true"></svg>
+                </button>
+                <button id="btn-theme-toggle" type="button" aria-label="다크 모드로 전환" class="btn-icon">
+                    <svg id="theme-icon" class="ic" viewBox="0 0 24 24" aria-hidden="true"></svg>
+                </button>
+            </div>
+            <div id="header-title">
+                <h1 class="serif text-xl font-semibold t1 leading-7">승세윤의 사자성어</h1>
             </div>
         </header>
 
-        <main id="main-container" class="flex-1 z-10 pb-32 relative">
+        <main id="main-container" class="flex-1 z-10 pb-24 relative">
             <!-- 1. 메뉴 뷰 -->
-            <div id="view-menu" class="space-y-8 fade-enter-active">
-                <div class="grid grid-cols-2 gap-4">
-                    <button id="btn-start-study" type="button" class="animate-slide-up glass p-5 rounded-[32px] flex flex-col items-center gap-3 transition-all duration-300 h-40 justify-center group active:scale-95 disabled:opacity-50 sm:hover:shadow-xl sm:hover:-translate-y-1">
-                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center shadow-inner icon-float-hover">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V5H6.5A2.5 2.5 0 0 0 4 7.5v12z"/></svg>
-                        </div>
-                        <div class="text-center">
-                            <span class="block font-extrabold text-sm text-gray-800">학습 카드</span>
-                            <span id="study-btn-sub" class="text-[11px] text-gray-500 font-bold mt-1 block tracking-tight">120개의 핵심 성어</span>
-                        </div>
+            <div id="view-menu" class="space-y-6 fade-enter-active">
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="btn-start-study" type="button" class="card action-card">
+                        <span class="icon-tile is-accent"><svg class="ic" data-ic="book" viewBox="0 0 24 24" aria-hidden="true"></svg></span>
+                        <span class="block">
+                            <span class="block text-sm font-medium t1">학습 카드</span>
+                            <span id="study-btn-sub" class="note block mt-1">120개 성어</span>
+                        </span>
                     </button>
-                    <button id="btn-review" type="button" class="animate-slide-up delay-100 glass p-5 rounded-[32px] flex flex-col items-center gap-3 transition-all duration-300 h-40 justify-center group active:scale-95 disabled:opacity-50 sm:hover:shadow-xl sm:hover:-translate-y-1">
-                        <div id="review-icon-bg" class="w-14 h-14 bg-gray-50 text-gray-500 rounded-[22px] flex items-center justify-center shadow-inner icon-float-hover">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9.5 12.5 5 5"/><path d="m14.5 12.5-5 5"/></svg>
-                        </div>
-                        <div class="text-center">
-                            <span id="review-btn-text" class="block font-extrabold text-sm text-gray-800">오답 노트</span>
-                            <span id="review-count" class="text-[11px] text-gray-500 font-bold mt-1 block tracking-tight">기록 없음</span>
-                        </div>
+                    <button id="btn-review" type="button" class="card action-card">
+                        <span id="review-icon-bg" class="icon-tile"><svg class="ic" data-ic="note" viewBox="0 0 24 24" aria-hidden="true"></svg></span>
+                        <span class="block">
+                            <span id="review-btn-text" class="block text-sm font-medium t1">오답 노트</span>
+                            <span id="review-count" class="note block mt-1">기록 없음</span>
+                        </span>
                     </button>
                 </div>
 
-                <div class="animate-slide-up delay-200">
-                    <button id="btn-show-search" type="button" class="w-full glass rounded-[24px] flex items-center gap-3 px-4 py-3 transition-all duration-300 active:scale-95 border border-indigo-100 text-left sm:hover:bg-white sm:hover:shadow-md">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                        <span class="flex-1 text-sm font-medium text-gray-500">성어, 한자, 뜻, 초성으로 검색…</span>
-                    </button>
-                </div>
+                <button id="btn-show-search" type="button" class="field w-full text-left">
+                    <svg class="ic" data-ic="search" viewBox="0 0 24 24" aria-hidden="true"></svg>
+                    <span class="flex-1 text-sm t3">성어, 한자, 뜻, 초성으로 검색</span>
+                </button>
 
-                <section class="space-y-3 animate-slide-up delay-200" aria-labelledby="quiz-type-title">
-                    <div class="flex items-center gap-2 px-1">
-                        <div class="w-1 h-3.5 bg-indigo-500 rounded-full"></div>
-                        <h3 id="quiz-type-title" class="text-[11px] font-black text-gray-600 uppercase tracking-[0.15em]">Quiz Type</h3>
-                    </div>
+                <section class="space-y-2" aria-labelledby="quiz-type-title">
+                    <h3 id="quiz-type-title" class="label">문제 유형</h3>
                     <div id="quiz-type-seg" role="radiogroup" aria-label="문제 유형" class="grid grid-cols-4 gap-2">
-                        <button type="button" role="radio" data-type="fill" class="seg-btn glass">빈칸</button>
-                        <button type="button" role="radio" data-type="meaning" class="seg-btn glass">뜻 고르기</button>
-                        <button type="button" role="radio" data-type="hanja" class="seg-btn glass">한자 읽기</button>
-                        <button type="button" role="radio" data-type="mixed" class="seg-btn glass">혼합</button>
+                        <button type="button" role="radio" data-type="fill" class="seg-btn">빈칸</button>
+                        <button type="button" role="radio" data-type="meaning" class="seg-btn">뜻 고르기</button>
+                        <button type="button" role="radio" data-type="hanja" class="seg-btn">한자 읽기</button>
+                        <button type="button" role="radio" data-type="mixed" class="seg-btn">혼합</button>
                     </div>
-                    <p id="quiz-type-desc" class="text-[11px] text-gray-500 font-bold px-1"></p>
+                    <p id="quiz-type-desc" class="note"></p>
                 </section>
 
-                <section class="space-y-4 animate-slide-up delay-200">
-                    <div class="flex justify-between items-center px-1">
-                        <div class="flex items-center gap-2">
-                            <div class="w-1 h-3.5 bg-indigo-500 rounded-full"></div>
-                            <h3 class="text-[11px] font-black text-gray-600 uppercase tracking-[0.15em]">Chapter Selection</h3>
-                        </div>
+                <section class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="label">챕터 선택</h3>
                         <div class="flex gap-2">
-                            <button id="btn-multi-select" type="button" class="text-[11px] font-bold text-gray-600 bg-white/50 glass px-3 py-1.5 rounded-lg transition-all duration-300 active:scale-90 sm:hover:bg-white">복수선택</button>
-                            <button id="btn-select-all" type="button" class="text-[11px] font-bold text-indigo-600 bg-indigo-50/50 glass px-3 py-1.5 rounded-lg transition-all duration-300 active:scale-90 hidden sm:hover:bg-indigo-100">전체선택</button>
+                            <button id="btn-multi-select" type="button" aria-pressed="false" class="btn btn-sm">복수선택</button>
+                            <button id="btn-select-all" type="button" class="btn btn-sm hidden">전체선택</button>
                         </div>
                     </div>
-                    <div id="chapter-grid" class="grid grid-cols-4 gap-3 p-1 min-h-[160px]"></div>
+                    <div id="chapter-grid" class="grid grid-cols-4 gap-2 min-h-[208px]"></div>
                 </section>
 
-                <div class="flex justify-center gap-3 animate-slide-up delay-200">
-                    <button id="btn-backup" type="button" class="pill-btn glass">⬇ 데이터 백업</button>
-                    <button id="btn-restore" type="button" class="pill-btn glass">⬆ 데이터 복원</button>
+                <div class="flex justify-center gap-2">
+                    <button id="btn-backup" type="button" class="btn btn-sm"><svg class="ic" data-ic="download" viewBox="0 0 24 24" aria-hidden="true"></svg>데이터 백업</button>
+                    <button id="btn-restore" type="button" class="btn btn-sm"><svg class="ic" data-ic="upload" viewBox="0 0 24 24" aria-hidden="true"></svg>데이터 복원</button>
                     <input id="restore-file" type="file" accept="application/json,.json" class="hidden" aria-label="백업 파일 선택">
                 </div>
             </div>
 
             <!-- 2. 학습 뷰 -->
-            <div id="view-study" class="hidden h-full flex flex-col gap-6 pt-2 fade-enter-active">
-                <div class="flex items-center gap-3 px-2">
-                    <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden flex-1" role="progressbar" aria-label="학습 진행도">
-                        <div id="study-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+            <div id="view-study" class="hidden flex flex-col gap-4 fade-enter-active">
+                <div class="flex items-center gap-3">
+                    <div class="progress" role="progressbar" aria-label="학습 진행도">
+                        <div id="study-progress" style="width: 0%"></div>
                     </div>
-                    <p class="text-sm font-semibold text-gray-500 w-14 text-right tabular-nums"><span id="study-current-num" class="font-bold text-indigo-600">1</span>/<span id="study-total-num">10</span></p>
+                    <p class="text-sm t2 w-14 text-right"><span id="study-current-num" class="font-medium t1">1</span>/<span id="study-total-num">10</span></p>
                 </div>
-                <div class="flex items-center justify-between px-2 -mb-2">
-                    <button id="btn-study-shuffle" type="button" aria-pressed="false" class="pill-btn glass">🔀 섞기</button>
-                    <button id="btn-study-known" type="button" aria-pressed="false" class="pill-btn glass">✓ 외웠어요</button>
+                <div class="flex items-center justify-between">
+                    <button id="btn-study-shuffle" type="button" aria-pressed="false" class="btn btn-sm"><svg class="ic" data-ic="shuffle" viewBox="0 0 24 24" aria-hidden="true"></svg>섞기</button>
+                    <button id="btn-study-known" type="button" aria-pressed="false" class="btn btn-sm">외웠어요?</button>
                 </div>
-                <div id="study-card-area" class="study-card-container flex justify-center w-full mt-2">
-                    <div id="study-card-inner" class="glass card-fixed-size rounded-[44px] p-8 flex flex-col items-center justify-center text-center gap-6 shadow-xl relative transition-all duration-300 hover:shadow-2xl">
-                        <p id="study-index" class="text-[11px] font-bold text-indigo-500 bg-indigo-50 px-4 py-1.5 rounded-full uppercase tracking-widest transition-all">Index 001</p>
-                        <div class="space-y-4 w-full">
-                            <h3 id="study-text" class="text-pop selectable text-5xl sm:text-6xl font-black text-gray-900 tracking-tighter leading-tight break-keep">사자성어</h3>
-                            <p id="study-hanja" class="text-pop selectable text-2xl sm:text-3xl hanja-font text-gray-500 font-normal tracking-[0.2em]" style="animation-delay: 0.1s;">漢字</p>
+                <div id="study-card-area" class="w-full">
+                    <div id="study-card-inner" class="card study-card">
+                        <div class="flex items-center justify-between">
+                            <span id="study-seal" class="seal" aria-label="번호"><span id="study-index">1</span></span>
+                            <span id="study-chapter" class="note">챕터 1</span>
                         </div>
-                        <div class="h-1.5 w-10 bg-indigo-50 rounded-full my-1"></div>
-                        <div id="study-mean-container">
-                            <p id="study-mean" class="text-pop selectable text-xl sm:text-2xl font-bold text-gray-700 break-keep px-4 leading-relaxed" style="animation-delay: 0.2s;">성어의 뜻풀이</p>
+                        <div class="study-body">
+                            <h3 id="study-text" class="study-idiom selectable">사자성어</h3>
+                            <p id="study-hanja" class="study-hanja selectable">漢字</p>
+                            <div id="study-mean-container">
+                                <p id="study-mean" class="study-mean selectable">성어의 뜻풀이</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <p class="text-center text-[11px] text-gray-500 font-bold -mt-2">카드를 좌우로 밀거나 ← → 키로 넘겨요</p>
-                <div class="flex gap-4 w-full px-2 mt-2">
-                    <button id="btn-study-prev" type="button" class="flex-1 h-14 glass rounded-[20px] font-bold text-gray-700 text-base transition-all duration-300 active:scale-95 disabled:opacity-30 sm:hover:bg-white sm:hover:shadow-md">이전</button>
-                    <button id="btn-study-next" type="button" class="flex-1 primary-btn h-14 rounded-[20px] font-bold text-base shadow-md transition-all">다음 카드</button>
+                <p class="text-center note">카드를 좌우로 밀거나 ← → 키로 넘겨요</p>
+                <div class="flex gap-3 w-full">
+                    <button id="btn-study-prev" type="button" class="btn btn-lg flex-1">이전</button>
+                    <button id="btn-study-next" type="button" class="btn btn-lg btn-primary flex-1">다음 카드</button>
                 </div>
             </div>
 
             <!-- 3. 퀴즈 뷰 -->
-            <div id="view-quiz" class="hidden h-full flex flex-col gap-6 pt-2">
-                <div class="flex items-center gap-3 px-2">
-                    <div class="w-full h-1.5 bg-gray-200/50 rounded-full overflow-hidden flex-1" role="progressbar" aria-label="퀴즈 진행도">
-                        <div id="quiz-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out" style="width: 0%"></div>
+            <div id="view-quiz" class="hidden flex flex-col gap-4 fade-enter-active">
+                <div class="flex items-center gap-3">
+                    <div class="progress" role="progressbar" aria-label="퀴즈 진행도">
+                        <div id="quiz-progress" style="width: 0%"></div>
                     </div>
-                    <p class="text-sm font-semibold text-gray-500 w-14 text-right tabular-nums"><span id="quiz-current" class="font-bold text-indigo-600">1</span>/<span id="quiz-total">10</span></p>
+                    <p class="text-sm t2 w-14 text-right"><span id="quiz-current" class="font-medium t1">1</span>/<span id="quiz-total">10</span></p>
                 </div>
-                <div class="flex justify-center w-full mt-2">
-                    <div id="quiz-card" class="glass card-fixed-size rounded-[44px] p-8 flex flex-col items-center justify-center gap-6 relative overflow-hidden shadow-xl bg-white/70 transition-all duration-300">
-                        <div id="quiz-feedback" class="absolute inset-0 z-50 flex flex-col items-center justify-center cursor-pointer" role="status" aria-live="polite">
-                            <div id="feedback-icon-box" class="w-20 h-20 sm:w-24 sm:h-24 rounded-[28px] sm:rounded-[36px] flex items-center justify-center text-white mb-6"></div>
-                            <div id="feedback-text-box" class="text-center space-y-3 px-8">
-                                <p id="feedback-answer" class="text-4xl sm:text-5xl font-black text-gray-900 tracking-tighter"></p>
-                                <p id="feedback-mean" class="text-base sm:text-lg font-semibold text-gray-700 leading-relaxed break-keep"></p>
-                            </div>
+                <div id="quiz-card" class="card quiz-card">
+                    <div id="quiz-feedback" role="status" aria-live="polite">
+                        <div id="feedback-icon-box"></div>
+                        <div id="feedback-text-box" class="text-center px-6 space-y-2">
+                            <p id="feedback-answer"></p>
+                            <p id="feedback-mean"></p>
                         </div>
-                        <div class="text-center space-y-4 w-full mt-2">
-                            <p id="quiz-q-wrapper" class="text-pop text-6xl sm:text-7xl font-black text-gray-900 tracking-tighter leading-tight flex justify-center gap-2">
-                                <span id="quiz-q-text">??</span><span class="text-gray-400" aria-hidden="true">??</span>
-                            </p>
-                            <div id="quiz-prompt" class="hidden space-y-3">
-                                <p id="quiz-prompt-label" class="text-[12px] font-bold text-indigo-500 bg-indigo-50 px-4 py-1.5 rounded-full inline-block"></p>
-                                <p id="quiz-prompt-text" class="text-pop"></p>
-                            </div>
-                            <div id="quiz-hint" class="opacity-0 transition-all duration-500 h-20 flex flex-col items-center justify-center gap-1.5"></div>
+                    </div>
+                    <div class="text-center w-full space-y-4">
+                        <p id="quiz-q-wrapper" class="q-mask">
+                            <span id="quiz-q-text">??</span><span class="q-rest" aria-hidden="true">??</span>
+                        </p>
+                        <div id="quiz-prompt" class="hidden space-y-3">
+                            <p id="quiz-prompt-label" class="tag"></p>
+                            <p id="quiz-prompt-text"></p>
                         </div>
-                        <div class="w-full max-w-[280px] space-y-5">
-                            <div id="quiz-fill">
-                                <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="성어의 뒤 두 글자" class="w-full bg-transparent border-b-[3px] border-gray-300 focus:border-indigo-600 text-center text-5xl font-black outline-none pb-2 text-indigo-600 transition-all duration-300 placeholder:text-gray-400 caret-indigo-500" placeholder="??">
-                            </div>
-                            <div id="quiz-choices" class="hidden grid gap-2.5" role="group" aria-label="보기"></div>
-                            <div id="quiz-actions" class="grid grid-cols-4 gap-3">
-                                <button id="btn-quiz-skip" type="button" aria-label="건너뛰기 (정답 보기)" class="col-span-1 h-14 glass rounded-2xl flex items-center justify-center text-gray-500 transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:shadow-md"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4l10 8-10 8V4zM19 5v14"/></svg></button>
-                                <button id="btn-quiz-hint" type="button" aria-pressed="false" class="col-span-1 h-14 glass rounded-2xl text-[12px] font-bold text-gray-600 transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:text-indigo-600 sm:hover:shadow-md">힌트</button>
-                                <button id="btn-quiz-check" type="button" disabled class="col-span-2 h-14 primary-btn rounded-2xl text-xs font-black tracking-widest uppercase">Check</button>
-                            </div>
+                        <div id="quiz-hint"></div>
+                    </div>
+                    <div class="w-full space-y-4">
+                        <div id="quiz-fill" class="mx-auto max-w-[240px]">
+                            <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="성어의 뒤 두 글자" placeholder="??">
+                        </div>
+                        <div id="quiz-choices" class="hidden grid gap-2" role="group" aria-label="보기"></div>
+                        <div id="quiz-actions" class="grid grid-cols-4 gap-2">
+                            <button id="btn-quiz-skip" type="button" aria-label="건너뛰기 (정답 보기)" class="btn btn-lg col-span-1 px-0"><svg class="ic" data-ic="skip" viewBox="0 0 24 24" aria-hidden="true"></svg></button>
+                            <button id="btn-quiz-hint" type="button" aria-pressed="false" class="btn btn-lg col-span-1 px-0">힌트</button>
+                            <button id="btn-quiz-check" type="button" disabled class="btn btn-lg btn-primary col-span-2">확인</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 4. 결과 뷰 -->
-            <div id="view-result" class="hidden h-full flex flex-col gap-8 py-6">
-                <div class="animate-slide-up glass p-10 rounded-[44px] w-full space-y-8 shadow-xl text-center">
-                    <div id="result-icon-box" class="w-24 h-24 bg-gradient-to-br from-indigo-50 to-blue-50 text-indigo-600 rounded-[32px] mx-auto flex items-center justify-center shadow-inner icon-float transition-all duration-500">
-                        <div id="result-icon-svg">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <h2 id="result-title" class="text-pop text-3xl font-black text-gray-900 tracking-tight leading-none transition-colors duration-300">학습 완료!</h2>
-                        <div class="text-pop flex items-center justify-center gap-3 text-5xl font-black text-indigo-600" style="animation-delay: 0.1s;">
-                            <span id="result-score">0</span><span class="text-gray-300 text-4xl">/</span><span id="result-total" class="text-gray-500 text-4xl">0</span>
-                        </div>
-                        <p id="result-extra" class="hidden text-sm font-bold text-emerald-600"></p>
+            <div id="view-result" class="hidden flex flex-col gap-6 fade-enter-active">
+                <div class="card p-6 w-full space-y-6 text-center">
+                    <div id="result-icon-box">
+                        <div id="result-icon-svg" class="flex"></div>
                     </div>
                     <div class="space-y-3">
-                        <button id="btn-result-wrongs" type="button" class="hidden w-full primary-btn h-14 rounded-[22px] font-black text-sm shadow-lg">틀린 것만 다시 풀기</button>
-                        <button id="btn-result-again" type="button" class="w-full glass h-14 rounded-[22px] font-bold text-sm text-gray-700 transition-all duration-300 active:scale-95 sm:hover:bg-white">처음부터 다시 풀기</button>
-                        <button id="btn-result-home" type="button" class="w-full glass h-14 rounded-[22px] font-bold text-sm text-gray-700 transition-all duration-300 active:scale-95 sm:hover:bg-white">홈으로 돌아가기</button>
+                        <h2 id="result-title">학습 완료</h2>
+                        <div class="score">
+                            <span id="result-score">0</span><span class="score-sep">/</span><span id="result-total">0</span>
+                        </div>
+                        <p id="result-extra" class="hidden text-sm t2"></p>
+                    </div>
+                    <div class="space-y-2">
+                        <button id="btn-result-wrongs" type="button" class="hidden btn btn-lg btn-primary w-full">틀린 것만 다시 풀기</button>
+                        <button id="btn-result-again" type="button" class="btn btn-lg w-full">처음부터 다시 풀기</button>
+                        <button id="btn-result-home" type="button" class="btn btn-lg w-full">홈으로 돌아가기</button>
                     </div>
                 </div>
 
                 <!-- 틀린 문제 다시보기 섹션 -->
-                <div id="wrong-answers-container" class="hidden animate-slide-up delay-100">
-                    <div class="flex items-center gap-2 mb-4 px-2">
-                        <div class="w-1 h-3.5 bg-rose-500 rounded-full"></div>
-                        <h3 class="text-sm font-black text-gray-700 uppercase tracking-widest">틀린 문제 다시보기</h3>
-                    </div>
+                <div id="wrong-answers-container" class="hidden">
+                    <h3 class="text-sm font-medium t1 mb-3">틀린 문제 다시보기</h3>
                     <div id="wrong-answers-list" class="grid gap-3"></div>
                 </div>
             </div>
 
             <!-- 5. 오답노트 뷰 -->
-            <div id="view-review" class="hidden space-y-6 pb-20">
-                <div class="animate-slide-up flex justify-between items-center px-1 mb-2">
-                    <div class="space-y-0.5">
-                        <h2 class="text-2xl font-black text-gray-900 tracking-tight">오답 노트</h2>
-                        <p class="text-[11px] text-gray-500 font-bold tracking-wider">테스트에서 연속 2번 맞히면 졸업해요</p>
+            <div id="view-review" class="hidden space-y-6 fade-enter-active">
+                <div class="flex justify-between items-center">
+                    <div class="space-y-1">
+                        <h2 class="serif text-2xl font-semibold t1 leading-8">오답 노트</h2>
+                        <p class="note">테스트에서 연속 2번 맞히면 졸업해요</p>
                     </div>
                     <div class="flex gap-2">
-                        <button id="btn-test-wrongs" type="button" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-[12px] font-bold shadow-lg transition-all duration-300 active:scale-90 sm:hover:-translate-y-1">테스트</button>
-                        <button id="btn-trash" type="button" aria-label="오답 모두 삭제" class="text-rose-500 w-10 h-10 flex items-center justify-center glass rounded-xl transition-all duration-300 active:scale-90 sm:hover:bg-white sm:hover:shadow-md"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                        <button id="btn-test-wrongs" type="button" class="btn btn-primary">테스트</button>
+                        <button id="btn-trash" type="button" aria-label="오답 모두 삭제" class="btn-icon is-bordered"><svg class="ic" data-ic="trash" viewBox="0 0 24 24" aria-hidden="true"></svg></button>
                     </div>
                 </div>
                 <div id="review-list" class="grid gap-3"></div>
             </div>
 
             <!-- 6. 검색 뷰 -->
-            <div id="view-search" class="hidden h-full flex flex-col gap-4">
-                <div class="glass rounded-[24px] flex items-center gap-3 px-4 py-3 transition-all duration-300 focus-within:shadow-lg focus-within:border-indigo-300 border border-transparent shrink-0">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                    <input id="search-input" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="성어 검색" placeholder="성어, 한자, 뜻, 초성(ㄱㅇ), 번호" class="flex-1 bg-transparent outline-none text-sm font-bold text-gray-800 placeholder:text-gray-400 placeholder:font-medium">
-                    <button id="search-clear" type="button" aria-label="검색어 지우기" class="hidden w-6 h-6 flex items-center justify-center text-gray-400 transition-all duration-200 active:scale-90 hover:text-gray-600">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
-                    </button>
+            <div id="view-search" class="hidden flex flex-col gap-4 fade-enter-active">
+                <div class="field shrink-0">
+                    <svg class="ic" data-ic="search" viewBox="0 0 24 24" aria-hidden="true"></svg>
+                    <input id="search-input" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="성어 검색" placeholder="성어, 한자, 뜻, 초성(ㄱㅇ), 번호" class="flex-1 min-w-0 bg-transparent outline-none text-sm t1">
+                    <button id="search-clear" type="button" aria-label="검색어 지우기" class="hidden btn-icon" style="width:32px;height:32px;margin-right:-8px"><svg class="ic" data-ic="x" viewBox="0 0 24 24" aria-hidden="true"></svg></button>
                 </div>
-                <div class="flex-1 overflow-y-auto pb-20">
-                    <p id="search-subtitle" class="text-[11px] text-gray-500 font-bold tracking-wider px-2 mb-2 hidden" aria-live="polite">Search Results</p>
+                <div class="flex-1">
+                    <p id="search-subtitle" class="note mb-2 hidden" aria-live="polite">검색 결과</p>
                     <div id="search-list" class="grid gap-3"></div>
                 </div>
             </div>
         </main>
 
-        <footer id="footer-menu" class="fixed bottom-4 left-0 right-0 p-5 sm:p-10 bg-transparent z-30 transition-transform duration-700 pointer-events-none">
-            <div class="max-w-md sm:max-w-[480px] mx-auto glass p-3.5 rounded-full flex items-center shadow-[0_25px_60px_-15px_rgba(94,92,230,0.25)] pointer-events-auto backdrop-blur-3xl">
-                <div class="flex-1 px-6 flex flex-col justify-center">
-                    <p id="footer-status" class="font-black text-gray-900 text-base tracking-tight transition-all duration-300">챕터를 선택하세요</p>
-                    <p class="text-[11px] text-gray-500 font-bold tracking-tighter mt-0.5">* 4글자가 아닌 성어는 객관식으로 출제</p>
+        <footer id="footer-menu">
+            <div class="footer-bar">
+                <div class="max-w-md sm:max-w-[520px] mx-auto flex items-center justify-between gap-4">
+                    <div class="min-w-0">
+                        <p id="footer-status" class="text-base font-semibold t1 leading-6">챕터를 선택하세요</p>
+                        <p class="note mt-0.5">4글자가 아닌 성어는 객관식으로 출제</p>
+                    </div>
+                    <button id="btn-footer-start" type="button" disabled class="btn btn-lg btn-primary px-8 shrink-0">시작</button>
                 </div>
-                <button id="btn-footer-start" type="button" disabled class="primary-btn btn-pulse h-14 px-10 rounded-full text-sm font-black tracking-widest uppercase transition-all duration-300">
-                    START
-                </button>
             </div>
         </footer>
     </div>
@@ -647,55 +540,55 @@
 
     <!-- 모달 -->
     <div id="modal-confirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title" aria-hidden="true">
-        <div class="glass w-full max-w-[280px] rounded-[36px] p-8 shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-confirm-inner">
-            <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-[22px] flex items-center justify-center mx-auto mb-6 shadow-inner"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-            <h3 id="modal-confirm-title" class="text-lg font-black text-gray-900 mb-2">모두 비울까요?</h3>
-            <p class="text-xs text-gray-500 mb-8 font-medium">저장된 오답이 삭제됩니다.</p>
-            <div class="flex gap-3">
-                <button id="btn-modal-cancel" type="button" class="flex-1 py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-bold text-xs active:scale-95 sm:hover:bg-gray-200">취소</button>
-                <button id="btn-modal-confirm" type="button" class="flex-1 py-3.5 bg-rose-500 text-white rounded-2xl font-bold text-xs active:scale-95 sm:hover:bg-rose-600">삭제</button>
+        <div class="card modal-card" id="modal-confirm-inner">
+            <div class="icon-tile is-accent mx-auto mb-4"><svg class="ic" data-ic="alert" viewBox="0 0 24 24" aria-hidden="true"></svg></div>
+            <h3 id="modal-confirm-title">모두 비울까요?</h3>
+            <p class="desc">저장된 오답이 삭제됩니다</p>
+            <div class="flex gap-2">
+                <button id="btn-modal-cancel" type="button" class="btn flex-1">취소</button>
+                <button id="btn-modal-confirm" type="button" class="btn btn-primary flex-1">삭제</button>
             </div>
         </div>
     </div>
 
     <div id="modal-stop-quiz" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-stop-title" aria-hidden="true">
-        <div class="glass w-full max-w-[280px] rounded-[36px] p-8 shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-stop-inner">
-            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-[22px] flex items-center justify-center mx-auto mb-6 shadow-inner"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-            <h3 id="modal-stop-title" class="text-lg font-black text-gray-900 mb-2">그만둘까요?</h3>
-            <p class="text-xs text-gray-500 mb-8 font-medium break-keep">퀴즈를 끝내요. 지금까지 틀린 문제는 이미 오답 노트에 저장돼 있어요.</p>
-            <div class="flex gap-3">
-                <button id="btn-stop-cancel" type="button" class="flex-1 py-3.5 bg-gray-100 text-gray-600 rounded-2xl font-bold text-xs active:scale-95 sm:hover:bg-gray-200">계속</button>
-                <button id="btn-stop-confirm" type="button" class="flex-1 primary-btn py-3.5 rounded-2xl font-bold text-xs shadow-lg">중단</button>
+        <div class="card modal-card" id="modal-stop-inner">
+            <div class="icon-tile mx-auto mb-4"><svg class="ic" data-ic="home" viewBox="0 0 24 24" aria-hidden="true"></svg></div>
+            <h3 id="modal-stop-title">그만둘까요?</h3>
+            <p class="desc">퀴즈를 끝내요. 지금까지 틀린 문제는 이미 오답 노트에 저장돼 있어요</p>
+            <div class="flex gap-2">
+                <button id="btn-stop-cancel" type="button" class="btn flex-1">계속</button>
+                <button id="btn-stop-confirm" type="button" class="btn btn-primary flex-1">중단</button>
             </div>
         </div>
     </div>
 
     <!-- 검색 상세 모달 -->
     <div id="modal-search-detail" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-sd-text" aria-hidden="true">
-        <div class="rounded-[40px] shadow-2xl text-center transform scale-95 transition-transform duration-300" id="modal-search-detail-inner">
-            <p id="modal-sd-index" class="text-[11px] font-bold text-indigo-500 bg-indigo-50 px-4 py-1.5 rounded-full uppercase tracking-widest inline-block mb-6">Index 001</p>
-            <h3 id="modal-sd-text" class="selectable text-5xl font-black text-gray-900 tracking-tighter leading-tight mb-3">사자성어</h3>
-            <p id="modal-sd-hanja" class="selectable text-2xl hanja-font text-gray-400 tracking-[0.2em] mb-6">漢字</p>
-            <div class="h-1 w-8 bg-indigo-100 rounded-full mx-auto mb-6"></div>
-            <p id="modal-sd-mean" class="selectable text-base font-bold text-gray-700 break-keep leading-relaxed px-2 mb-8">뜻풀이</p>
-            <div class="space-y-3">
-                <button id="btn-sd-study" type="button" class="w-full primary-btn rounded-[20px] font-black text-sm">이 챕터 학습 카드로 보기</button>
-                <button id="btn-sd-close" type="button" class="w-full rounded-[20px] font-bold text-sm text-gray-600 bg-gray-100 active:scale-95" style="height:52px">닫기</button>
+        <div class="card modal-card" id="modal-search-detail-inner">
+            <p id="modal-sd-index" class="tag mb-4">1번 · 챕터 1</p>
+            <h3 id="modal-sd-text" class="sd-idiom selectable" style="margin:0 0 8px">사자성어</h3>
+            <p id="modal-sd-hanja" class="sd-hanja selectable mb-4">漢字</p>
+            <p id="modal-sd-mean" class="selectable text-base t1 break-keep leading-7 px-2 mb-6">뜻풀이</p>
+            <div class="space-y-2">
+                <button id="btn-sd-study" type="button" class="btn btn-lg btn-primary w-full">이 챕터 학습 카드로 보기</button>
+                <button id="btn-sd-close" type="button" class="btn btn-lg w-full">닫기</button>
             </div>
         </div>
     </div>
 
     <script src="data.js"></script>
+    <script src="sfx.js"></script>
     <script>
         'use strict';
         // ===== 상수 · 저장소 =====
         const GRAD_STREAK = 2; // 오답 노트에서 연속 N번 맞히면 졸업
         const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1' };
         const QUIZ_TYPES = {
-            fill: '앞 두 글자를 보고 뒤 두 글자를 써요. 4글자가 아닌 성어는 뜻 고르기로 나와요.',
-            meaning: '뜻을 보고 알맞은 성어를 4개 중에 골라요.',
-            hanja: '한자를 보고 알맞은 독음을 4개 중에 골라요.',
-            mixed: '위 세 가지 유형이 무작위로 섞여 나와요.'
+            fill: '앞 두 글자를 보고 뒤 두 글자를 써요. 4글자가 아닌 성어는 뜻 고르기로 나와요',
+            meaning: '뜻을 보고 알맞은 성어를 4개 중에 골라요',
+            hanja: '한자를 보고 알맞은 독음을 4개 중에 골라요',
+            mixed: '위 세 가지 유형이 무작위로 섞여 나와요'
         };
 
         // 저장소가 막혀 있거나(시크릿 모드, 인앱 브라우저) 값이 깨져 있어도 앱이 죽지 않도록 모든 접근을 감싼다.
@@ -764,8 +657,36 @@
             back: '<path d="m15 18-6-6 6-6"/>',
             home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
             sun: '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
-            moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+            moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+            book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+            note: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/><path d="m9.5 12.5 5 5M14.5 12.5l-5 5"/>',
+            search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+            download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+            upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+            shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>',
+            check: '<path d="M20 6 9 17l-5-5"/>',
+            x: '<path d="M18 6 6 18M6 6l12 12"/>',
+            skip: '<path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/>',
+            trash: '<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+            alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+            award: '<circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/>',
+            speaker: '<path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>',
+            speakerOff: '<path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m16 9 5 6M21 9l-5 6"/>'
         };
+        // 아이콘은 모두 16px / 선 1.5 (크기와 선은 .ic 클래스가 정한다)
+        const ico = (name) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+        function hydrateIcons() { document.querySelectorAll('svg[data-ic]').forEach((s) => { s.innerHTML = ICONS[s.dataset.ic] || ''; }); }
+
+        // 효과음(sfx.js)이 없어도 앱은 그대로 동작한다.
+        const sfx = (name) => { try { if (window.SFX && typeof window.SFX[name] === 'function') window.SFX[name](); } catch (e) {} };
+        function renderSound() {
+            const btn = $('btn-sound-toggle');
+            if (!window.SFX || typeof window.SFX.isMuted !== 'function') { btn.classList.add('hidden'); return; }
+            const on = !window.SFX.isMuted();
+            btn.classList.remove('hidden');
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            $('sound-icon').innerHTML = on ? ICONS.speaker : ICONS.speakerOff;
+        }
 
         // ===== 공통 유틸 =====
         function applyTheme(theme) {
@@ -774,12 +695,8 @@
             els.header.themeIcon.innerHTML = theme === 'dark' ? ICONS.sun : ICONS.moon;
             els.header.themeToggle.setAttribute('aria-label', theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
             const meta = document.querySelector('meta[name="theme-color"]');
-            if (meta) meta.setAttribute('content', theme === 'dark' ? '#121212' : '#F5F5F7');
+            if (meta) meta.setAttribute('content', theme === 'dark' ? '#151311' : '#F6F4F0');
             storeSet(STORE.theme, theme);
-        }
-
-        function restartAnimation(selector, animClass) {
-            document.querySelectorAll(selector).forEach((el) => { el.classList.remove(animClass); void el.offsetWidth; el.classList.add(animClass); });
         }
 
         let toastTimer = null;
@@ -797,13 +714,13 @@
             modalEl.classList.add('show');
             modalEl.setAttribute('aria-hidden', 'false');
             const inner = $(innerId);
-            if (inner) { inner.classList.remove('scale-95'); inner.classList.add('scale-100'); }
+            if (inner) inner.classList.add('is-open');
             const first = modalEl.querySelector('button');
             if (first) setTimeout(() => first.focus(), 60);
         }
         function hideModal(modalEl, innerId) {
             const inner = $(innerId);
-            if (inner) { inner.classList.remove('scale-100'); inner.classList.add('scale-95'); }
+            if (inner) inner.classList.remove('is-open');
             setTimeout(() => {
                 modalEl.classList.remove('show');
                 modalEl.setAttribute('aria-hidden', 'true');
@@ -815,7 +732,7 @@
         function triggerConfetti() {
             if (typeof confetti !== 'function') return; // CDN을 못 불러온 경우(오프라인 등)에도 결과 화면은 정상 동작
             const count = 200;
-            const defaults = { origin: { y: 0.7 }, zIndex: 2000 };
+            const defaults = { origin: { y: 0.7 }, zIndex: 2000, colors: ['#B3382C', '#D2584A', '#26221E', '#E6DCCB'], disableForReducedMotion: true };
             const fire = (ratio, opts) => confetti({ ...defaults, ...opts, particleCount: Math.floor(count * ratio) });
             fire(0.25, { spread: 26, startVelocity: 55 });
             fire(0.2, { spread: 60 });
@@ -859,13 +776,13 @@
 
             const currentEl = els.views[state.view];
             currentEl.style.opacity = '0';
-            currentEl.style.transform = 'translateY(-10px)';
-            currentEl.style.transition = 'all 0.3s ease';
+            currentEl.style.transition = 'opacity 160ms cubic-bezier(0.2, 0, 0, 1)';
 
             setTimeout(() => {
                 currentEl.classList.add('hidden');
+                currentEl.style.opacity = ''; currentEl.style.transition = '';
                 const newEl = els.views[newView];
-                newEl.style.opacity = ''; newEl.style.transform = ''; newEl.style.transition = '';
+                newEl.style.opacity = ''; newEl.style.transition = '';
                 newEl.classList.remove('hidden');
                 void newEl.offsetWidth;
                 newEl.classList.add('fade-enter-active');
@@ -890,11 +807,12 @@
             els.header.title.classList.toggle('opacity-0', !isMenu && !isSearch);
             els.header.back.classList.toggle('hidden', isMenu);
             els.header.themeToggle.classList.toggle('hidden', !isMenu);
+            renderSound();
             els.header.title.querySelector('h1').innerText = isSearch ? '검색' : '승세윤의 사자성어';
 
-            if (isMenu) { els.footer.classList.remove('translate-y-[150%]'); renderMenu(); }
+            if (isMenu) { els.footer.classList.remove('is-away'); renderMenu(); }
             else {
-                els.footer.classList.add('translate-y-[150%]');
+                els.footer.classList.add('is-away');
                 const inQuiz = state.view === 'quiz';
                 els.header.icon.innerHTML = inQuiz ? ICONS.home : ICONS.back;
                 els.header.back.setAttribute('aria-label', inQuiz ? '홈으로 (퀴즈 중단)' : '뒤로');
@@ -923,29 +841,24 @@
             const btnMulti = $('btn-multi-select');
             const btnSelectAll = $('btn-select-all');
             if (state.multiSelectMode) {
-                btnMulti.classList.remove('bg-white/50', 'text-gray-600');
-                btnMulti.classList.add('bg-indigo-600', 'text-white');
                 btnMulti.innerText = '복수해제';
                 btnMulti.setAttribute('aria-pressed', 'true');
                 btnSelectAll.classList.remove('hidden');
                 btnSelectAll.innerText = state.selectedChapters.length === CHAPTERS.length ? '전체해제' : '전체선택';
             } else {
-                btnMulti.classList.remove('bg-indigo-600', 'text-white');
-                btnMulti.classList.add('bg-white/50', 'text-gray-600');
                 btnMulti.innerText = '복수선택';
                 btnMulti.setAttribute('aria-pressed', 'false');
                 btnSelectAll.classList.add('hidden');
             }
             if (grid.children.length === 0) {
-                CHAPTERS.forEach((ch, idx) => {
+                CHAPTERS.forEach((ch) => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.id = `tile-${ch.id}`;
-                    btn.className = 'h-16 rounded-[20px] flex flex-col items-center justify-center border chapter-btn glass border-transparent text-gray-700 shadow-sm';
-                    btn.style.animationDelay = `${idx * 0.04}s`;
+                    btn.className = 'chapter-btn';
                     btn.innerHTML = `
-                        <span class="text-[11px] font-black opacity-40 uppercase tracking-tighter mb-0.5 transition-opacity duration-300">CH ${ch.id}</span>
-                        <span class="text-[13px] font-extrabold tracking-tight">${(ch.id - 1) * 10 + 1}-${ch.id * 10}</span>
+                        <span class="ch-name">챕터 ${ch.id}</span>
+                        <span class="ch-range">${(ch.id - 1) * 10 + 1}-${ch.id * 10}</span>
                         <span class="tile-bar" aria-hidden="true"><i></i></span>`;
                     btn.onclick = () => handleChapterClick(ch.id);
                     grid.appendChild(btn);
@@ -955,17 +868,14 @@
                 const btn = $(`tile-${ch.id}`);
                 if (!btn) return;
                 const isActive = state.selectedChapters.includes(ch.id);
-                const titleSpan = btn.querySelector('span:first-child');
                 btn.classList.toggle('selected', isActive);
                 btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-                if (isActive) titleSpan.classList.replace('opacity-40', 'opacity-80'); else titleSpan.classList.replace('opacity-80', 'opacity-40');
                 const items = chapterItems([ch.id]);
                 const knownCnt = items.filter((it) => state.known.has(it.index)).length;
                 btn.querySelector('.tile-bar i').style.width = `${(knownCnt / items.length) * 100}%`;
                 btn.setAttribute('aria-label', `챕터 ${ch.id}, ${(ch.id - 1) * 10 + 1}번부터 ${ch.id * 10}번, 외운 성어 ${knownCnt}/${items.length}${isActive ? ', 선택됨' : ''}`);
-                btn.classList.toggle('animate-entry', state.isMenuFirstLoad);
             });
-            if (state.isMenuFirstLoad) setTimeout(() => { state.isMenuFirstLoad = false; }, 800);
+            state.isMenuFirstLoad = false;
 
             const hasWrongs = state.savedWrongs.length > 0;
             $('btn-review').disabled = !hasWrongs;
@@ -1002,20 +912,19 @@
             $('study-current-num').innerText = state.studyIdx + 1;
             $('study-total-num').innerText = list.length;
             $('study-progress').style.width = `${((state.studyIdx + 1) / list.length) * 100}%`;
-            if (direction === 'none') { updateStudyCardData(item); restartAnimation('.text-pop', 'text-pop'); return; }
-            cardInner.style.transform = direction === 'next' ? 'translateX(-40px) scale(0.95)' : 'translateX(40px) scale(0.95)';
+            if (direction === 'none') { updateStudyCardData(item); return; }
             cardInner.style.opacity = '0';
             setTimeout(() => {
-                updateStudyCardData(item); restartAnimation('.text-pop', 'text-pop');
-                cardInner.style.transition = 'none';
-                cardInner.style.transform = direction === 'next' ? 'translateX(40px) scale(0.95)' : 'translateX(-40px) scale(0.95)';
-                setTimeout(() => { cardInner.style.transition = 'all 0.5s var(--ease-bounce)'; cardInner.style.transform = 'translateX(0) scale(1)'; cardInner.style.opacity = '1'; }, 50);
-            }, 200);
+                updateStudyCardData(item);
+                cardInner.style.opacity = '1';
+            }, 120);
         }
 
         function updateStudyCardData(item) {
             if (!item) return;
-            $('study-index').innerText = `Ch. ${chapterOf(item)} · Index ${String(item.index).padStart(3, '0')}`;
+            $('study-index').innerText = item.index;
+            $('study-chapter').innerText = `챕터 ${chapterOf(item)}`;
+            $('study-seal').setAttribute('aria-label', `${item.index}번`);
             $('study-text').innerText = item.text;
             $('study-hanja').innerText = item.hanja;
             $('study-mean').innerText = item.mean;
@@ -1024,7 +933,7 @@
             const known = state.known.has(item.index);
             const kb = $('btn-study-known');
             kb.setAttribute('aria-pressed', known ? 'true' : 'false');
-            kb.innerText = known ? '✓ 외웠어요' : '외웠어요?';
+            kb.innerHTML = known ? `${ico('check')}외웠어요` : '외웠어요?';
             $('btn-study-shuffle').setAttribute('aria-pressed', state.studyShuffle ? 'true' : 'false');
         }
 
@@ -1083,21 +992,17 @@
 
             if (isFill) {
                 $('quiz-q-text').innerText = item.text.slice(0, 2);
-                restartAnimation('#quiz-q-wrapper', 'text-pop');
             } else {
                 $('quiz-prompt-label').innerText = q.type === 'meaning' ? '뜻에 알맞은 성어는?' : '이 한자의 독음은?';
                 const pt = $('quiz-prompt-text');
-                pt.className = q.type === 'meaning'
-                    ? 'text-pop selectable text-xl sm:text-2xl font-extrabold text-gray-900 break-keep leading-relaxed px-2'
-                    : 'text-pop selectable text-5xl sm:text-6xl font-black hanja-font text-gray-800 tracking-[0.15em]';
+                pt.className = q.type === 'meaning' ? 'quiz-meaning selectable' : 'quiz-hanja selectable';
                 pt.innerText = q.type === 'meaning' ? item.mean : item.hanja;
-                restartAnimation('#quiz-prompt-text', 'text-pop');
                 const box = $('quiz-choices');
                 box.innerHTML = '';
                 q.options.forEach((opt, i) => {
                     const b = document.createElement('button');
                     b.type = 'button';
-                    b.className = 'choice-btn glass text-gray-800';
+                    b.className = 'choice-btn';
                     b.dataset.index = opt.index;
                     b.innerHTML = `<span class="choice-key" aria-hidden="true">${i + 1}</span><span class="choice-label">${esc(opt.text)}</span>`;
                     b.onclick = () => submitAnswer({ picked: opt.index });
@@ -1107,15 +1012,15 @@
 
             const hintEl = $('quiz-hint');
             if (qz.hints) {
-                const hanjaHtml = `<span class="text-2xl hanja-font text-indigo-500 font-bold block mb-1">${esc(item.hanja)}</span>`;
-                const meanHtml = `<span class="text-base text-indigo-600 font-bold block break-keep leading-tight px-4">${esc(item.mean)}</span>`;
+                const hanjaHtml = `<span class="hint-hanja">${esc(item.hanja)}</span>`;
+                const meanHtml = `<span class="hint-mean">${esc(item.mean)}</span>`;
                 hintEl.innerHTML = isFill ? hanjaHtml + meanHtml : (q.type === 'meaning' ? hanjaHtml : meanHtml);
-                hintEl.style.opacity = '1'; hintEl.style.transform = 'translateY(0) scale(1)';
-            } else { hintEl.innerHTML = ''; hintEl.style.opacity = '0'; hintEl.style.transform = 'translateY(15px) scale(0.95)'; }
+                hintEl.style.opacity = '1';
+            } else { hintEl.innerHTML = ''; hintEl.style.opacity = '0'; }
 
             const input = $('quiz-input');
             input.value = qz.val;
-            input.classList.remove('shake-error');
+            input.classList.remove('is-wrong');
             if (isFill && !qz.feedback) {
                 setTimeout(() => {
                     if (state.view !== 'quiz') return;
@@ -1127,8 +1032,6 @@
             if (!qz.feedback) $('quiz-feedback').classList.remove('show');
 
             const hintBtn = $('btn-quiz-hint');
-            hintBtn.classList.toggle('bg-indigo-100', qz.hints);
-            hintBtn.classList.toggle('text-indigo-700', qz.hints);
             hintBtn.setAttribute('aria-pressed', qz.hints ? 'true' : 'false');
         }
 
@@ -1141,7 +1044,7 @@
                 ? qz.val.trim().normalize('NFC') === item.text.slice(2)
                 : picked === item.index);
             const inputEl = $('quiz-input');
-            if (!isCorrect && !skipped && q.type === 'fill') { inputEl.classList.add('shake-error'); setTimeout(() => inputEl.classList.remove('shake-error'), 400); }
+            if (!isCorrect && !skipped && q.type === 'fill') { inputEl.classList.add('is-wrong'); setTimeout(() => inputEl.classList.remove('is-wrong'), 600); }
 
             qz.feedback = isCorrect ? 'O' : 'X';
             qz.lastSubmitTime = Date.now();
@@ -1150,13 +1053,11 @@
             overlay.classList.add('show');
             overlay.classList.toggle('correct-feedback', isCorrect);
             overlay.classList.toggle('wrong-feedback', !isCorrect);
-            overlay.style.backgroundColor = isCorrect ? 'rgba(236, 253, 245, 0.9)' : 'rgba(255, 241, 242, 0.9)';
+            if (isCorrect) sfx('correct'); else if (!skipped) sfx('wrong'); // 건너뛰기는 소리 없음
 
             const iconBox = $('feedback-icon-box');
-            iconBox.className = `w-24 h-24 rounded-[32px] flex items-center justify-center text-white mb-6 shadow-2xl ${isCorrect ? 'bg-emerald-500 correct' : 'bg-rose-500 wrong'}`;
-            iconBox.innerHTML = isCorrect
-                ? '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'
-                : '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+            iconBox.className = isCorrect ? 'correct' : 'wrong';
+            iconBox.innerHTML = ico(isCorrect ? 'check' : 'x');
 
             let extra = '';
             if (!isCorrect) {
@@ -1168,7 +1069,7 @@
                 saveWrongs();
                 if (!qz.wrongs.some((it) => it.index === item.index)) qz.wrongs.push(item);
             } else {
-                $('feedback-answer').innerText = 'Correct!';
+                $('feedback-answer').innerText = '정답';
                 if (qz.mode === 'review') {
                     const w = state.savedWrongs.find((x) => x.index === item.index);
                     if (w) {
@@ -1176,7 +1077,7 @@
                         if (w.streak >= GRAD_STREAK) {
                             state.savedWrongs = state.savedWrongs.filter((x) => x.index !== item.index);
                             qz.graduated.push(item);
-                            extra = '🎓 오답 노트 졸업!';
+                            extra = '오답 노트에서 졸업';
                         } else extra = `연속 정답 ${w.streak}/${GRAD_STREAK}`;
                         saveWrongs();
                     }
@@ -1193,15 +1094,14 @@
             if (state.view !== 'quiz') return;
             if (qz.idx + 1 >= qz.qs.length) { qz.done = true; navigateTo('result'); return; }
             const card = $('quiz-card');
-            card.classList.add('fluid-card-exit');
+            card.classList.add('q-out');
             setTimeout(() => {
-                if (state.view !== 'quiz') { card.classList.remove('fluid-card-exit'); return; }
+                if (state.view !== 'quiz') { card.classList.remove('q-out'); return; }
                 qz.idx++; qz.val = ''; qz.hints = false; qz.feedback = null;
                 $('quiz-feedback').classList.remove('show', 'correct-feedback', 'wrong-feedback');
                 renderQuiz();
-                card.classList.remove('fluid-card-exit'); card.classList.add('fluid-card-enter');
-                setTimeout(() => card.classList.remove('fluid-card-enter'), 400);
-            }, 350);
+                card.classList.remove('q-out');
+            }, 140);
         }
 
         // 피드백 건너뛰기 (연타로 의도치 않게 넘어가지 않도록 0.3초 쿨타임)
@@ -1225,21 +1125,14 @@
             const titleEl = $('result-title');
             const iconBox = $('result-icon-box');
             const iconSvg = $('result-icon-svg');
-            if (isPerfect) {
-                titleEl.innerText = '완벽해요! 🎉'; titleEl.classList.add('text-amber-500'); titleEl.classList.remove('text-gray-900');
-                iconBox.classList.add('bg-amber-50', 'text-amber-500'); iconBox.classList.remove('bg-indigo-50', 'text-indigo-600');
-                iconSvg.innerHTML = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
-                if (!qz.celebrated) { qz.celebrated = true; triggerConfetti(); }
-            } else {
-                titleEl.innerText = '학습 완료!'; titleEl.classList.add('text-gray-900'); titleEl.classList.remove('text-amber-500');
-                iconBox.classList.add('bg-indigo-50', 'text-indigo-600'); iconBox.classList.remove('bg-amber-50', 'text-amber-500');
-                iconSvg.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
-            }
-            restartAnimation('.text-pop', 'text-pop');
+            titleEl.innerText = isPerfect ? '모두 맞혔어요' : '학습 완료';
+            iconBox.classList.toggle('is-perfect', isPerfect);
+            iconSvg.innerHTML = ico(isPerfect ? 'award' : 'check');
+            if (isPerfect && !qz.celebrated) { qz.celebrated = true; triggerConfetti(); }
 
             const extra = $('result-extra');
             extra.classList.toggle('hidden', !qz.graduated.length);
-            extra.innerText = qz.graduated.length ? `🎓 ${qz.graduated.length}개를 오답 노트에서 졸업시켰어요` : '';
+            extra.innerText = qz.graduated.length ? `${qz.graduated.length}개를 오답 노트에서 졸업시켰어요` : '';
             $('btn-result-wrongs').classList.toggle('hidden', qz.wrongs.length === 0);
 
             const wrongsContainer = $('wrong-answers-container');
@@ -1247,18 +1140,15 @@
             if (qz.wrongs.length > 0) {
                 wrongsContainer.classList.remove('hidden');
                 wrongsListEl.innerHTML = '';
-                qz.wrongs.forEach((it, idx) => {
+                qz.wrongs.forEach((it) => {
                     const el = document.createElement('div');
-                    el.className = 'animate-entry glass p-5 rounded-[24px] space-y-3';
-                    el.style.animationDelay = `${idx * 0.05}s`;
+                    el.className = 'card item-card space-y-2';
                     el.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="selectable text-lg font-black text-gray-800">${esc(it.text)}</h3>
-                                <p class="selectable text-[13px] text-gray-700 font-semibold break-keep leading-relaxed mt-1.5">${esc(it.mean)}</p>
-                            </div>
-                            <span class="selectable text-xl hanja-font text-indigo-400 font-bold opacity-80">${esc(it.hanja)}</span>
-                        </div>`;
+                        <div class="flex justify-between items-start gap-3">
+                            <h3 class="selectable item-idiom">${esc(it.text)}</h3>
+                            <span class="selectable item-hanja">${esc(it.hanja)}</span>
+                        </div>
+                        <p class="selectable item-mean">${esc(it.mean)}</p>`;
                     wrongsListEl.appendChild(el);
                 });
             } else { wrongsContainer.classList.add('hidden'); }
@@ -1270,29 +1160,28 @@
             listEl.innerHTML = '';
             $('btn-test-wrongs').disabled = !state.savedWrongs.length;
             if (!state.savedWrongs.length) {
-                listEl.innerHTML = '<div class="glass p-16 rounded-[40px] text-center text-gray-500 font-bold animate-slide-up">저장된 오답이 없습니다.</div>';
+                listEl.innerHTML = '<div class="card p-12 text-center text-sm t3">저장된 오답이 없어요</div>';
                 return;
             }
-            state.savedWrongs.forEach((w, idx) => {
+            state.savedWrongs.forEach((w) => {
                 const it = BY_INDEX.get(w.index);
                 const el = document.createElement('div');
-                el.className = 'animate-slide-up glass p-5 rounded-[24px] space-y-3 relative transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1';
-                el.style.animationDelay = `${idx * 0.05}s`;
-                const streakBadge = w.streak > 0 ? `<span class="text-[11px] font-bold text-emerald-600 ml-1.5">연속 정답 ${w.streak}/${GRAD_STREAK}</span>` : '';
+                el.className = 'card item-card space-y-2';
+                const streakBadge = w.streak > 0 ? `<span class="note ml-2">연속 정답 ${w.streak}/${GRAD_STREAK}</span>` : '';
                 el.innerHTML = `
-                    <div class="flex justify-between items-start pr-8">
+                    <div class="flex justify-between items-start pr-10">
                         <div>
-                            <span class="text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg inline-block transition-colors">Idx ${it.index}</span>
-                            ${w.date ? `<span class="text-[11px] font-bold text-gray-500 ml-1.5">${esc(formatRelativeTime(w.date))}</span>` : ''}${streakBadge}
-                            <h3 class="selectable text-lg font-black text-gray-800 mt-1.5">${esc(it.text)}</h3>
+                            <span class="tag">${it.index}번</span>
+                            ${w.date ? `<span class="note ml-2">${esc(formatRelativeTime(w.date))}</span>` : ''}${streakBadge}
+                            <h3 class="selectable item-idiom mt-2">${esc(it.text)}</h3>
                         </div>
-                        <span class="selectable text-xl hanja-font text-indigo-400 font-bold opacity-80">${esc(it.hanja)}</span>
+                        <span class="selectable item-hanja">${esc(it.hanja)}</span>
                     </div>
-                    <p class="selectable text-[13px] text-gray-700 font-semibold break-keep leading-relaxed">${esc(it.mean)}</p>
-                    <button type="button" aria-label="${esc(it.text)} 삭제" class="delete-btn absolute top-5 right-5 w-8 h-8 flex items-center justify-center text-gray-500 transition-all duration-300 hover:text-rose-500 hover:bg-rose-50 rounded-full active:scale-90"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+                    <p class="selectable item-mean">${esc(it.mean)}</p>
+                    <button type="button" aria-label="${esc(it.text)} 삭제" class="delete-btn btn-icon absolute top-2 right-2">${ico('x')}</button>`;
                 el.querySelector('.delete-btn').onclick = () => {
-                    el.style.opacity = '0'; el.style.transform = 'translateX(20px)';
-                    setTimeout(() => { state.savedWrongs = state.savedWrongs.filter((x) => x.index !== w.index); saveWrongs(); renderReview(); renderMenu(); }, 300);
+                    el.style.opacity = '0';
+                    setTimeout(() => { state.savedWrongs = state.savedWrongs.filter((x) => x.index !== w.index); saveWrongs(); renderReview(); renderMenu(); }, 160);
                 };
                 listEl.appendChild(el);
             });
@@ -1322,7 +1211,7 @@
         function highlight(text, q) {
             const r = findRange(text, q);
             if (!r) return esc(text);
-            return `${esc(text.slice(0, r[0]))}<strong class="font-black text-indigo-600">${esc(text.slice(r[0], r[0] + r[1]))}</strong>${esc(text.slice(r[0] + r[1]))}`;
+            return `${esc(text.slice(0, r[0]))}<strong class="hl">${esc(text.slice(r[0], r[0] + r[1]))}</strong>${esc(text.slice(r[0] + r[1]))}`;
         }
 
         function renderSearch() {
@@ -1340,27 +1229,25 @@
             subtitle.innerText = results.length > 0 ? `${results.length}개 결과` : '결과 없음';
             if (!results.length) {
                 listEl.innerHTML = `
-                    <div class="glass p-12 rounded-[40px] text-center animate-slide-up">
-                        <div class="text-5xl mb-5" aria-hidden="true">🤔</div>
-                        <p class="text-base font-bold text-gray-700 mb-3 leading-snug break-all">'<strong class="text-indigo-600 font-black">${esc(q)}</strong>'에 대한<br>검색 결과가 없습니다.</p>
-                        <p class="text-sm text-gray-500 font-semibold">오타가 없는지 확인하거나<br>다른 검색어를 입력해 보세요.</p>
+                    <div class="card p-12 text-center">
+                        <p class="text-base t1 mb-2 leading-6 break-all">'<strong class="hl">${esc(q)}</strong>'에 대한<br>검색 결과가 없어요</p>
+                        <p class="text-sm t3">오타가 없는지 확인하거나<br>다른 검색어를 입력해 보세요</p>
                     </div>`;
                 return;
             }
-            results.forEach((it, idx) => {
+            results.forEach((it) => {
                 const el = document.createElement('button');
                 el.type = 'button';
-                el.className = 'animate-slide-up glass p-5 rounded-[24px] space-y-3 cursor-pointer transition-all duration-300 hover:shadow-xl sm:hover:-translate-y-1 active:scale-95 text-left w-full block';
-                el.style.animationDelay = `${idx * 0.04}s`;
+                el.className = 'card item-card space-y-2';
                 el.innerHTML = `
-                    <div class="flex justify-between items-start">
+                    <div class="flex justify-between items-start gap-3">
                         <div>
-                            <span class="text-[11px] font-bold text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-lg inline-block">Ch.${chapterOf(it)} · Idx ${it.index}</span>
-                            <h3 class="text-lg font-black text-gray-800 mt-1">${highlight(it.text, q)}</h3>
+                            <span class="tag">챕터 ${chapterOf(it)} · ${it.index}번</span>
+                            <h3 class="item-idiom mt-2">${highlight(it.text, q)}</h3>
                         </div>
-                        <span class="text-xl hanja-font text-indigo-400 font-bold opacity-80">${highlight(it.hanja, q)}</span>
+                        <span class="item-hanja">${highlight(it.hanja, q)}</span>
                     </div>
-                    <p class="text-[13px] text-gray-700 font-semibold break-keep leading-relaxed">${highlight(it.mean, q)}</p>`;
+                    <p class="item-mean">${highlight(it.mean, q)}</p>`;
                 el.onclick = () => showSearchDetail(it);
                 listEl.appendChild(el);
             });
@@ -1368,7 +1255,7 @@
 
         function showSearchDetail(it) {
             state.detailItem = it;
-            $('modal-sd-index').innerText = `Index ${String(it.index).padStart(3, '0')} · Ch.${chapterOf(it)}`;
+            $('modal-sd-index').innerText = `${it.index}번 · 챕터 ${chapterOf(it)}`;
             $('modal-sd-text').innerText = it.text;
             $('modal-sd-hanja').innerText = it.hanja;
             $('modal-sd-mean').innerText = it.mean;
@@ -1426,6 +1313,7 @@
 
         // ===== 초기화 =====
         function init() {
+            hydrateIcons();
             history.replaceState({ view: 'menu' }, '');
             const savedTheme = storeGet(STORE.theme);
             applyTheme(savedTheme === 'dark' || savedTheme === 'light' ? savedTheme : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
@@ -1513,6 +1401,11 @@
 
             on('btn-theme-toggle', () => applyTheme(state.theme === 'light' ? 'dark' : 'light'));
             on('btn-show-search', () => navigateTo('search'));
+            on('btn-sound-toggle', () => {
+                if (!window.SFX || typeof window.SFX.setMuted !== 'function') return;
+                window.SFX.setMuted(!window.SFX.isMuted());
+                renderSound();
+            });
 
             const qIn = $('quiz-input');
             qIn.oninput = (e) => { state.quiz.val = e.target.value; $('btn-quiz-check').disabled = state.quiz.val.length < 2; };
