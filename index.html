@@ -227,27 +227,12 @@
         .btn-icon.is-bordered { background: var(--surface); border: 1px solid var(--line); box-shadow: 0 3px 0 var(--edge); }
 
         /* ===== 메뉴 ===== */
-        .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-        .hero-count { font-size: 14px; line-height: 20px; color: var(--t2); }
-        .hero-count .num { font-size: 32px; line-height: 36px; color: var(--t1); }
-        .segs { display: flex; gap: 3px; width: 100%; margin-top: 12px; }
-        .segs i { flex: 1; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; border: 1px solid var(--line-soft); box-sizing: border-box; }
-        .segs b { display: block; height: 100%; width: 0; background: var(--c); transition: width var(--d-enter) var(--ease); }
 
-        .action-card {
             position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 12px;
             height: 132px; padding: 14px; text-align: left; border-radius: 14px; box-shadow: 0 4px 0 var(--edge);
             transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), background-color var(--d-fast) var(--ease);
         }
-        .action-card:disabled { opacity: 0.6; cursor: default; box-shadow: none; transform: translateY(4px); }
-        .action-card:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
-        @media (hover: hover) { .action-card:not(:disabled):hover { background: var(--surface-2); } }
-        .icon-block { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 10px; background: var(--c); color: #fff; box-shadow: 0 3px 0 var(--cd); }
-        .stamp-block { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 4px; background: var(--stamp); color: #fff; transform: rotate(-6deg);
             font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1; box-shadow: inset 0 0 0 3px var(--stamp), inset 0 0 0 4px rgba(255,255,255,0.6); }
-        .action-card:disabled .stamp-block { background: var(--t3); box-shadow: inset 0 0 0 3px var(--t3), inset 0 0 0 4px rgba(255,255,255,0.5); }
-        .count-badge { position: absolute; top: 10px; right: 10px; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 12px; background: var(--stamp); color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
-        .count-badge.hidden { display: none; }
         .icon-tile { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--r-ctl); background: var(--surface-2); color: var(--t2); }
         .icon-tile.is-accent { background: var(--accent-wash); color: var(--accent-text); }
 
@@ -456,13 +441,6 @@
         .sd-idiom { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 48px; color: var(--t1); word-break: keep-all; }
         .sd-hanja { font-family: var(--serif); font-size: 20px; line-height: 28px; letter-spacing: 0.1em; color: var(--t2); }
 
-        .toast {
-            position: fixed; left: 50%; bottom: calc(112px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 8px);
-            max-width: calc(100vw - 32px); padding: 12px 16px; border-radius: var(--r-ctl); z-index: 1500;
-            background: var(--t1); color: var(--bg); font-size: 14px; line-height: 20px; font-weight: 500; text-align: center;
-            opacity: 0; pointer-events: none; transition: opacity var(--d-base) var(--ease), transform var(--d-base) var(--ease);
-        }
-        .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
         #btn-footer-start { padding: 0 32px; }
         #footer-menu {
@@ -547,12 +525,6 @@
                     </div>
                     <div id="chapter-grid" class="path"></div>
                 </section>
-
-                <div class="flex justify-center gap-2">
-                    <button id="btn-backup" type="button" class="btn btn-sm"><svg class="ic" data-ic="download" viewBox="0 0 24 24" aria-hidden="true"></svg>데이터 백업</button>
-                    <button id="btn-restore" type="button" class="btn btn-sm"><svg class="ic" data-ic="upload" viewBox="0 0 24 24" aria-hidden="true"></svg>데이터 복원</button>
-                    <input id="restore-file" type="file" accept="application/json,.json" class="hidden" aria-label="백업 파일 선택">
-                </div>
             </div>
 
             <!-- 2. 학습 뷰 -->
@@ -736,8 +708,6 @@
 
     <div id="quiz-bar" class="quiz-bar hidden"><div class="fb-inner"><button id="btn-quiz-check" type="button" disabled class="btn btn-lg btn-primary w-full">확인</button></div></div>
 
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
     <!-- 모달 -->
     <div id="modal-confirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title" aria-hidden="true">
         <div class="card modal-card" id="modal-confirm-inner">
@@ -862,8 +832,6 @@
             book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
             note: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/><path d="m9.5 12.5 5 5M14.5 12.5l-5 5"/>',
             search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
-            download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
-            upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
             shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>',
             check: '<path d="M20 6 9 17l-5-5"/>',
             x: '<path d="M18 6 6 18M6 6l12 12"/>',
@@ -907,15 +875,6 @@
             const meta = document.querySelector('meta[name="theme-color"]');
             if (meta) meta.setAttribute('content', theme === 'dark' ? '#1E2227' : '#F4F6F8');
             storeSet(STORE.theme, theme);
-        }
-
-        let toastTimer = null;
-        function showToast(msg) {
-            const t = $('toast');
-            t.innerText = msg;
-            t.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
         }
 
         let lastFocused = null;
@@ -1599,44 +1558,6 @@
             setTimeout(() => navigateTo('study'), 160);
         }
 
-        // ===== 백업 · 복원 =====
-        function exportData() {
-            const data = { app: 'idiom-seung', version: 1, exportedAt: new Date().toISOString(), wrongs: state.savedWrongs, known: [...state.known] };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            const d = new Date();
-            const stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-            a.href = URL.createObjectURL(blob);
-            a.download = `idiom-backup-${stamp}.json`;
-            document.body.appendChild(a); a.click(); a.remove();
-            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-            showToast('백업 파일을 저장했어요');
-        }
-
-        function importData(file) {
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onerror = () => showToast('파일을 읽지 못했어요');
-            reader.onload = () => {
-                try {
-                    const data = JSON.parse(reader.result);
-                    if (!data || data.app !== 'idiom-seung') throw new Error('not a backup');
-                    // 가져온 데이터는 현재 기록과 합친다(같은 성어는 더 최근/더 높은 기록을 유지).
-                    const merged = new Map(state.savedWrongs.map((w) => [w.index, w]));
-                    normalizeWrongs(data.wrongs).forEach((w) => {
-                        const cur = merged.get(w.index);
-                        if (!cur || (w.date || '') > (cur.date || '')) merged.set(w.index, w);
-                    });
-                    state.savedWrongs = [...merged.values()].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-                    normalizeKnown(data.known).forEach((n) => state.known.add(n));
-                    saveWrongs(); saveKnown();
-                    renderMenu();
-                    showToast(`복원 완료 · 오답 ${state.savedWrongs.length}개, 외운 성어 ${state.known.size}개`);
-                } catch (e) { showToast('올바른 백업 파일이 아니에요'); }
-            };
-            reader.readAsText(file);
-        }
-
         // ===== 초기화 =====
         function init() {
             hydrateIcons();
@@ -1772,9 +1693,6 @@
             });
             on('btn-sd-close', () => hideModal(els.modals.searchDetail, 'modal-search-detail-inner'));
             on('btn-sd-study', studyFromDetail);
-            on('btn-backup', exportData);
-            on('btn-restore', () => $('restore-file').click());
-            $('restore-file').onchange = (e) => { importData(e.target.files[0]); e.target.value = ''; };
             $('btn-quiz-close').onclick = () => showModal(els.modals.stop, 'modal-stop-inner');
             els.header.back.onclick = () => {
                 if (state.view === 'quiz') showModal(els.modals.stop, 'modal-stop-inner');

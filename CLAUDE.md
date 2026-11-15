@@ -45,7 +45,7 @@ All access goes through `storeGet/storeSet/loadJSON`, which swallow errors (stor
 - `idiom_seung_opt_v1` — 오답 노트: `[{ index, date, streak }]`. Only the index is stored; text/hanja/meaning are looked up in `RAW_DATA`. `normalizeWrongs` also accepts the legacy format (full idiom objects) — keep the key stable or existing users lose their notes. In `review` mode a correct answer increments `streak`; reaching `GRAD_STREAK` (2) removes the entry ("졸업"). A wrong answer moves it to the front with `streak: 0` and a fresh date.
 - `idiom_known_v1` — indexes marked "외웠어요" in study mode (shown as progress bars on chapter tiles).
 - `idiom_quiz_type_v1`, `idiom_theme_pref` (`'light'`/`'dark'`; light is the default and `prefers-color-scheme` is deliberately ignored — dark applies only after the user taps the theme toggle).
-- Backup/restore (menu footer) exports/imports `{ app: 'idiom-seung', version: 1, wrongs, known }` JSON and merges on restore.
+- There is no backup/restore feature (removed on purpose). Data lives only in this browser's localStorage.
 
 ### Theming and styling
 Dark mode is the `dark-theme` class on `<html>`, applied by a tiny inline script in `<head>` before first paint (avoids a white flash) and again by `applyTheme`. Dark styles are hand-written `.dark-theme …` overrides (including `!important` overrides of Tailwind `text-gray-*`/`bg-*` classes), not Tailwind's `dark:` variant — new UI needs matching `.dark-theme` rules, and body text must keep WCAG-AA contrast there. Keep text ≥ 11px. `prefers-reduced-motion` disables animations globally; on narrow screens the blurred background blobs are static for performance.
