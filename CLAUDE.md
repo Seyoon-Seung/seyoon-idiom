@@ -44,7 +44,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 All access goes through `storeGet/storeSet/loadJSON`, which swallow errors (storage can be blocked or corrupted; the app must still start).
 - `idiom_seung_opt_v1` — 오답 노트: `[{ index, date, streak }]`. Only the index is stored; text/hanja/meaning are looked up in `RAW_DATA`. `normalizeWrongs` also accepts the legacy format (full idiom objects) — keep the key stable or existing users lose their notes. In `review` mode a correct answer increments `streak`; reaching `GRAD_STREAK` (2) removes the entry ("졸업"). A wrong answer moves it to the front with `streak: 0` and a fresh date.
 - `idiom_known_v1` — indexes marked "외웠어요" in study mode (shown as progress bars on chapter tiles).
-- `idiom_quiz_type_v1`, `idiom_theme_pref` (`'light'`/`'dark'`, falls back to `prefers-color-scheme`).
+- `idiom_quiz_type_v1`, `idiom_theme_pref` (`'light'`/`'dark'`; light is the default and `prefers-color-scheme` is deliberately ignored — dark applies only after the user taps the theme toggle).
 - Backup/restore (menu footer) exports/imports `{ app: 'idiom-seung', version: 1, wrongs, known }` JSON and merges on restore.
 
 ### Theming and styling
