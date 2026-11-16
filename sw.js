@@ -1,8 +1,8 @@
 // 앱 셸을 캐시해 오프라인에서도 열리게 하는 서비스워커.
 // 앱 파일을 수정해 배포할 때는 VERSION을 올려서 이전 캐시를 비운다.
-const VERSION = 'v8';
+const VERSION = 'v9';
 const CORE = [
-  './', 'index.html', 'data.js', 'sfx.js', 'tailwind.css', 'manifest.webmanifest',
+  './', 'index.html', 'data.js', 'sfx.js', 'mascot.js', 'tailwind.css', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'
 ];
 
