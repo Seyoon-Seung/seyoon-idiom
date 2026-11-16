@@ -246,7 +246,7 @@
         .btn-hero .hero-ic { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .btn-hero .hero-ic .ic { width: 26px; height: 26px; }
         .hello { display: flex; align-items: center; gap: 12px; padding: 0 4px; }
-        .hello-bubble { flex: 1; min-width: 0; padding: 12px 14px; background: var(--surface); border: 2px solid var(--border); border-radius: 18px 18px 18px 6px; font-size: 15px; line-height: 22px; font-weight: 700; color: var(--t1); word-break: keep-all; }
+        .hello-bubble { flex: 1; min-width: 0; padding: 8px 14px; background: var(--surface); border: 2px solid var(--border); border-radius: 18px 18px 18px 6px; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--t1); word-break: keep-all; }
 
         /* ===== 메뉴 ===== */
 
@@ -272,7 +272,7 @@
         .seg-btn.selected { background: var(--accent); border-color: var(--accent-edge); color: var(--on-accent); box-shadow: 0 1px 0 var(--accent-edge); transform: translateY(2px); }
 
         /* 학습 경로: 챕터 12개가 지그재그로 이어지는 큰 둥근 노드. 링 = 외운 비율 */
-        .stats-bar { position: sticky; top: 0; z-index: 25; display: grid; grid-template-columns: auto 1fr auto; gap: 6px; padding: 8px 0 12px; background: var(--page); }
+        .stats-bar { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 0; background: var(--page); }
         .stat-pill { display: flex; align-items: center; justify-content: center; gap: 4px; height: 44px; padding: 0 6px; border-radius: 999px; background: var(--surface); border: 2px solid var(--border); box-shadow: 0 3px 0 var(--border); font-size: 13px; line-height: 16px; font-weight: 800; color: var(--t1); white-space: nowrap; }
         .stat-pill .ic { width: 20px; height: 20px; stroke-width: 2.25; }
         .stat-pill.flame { background: var(--gold-wash); border-color: var(--gold); box-shadow: 0 3px 0 var(--gold-edge); color: var(--gold-text); }
@@ -532,13 +532,12 @@
 
         <main id="main-container" class="flex-1 z-10 pb-24 relative">
             <!-- 1. 메뉴 뷰 -->
-            <div id="view-menu" class="space-y-6 fade-enter-active">
+            <div id="view-menu" class="space-y-5 fade-enter-active">
                 <div class="hello">
-                    <span class="mw" data-mascot="happy" data-size="72" style="width:72px;height:72px"></span>
+                    <span class="mw" data-mascot="happy" data-size="56" style="width:56px;height:56px"></span>
                     <p id="hello-line" class="hello-bubble">오늘도 한 개만 더 외워볼까요</p>
                 </div>
                 <div class="stats-bar">
-                    <div class="stat-pill flame" title="내 최고 기록"><svg class="ic" data-ic="flame" viewBox="0 0 24 24" aria-hidden="true"></svg><span>최고 <span id="stat-best-top">0</span>연속</span></div>
                     <div class="stat-pill xp"><svg class="ic" data-ic="bolt" viewBox="0 0 24 24" aria-hidden="true"></svg><span>외운 성어 <span id="hero-known">0</span>/<span id="hero-total">120</span></span></div>
                     <button id="btn-review" type="button" class="stat-pill notes" aria-label="오답 노트 열기"><svg class="ic" data-ic="note" viewBox="0 0 24 24" aria-hidden="true"></svg><span>오답 <span id="review-count">0</span></span></button>
                 </div>
@@ -739,7 +738,6 @@
                 <div class="max-w-md sm:max-w-[520px] mx-auto flex items-center justify-between gap-4">
                     <div class="min-w-0">
                         <p id="footer-status" class="text-base font-bold t1 leading-6">챕터를 골라봐요</p>
-                        <p class="note mt-0.5">4글자가 아닌 건 뜻 고르기</p>
                     </div>
                     <button id="btn-footer-start" type="button" disabled class="btn btn-lg btn-primary px-8 shrink-0">퀴즈 시작</button>
                 </div>
@@ -811,10 +809,10 @@
         const GRAD_STREAK = 2; // 오답 노트에서 연속 N번 맞히면 졸업
         const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', best: 'idiom_best_combo_v1' };
         const QUIZ_TYPES = {
-            fill: '앞 두 글자를 보고 뒤에 이어질 두 글자를 써요. 4글자가 아니면 뜻 고르기로 나와요',
-            meaning: '뜻을 보고 알맞은 성어를 네 개 중에 골라요',
-            hanja: '한자를 보고 읽는 법을 네 개 중에 골라요',
-            mixed: '세 가지 유형이 랜덤으로 섞여 나와요'
+            fill: '뒤 두 글자를 써요. 4글자가 아니면 뜻 고르기',
+            meaning: '뜻을 보고 성어를 골라요',
+            hanja: '한자를 보고 읽는 법을 골라요',
+            mixed: '세 가지가 섞여 나와요'
         };
 
         // 저장소가 막혀 있거나(시크릿 모드, 인앱 브라우저) 값이 깨져 있어도 앱이 죽지 않도록 모든 접근을 감싼다.
@@ -1143,7 +1141,7 @@
         function renderHero() {
             $('hero-known').innerText = state.known.size;
             $('hero-total').innerText = RAW_DATA.length;
-            $('stat-best-top').innerText = getBest();
+            const bt = $('stat-best-top'); if (bt) bt.innerText = getBest();
             $('hello-line').innerText = helloLine();
         }
 
