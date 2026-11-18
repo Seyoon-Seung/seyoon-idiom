@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="description" content="승세윤이 만든 사자성어 암기 도우미">
     <meta name="theme-color" content="#F7F8FA">
     <meta property="og:type" content="website">
@@ -260,6 +260,19 @@
         @keyframes drawerUp { from { transform: translateY(100%); } to { transform: none; } }
         /* overflow: clip은 스크롤 컨테이너가 아니어서, 입력칸 scrollIntoView가 카드 내용을 밀어 올리지 않는다 */
         #quiz-card { overflow: clip; }
+
+        /* 모바일 키보드가 열려 있을 때(html.kb-open): 문제 · 입력칸 · 버튼이 키보드 위에 다 들어오도록 줄인다 */
+        .kb-open #view-quiz { gap: 8px; padding-top: 0; }
+        .kb-open #quiz-card { min-height: 0; padding-top: 20px; padding-bottom: 20px; gap: 12px; box-shadow: 0 4px 0 var(--line); }
+        .kb-open #quiz-q-wrapper { font-size: 48px; line-height: 1.15; }
+        .kb-open #quiz-q-wrapper .slot { border-width: 3px; border-radius: 10px; }
+        .kb-open #quiz-hint { min-height: 0; }
+        .kb-open #quiz-hint:empty { display: none; }
+        .kb-open #quiz-hint .hanja { font-size: 20px; }
+        .kb-open .answer-input { height: 60px; font-size: 34px; }
+        .kb-open #quiz-feedback { padding: 16px 20px 20px; }
+        .kb-open #feedback-mean { display: none; }
+        .kb-open .app-header { margin-bottom: 8px; }
         #quiz-feedback.correct-feedback { background: var(--green-soft); border-top-color: var(--green-line); }
         #quiz-feedback.wrong-feedback { background: var(--red-soft); border-top-color: var(--red-line); }
         #quiz-feedback.correct-feedback #feedback-title { color: var(--green-text); }
@@ -500,7 +513,7 @@
                         </div>
                         <div class="w-full max-w-[320px] space-y-4">
                             <div id="quiz-fill">
-                                <input id="quiz-input" type="text" maxlength="2" inputmode="text" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="성어의 뒤 두 글자" class="answer-input" placeholder="뒤 두 글자">
+                                <input id="quiz-input" type="text" lang="ko" maxlength="2" inputmode="text" enterkeyhint="go" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="성어의 뒤 두 글자" class="answer-input" placeholder="뒤 두 글자">
                             </div>
                             <div id="quiz-choices" class="hidden grid gap-3" role="group" aria-label="보기"></div>
                             <div id="quiz-actions" class="grid grid-cols-4 gap-3">
@@ -573,7 +586,7 @@
             <div id="view-search" class="hidden h-full flex flex-col gap-4">
                 <div class="search-field flex items-center gap-3 px-4 h-14 shrink-0">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="t-3 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input id="search-input" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="성어 검색" placeholder="성어, 한자, 뜻, 초성(ㄱㅇ), 번호" class="flex-1 bg-transparent outline-none text-base font-bold t-1">
+                    <input id="search-input" type="text" lang="ko" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="성어 검색" placeholder="성어, 한자, 뜻, 초성(ㄱㅇ), 번호" class="flex-1 bg-transparent outline-none text-base font-bold t-1">
                     <button id="search-clear" type="button" aria-label="검색어 지우기" class="icon-btn hidden w-8 h-8">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
                     </button>
@@ -955,6 +968,50 @@
             return date.toLocaleDateString('ko-KR');
         }
 
+        // ===== 모바일 키보드 =====
+        // visualViewport 높이가 평소보다 150px 넘게 줄었고 글자 입력칸에 포커스가 있으면 키보드가 열린 것으로 본다.
+        const keyboard = { open: false, baseH: 0 };
+        const isTyping = () => { const a = document.activeElement; return !!a && a.tagName === 'INPUT' && a.type === 'text'; };
+        function updateKeyboard() {
+            const vv = window.visualViewport;
+            if (!vv) return;
+            if (!isTyping()) keyboard.baseH = vv.height; // 키보드가 없을 때의 높이를 기준으로 기억
+            else if (!keyboard.baseH) keyboard.baseH = window.innerHeight;
+            const open = isTyping() && keyboard.baseH - vv.height > 150;
+            if (open !== keyboard.open) {
+                keyboard.open = open;
+                document.documentElement.classList.toggle('kb-open', open);
+            }
+            if (open && state.view === 'quiz') keepQuizInView();
+        }
+        // 퀴즈 카드 아래 끝(확인 버튼 · 정답 서랍)이 키보드에 가리면 그만큼만 스크롤한다.
+        function keepQuizInView() {
+            requestAnimationFrame(() => {
+                const vv = window.visualViewport;
+                const card = $('quiz-card');
+                if (!vv || !card || state.view !== 'quiz') return;
+                const bottom = card.getBoundingClientRect().bottom + 12;
+                const visibleBottom = vv.offsetTop + vv.height;
+                if (bottom > visibleBottom) window.scrollBy({ top: bottom - visibleBottom, behavior: 'smooth' });
+            });
+        }
+        // 한글 조합 중에 누른 Enter는 조합이 끝난 뒤에 처리한다(두 번 누를 필요 없게).
+        function onEnterAfterCompose(input, action) {
+            let pending = false;
+            input.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                if (e.isComposing || e.keyCode === 229) { pending = true; return; }
+                pending = false;
+                e.preventDefault();
+                action();
+            });
+            input.addEventListener('compositionend', () => {
+                if (!pending) return;
+                pending = false;
+                setTimeout(action, 0); // input 이벤트로 값이 반영된 다음
+            });
+        }
+
         // ===== 화면 전환 =====
         let navBusy = false; // 전환 애니메이션(300ms) 중 중복 호출을 막아 히스토리가 꼬이지 않게 한다.
         function clearQuizTimer() { if (state.quiz.timer) { clearTimeout(state.quiz.timer); state.quiz.timer = null; } }
@@ -994,7 +1051,7 @@
                 newEl.classList.add(dir > 0 ? 'view-in-fwd' : dir < 0 ? 'view-in-back' : 'fade-enter-active');
 
                 if (newView === 'menu') state.isMenuFirstLoad = true;
-                else if (newView === 'search') $('search-input').focus();
+                else if (newView === 'search') $('search-input').focus({ preventScroll: true });
 
                 if (!fromPopState) {
                     if (newView === 'menu') history.replaceState({ view: newView }, '');
@@ -1330,12 +1387,11 @@
             const input = $('quiz-input');
             input.value = qz.val;
             input.classList.remove('shake-error', 'is-right', 'is-wrong');
-            input.readOnly = false;
             if (isFill && !qz.feedback) {
                 setTimeout(() => {
                     if (state.view !== 'quiz') return;
-                    input.focus();
-                    if (window.innerWidth < 640) input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (document.activeElement !== input) input.focus({ preventScroll: true });
+                    if (keyboard.open) keepQuizInView();
                 }, 300);
             }
             $('btn-quiz-check').disabled = qz.val.length < 2;
@@ -1355,8 +1411,8 @@
                 : picked === item.index);
             const inputEl = $('quiz-input');
             if (q.type === 'fill') {
+                // readOnly로 바꾸면 iOS에서 키보드가 내려갔다 다시 올라오므로, 대신 입력을 막는다(beforeinput)
                 inputEl.classList.add(isCorrect ? 'is-right' : 'is-wrong');
-                inputEl.readOnly = true;
                 if (!isCorrect && !skipped) { inputEl.classList.add('shake-error'); setTimeout(() => inputEl.classList.remove('shake-error'), 400); }
             } else {
                 document.querySelectorAll('#quiz-choices .choice-btn').forEach((b) => {
@@ -1812,19 +1868,25 @@
             on('btn-show-search', () => navigateTo('search'));
 
             const qIn = $('quiz-input');
+            // 정답 서랍이 떠 있는 동안에는 입력을 받지 않는다
+            qIn.addEventListener('beforeinput', (e) => { if (state.quiz.feedback) e.preventDefault(); });
             qIn.oninput = (e) => {
+                if (state.quiz.feedback) { qIn.value = state.quiz.val; return; }
                 const grew = e.target.value.length > state.quiz.val.length;
                 state.quiz.val = e.target.value;
                 $('btn-quiz-check').disabled = state.quiz.val.length < 2;
                 if (grew) restartClass(qIn, 'type-pop');
                 if (state.quiz.val.length === 2 && grew) restartClass($('btn-quiz-check'), 'pop');
             };
-            qIn.onkeydown = (e) => {
-                if (e.key !== 'Enter' || e.isComposing) return; // 한글 조합 중 Enter는 무시
-                e.preventDefault();
+            onEnterAfterCompose(qIn, () => {
+                if (state.view !== 'quiz') return;
                 if (state.quiz.feedback) skipFeedback();
                 else if (state.quiz.val.length === 2) submitAnswer(); // 빈 입력의 Enter로는 건너뛰지 않는다(건너뛰기 버튼 사용)
-            };
+            });
+            // 확인 · 건너뛰기 · 힌트 · 정답 서랍을 눌러도 입력칸 포커스를 뺏지 않는다 → 문제마다 키보드가 내려갔다 올라오지 않음
+            ['btn-quiz-check', 'btn-quiz-skip', 'btn-quiz-hint', 'quiz-feedback'].forEach((id) => {
+                $(id).addEventListener('mousedown', (e) => { if (document.activeElement === qIn) e.preventDefault(); });
+            });
             on('btn-quiz-hint', () => { if (state.quiz.feedback) return; state.quiz.hints = !state.quiz.hints; sfx.play(state.quiz.hints ? 'pop' : 'tap'); renderQuiz(); });
             on('btn-quiz-check', () => submitAnswer());
             on('btn-quiz-skip', () => submitAnswer({ skipped: true }));
@@ -1866,10 +1928,22 @@
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(doSearch, 300);
             };
-            searchInput.onkeydown = (e) => {
-                if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); searchInput.blur(); clearTimeout(searchTimer); doSearch(); }
-            };
-            searchClear.onclick = () => { searchInput.value = ''; searchClear.classList.add('hidden'); doSearch(); searchInput.focus(); };
+            onEnterAfterCompose(searchInput, () => { searchInput.blur(); clearTimeout(searchTimer); doSearch(); });
+            // 결과를 손가락으로 훑기 시작하면 키보드를 내려 목록을 넓게 보여 준다(탭은 그대로 동작)
+            $('search-list').addEventListener('touchmove', () => { if (document.activeElement === searchInput) searchInput.blur(); }, { passive: true });
+            searchClear.onclick = () => { searchInput.value = ''; searchClear.classList.add('hidden'); doSearch(); searchInput.focus({ preventScroll: true }); };
+            $('search-clear').addEventListener('mousedown', (e) => e.preventDefault()); // 지우기 눌러도 키보드 유지
+
+            if (window.visualViewport) {
+                const vv = window.visualViewport;
+                let raf = 0;
+                const schedule = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(updateKeyboard); };
+                vv.addEventListener('resize', schedule);
+                document.addEventListener('focusin', schedule);
+                document.addEventListener('focusout', () => setTimeout(schedule, 60));
+                window.addEventListener('orientationchange', () => { keyboard.baseH = 0; setTimeout(schedule, 300); });
+                keyboard.baseH = vv.height;
+            }
 
             Object.values(els.modals).forEach((modalEl) => {
                 modalEl.addEventListener('click', (e) => { if (e.target === modalEl) hideModal(modalEl, MODAL_INNER[modalEl.id]); });
