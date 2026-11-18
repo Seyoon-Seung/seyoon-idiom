@@ -164,6 +164,7 @@
         .chapter-btn.selected .ch-label { color: var(--blue-text); }
         .ch-range { font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
         .tile-bar { position: absolute; left: 12px; right: 12px; bottom: 8px; height: 4px; border-radius: 2px; background: var(--raised); overflow: hidden; }
+        .tile-bar.is-empty { opacity: 0; }
         .tile-bar i { display: block; height: 100%; width: 0; background: var(--green); border-radius: 2px; transition: width 500ms var(--ease); }
 
         .seg-btn { height: 48px; font-size: 13px; }
@@ -187,8 +188,14 @@
         @keyframes droop { 0% { transform: rotate(0); } 30% { transform: rotate(-8deg); } 60% { transform: rotate(6deg); } 100% { transform: rotate(0); } }
 
         /* 기록 박스 (연속 학습일 · 오늘 XP) */
-        .stat-box { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
-        .stat-num { font-family: var(--font-fun); font-weight: 800; font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; }
+        .stat-box { position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; padding: 16px; }
+        .stat-num { font-family: var(--font-fun); font-weight: 800; font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .stat-unit { font-size: 15px; margin-left: 2px; }
+        .stat-label { margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stat-strip { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--raised); }
+        .stat-strip > i { display: block; height: 100%; width: 0; background: var(--amber); border-radius: 0 2px 2px 0; transition: width 600ms var(--spring); }
+        .entry-card { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px; text-align: left; }
+        .section-head { display: flex; align-items: center; min-height: 36px; }
 
         /* 학습 카드 */
         .card-fixed-size { width: 100%; max-width: 360px; min-height: 380px; margin: 0 auto; flex-shrink: 0; }
@@ -359,8 +366,9 @@
 
         <main id="main-container" class="flex-1 z-10 pb-32 relative">
             <!-- 1. 메뉴 뷰 -->
-            <div id="view-menu" class="space-y-6 fade-enter-active">
-                <section class="rise flex items-end gap-3" aria-live="polite">
+            <div id="view-menu" class="space-y-8 fade-enter-active">
+                <div class="space-y-3">
+                <section class="rise flex items-end gap-3 pb-1" aria-live="polite">
                     <div id="mascot-menu" class="mascot w-20 h-20 shrink-0" aria-hidden="true"></div>
                     <div class="bubble flex-1 mb-2">
                         <p id="menu-greet" class="text-[15px] font-bold t-1 leading-snug break-keep">오늘은 어떤 성어를 외워 볼까요?</p>
@@ -371,28 +379,29 @@
                     <div class="panel stat-box">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="t-amber shrink-0" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                         <div>
-                            <p class="stat-num t-amber"><span id="stat-streak">0</span><span class="text-base">일</span></p>
-                            <p class="text-[12px] font-bold t-3 mt-1">연속 학습</p>
+                            <p class="stat-num t-amber"><span id="stat-streak">0</span><span class="stat-unit">일</span></p>
+                            <p class="stat-label">연속 학습</p>
                         </div>
                     </div>
                     <div class="panel stat-box">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="t-blue shrink-0" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                         <div class="flex-1 min-w-0">
-                            <p class="stat-num t-blue whitespace-nowrap"><span id="stat-xp">0</span><span class="text-[13px] t-3"> / <span id="stat-goal">50</span> XP</span></p>
-                            <div class="bar thin amber mt-2" role="progressbar" aria-label="오늘 목표 XP"><i id="stat-xp-bar"></i></div>
+                            <p class="stat-num t-blue"><span id="stat-xp">0</span><span class="stat-unit">XP</span></p>
+                            <p id="stat-xp-label" class="stat-label">오늘 목표 <span id="stat-goal">50</span> XP</p>
                         </div>
+                        <div class="stat-strip" role="progressbar" aria-label="오늘 목표 XP"><i id="stat-xp-bar"></i></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <button id="btn-start-study" type="button" class="rise tap p-4 h-32 flex flex-col items-start justify-between text-left" style="animation-delay: 120ms">
+                    <button id="btn-start-study" type="button" class="rise tap entry-card" style="animation-delay: 120ms">
                         <span class="icon-tile blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
                         <span>
                             <span class="block text-base font-extrabold t-1">학습 카드</span>
                             <span id="study-btn-sub" class="block text-[13px] font-semibold t-3 mt-1">120개의 핵심 성어</span>
                         </span>
                     </button>
-                    <button id="btn-review" type="button" class="rise tap p-4 h-32 flex flex-col items-start justify-between text-left" style="animation-delay: 160ms">
+                    <button id="btn-review" type="button" class="rise tap entry-card" style="animation-delay: 160ms">
                         <span id="review-icon-bg" class="icon-tile red"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9.5 12.5 5 5"/><path d="m14.5 12.5-5 5"/></svg></span>
                         <span>
                             <span id="review-btn-text" class="block text-base font-extrabold t-1">오답 노트</span>
@@ -405,30 +414,32 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="t-3 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     <span class="flex-1 text-[15px] font-semibold t-3">성어, 한자, 뜻, 초성으로 찾기</span>
                 </button>
+                </div>
 
                 <section class="rise space-y-3" style="animation-delay: 240ms" aria-labelledby="quiz-type-title">
-                    <h3 id="quiz-type-title" class="text-base font-extrabold t-1 px-1">문제 유형</h3>
+                    <div class="section-head"><h3 id="quiz-type-title" class="text-base font-extrabold t-1">문제 유형</h3></div>
                     <div id="quiz-type-seg" role="radiogroup" aria-label="문제 유형" class="grid grid-cols-4 gap-2">
                         <button type="button" role="radio" data-type="fill" class="seg-btn tap">빈칸</button>
                         <button type="button" role="radio" data-type="meaning" class="seg-btn tap">뜻 고르기</button>
                         <button type="button" role="radio" data-type="hanja" class="seg-btn tap">한자 읽기</button>
                         <button type="button" role="radio" data-type="mixed" class="seg-btn tap">섞어서</button>
                     </div>
-                    <p id="quiz-type-desc" class="text-[13px] font-semibold t-3 px-1 break-keep"></p>
+                    <p id="quiz-type-desc" class="text-[13px] font-semibold t-3 leading-5 min-h-[40px] break-keep"></p>
                 </section>
 
                 <section class="rise space-y-3" style="animation-delay: 280ms">
-                    <div class="flex justify-between items-center px-1">
+                    <div class="section-head justify-between">
                         <h3 class="text-base font-extrabold t-1">챕터</h3>
                         <div class="flex gap-2">
                             <button id="btn-select-all" type="button" class="tap chip hidden">전체선택</button>
                             <button id="btn-multi-select" type="button" aria-pressed="false" class="tap chip">여러 개 고르기</button>
                         </div>
                     </div>
-                    <div id="chapter-grid" class="grid grid-cols-4 gap-2 pb-1 min-h-[160px]"></div>
+                    <div id="chapter-grid" class="grid grid-cols-4 gap-2 min-h-[220px]"></div>
                 </section>
 
-                <div class="flex justify-center gap-2">
+                <div class="flex flex-wrap justify-center gap-1 -mt-2">
+                    <button id="btn-haptic" type="button" aria-pressed="true" class="link-btn hidden"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 8 2 2-2 2 2 2-2 2"/><path d="m22 8-2 2 2 2-2 2 2 2"/><rect width="8" height="14" x="8" y="5" rx="1"/></svg><span id="haptic-label">진동 켜짐</span></button>
                     <button id="btn-backup" type="button" class="link-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>데이터 백업</button>
                     <button id="btn-restore" type="button" class="link-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>데이터 복원</button>
                     <input id="restore-file" type="file" accept="application/json,.json" class="hidden" aria-label="백업 파일 선택">
@@ -476,7 +487,7 @@
                     <p class="text-sm font-bold t-3 min-w-[48px] text-right tabular-nums"><span id="quiz-current" class="t-1">1</span>/<span id="quiz-total">10</span></p>
                 </div>
                 <div class="flex justify-center w-full pb-2">
-                    <div id="quiz-card" class="card3d card-fixed-size relative overflow-hidden px-6 pt-8 pb-8 flex flex-col items-center justify-between gap-6">
+                    <div id="quiz-card" class="card3d card-fixed-size relative overflow-hidden px-6 py-8 flex flex-col items-center justify-center gap-6">
                         <div class="text-center space-y-4 w-full">
                             <p id="quiz-q-wrapper" class="text-pop fun text-6xl sm:text-7xl t-1 leading-tight flex justify-center items-center gap-2">
                                 <span id="quiz-q-text">??</span><span class="slot" aria-hidden="true"></span><span class="slot" aria-hidden="true"></span>
@@ -538,14 +549,14 @@
 
                 <!-- 틀린 문제 다시보기 -->
                 <div id="wrong-answers-container" class="hidden rise" style="animation-delay: 120ms">
-                    <h3 class="text-base font-extrabold t-1 mb-3 px-1">틀린 문제 다시 보기</h3>
+                    <h3 class="text-base font-extrabold t-1 mb-3">틀린 문제 다시 보기</h3>
                     <div id="wrong-answers-list" class="grid gap-3"></div>
                 </div>
             </div>
 
             <!-- 5. 오답노트 뷰 -->
             <div id="view-review" class="hidden space-y-6 pb-20">
-                <div class="rise flex justify-between items-end gap-3 px-1">
+                <div class="rise flex justify-between items-end gap-3">
                     <div class="space-y-1">
                         <h2 class="fun text-3xl t-1">오답 노트</h2>
                         <p class="text-[13px] font-semibold t-3">테스트에서 연속 2번 맞히면 졸업해요</p>
@@ -568,19 +579,19 @@
                     </button>
                 </div>
                 <div class="flex-1 pb-20">
-                    <p id="search-subtitle" class="text-[13px] font-bold t-3 px-1 mb-3 hidden" aria-live="polite"></p>
+                    <p id="search-subtitle" class="text-[13px] font-bold t-3 mb-3 hidden" aria-live="polite"></p>
                     <div id="search-list" class="grid gap-3"></div>
                 </div>
             </div>
         </main>
 
-        <footer id="footer-menu" class="fixed left-0 right-0 px-4 pb-4 sm:px-8 sm:pb-8 z-30 transition-transform duration-500 pointer-events-none">
-            <div class="footer-bar max-w-md sm:max-w-[488px] mx-auto p-3 pl-5 flex items-center gap-3 pointer-events-auto">
+        <footer id="footer-menu" class="fixed left-0 right-0 px-5 pb-4 sm:px-8 sm:pb-8 z-30 transition-transform duration-500 pointer-events-none">
+            <div class="footer-bar max-w-[408px] sm:max-w-[456px] mx-auto p-3 pl-5 flex items-center gap-3 pointer-events-auto">
                 <div class="flex-1 min-w-0">
                     <p id="footer-status" class="font-extrabold t-1 text-base origin-left">챕터를 골라 주세요</p>
                     <p class="text-[12px] font-semibold t-3 mt-0.5 break-keep">4글자가 아닌 성어는 객관식으로 나와요</p>
                 </div>
-                <button id="btn-footer-start" type="button" disabled class="btn btn-green h-12 px-6 shrink-0">퀴즈 시작</button>
+                <button id="btn-footer-start" type="button" disabled class="btn btn-green h-12 px-5 shrink-0">퀴즈 시작</button>
             </div>
         </footer>
     </div>
@@ -631,7 +642,7 @@
         'use strict';
         // ===== 상수 · 저장소 =====
         const GRAD_STREAK = 2; // 오답 노트에서 연속 N번 맞히면 졸업
-        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', sound: 'idiom_sound_v1', xp: 'idiom_xp_v1', streak: 'idiom_streak_v1' };
+        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', sound: 'idiom_sound_v1', haptic: 'idiom_haptic_v1', xp: 'idiom_xp_v1', streak: 'idiom_streak_v1' };
         const XP_PER_CORRECT = 10, XP_PERFECT_BONUS = 20, DAILY_GOAL = 50;
         const QUIZ_TYPES = {
             fill: '앞 두 글자를 보고 뒤 두 글자를 써요. 4글자가 아닌 성어는 뜻 고르기로 나와요.',
@@ -756,7 +767,58 @@
                 }
             };
         })();
-        function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+
+        // ===== 햅틱 =====
+        // 길게 '드르륵' 울리지 않고, 의미 있는 순간에만 짧고 또렷한 패턴을 준다.
+        // 안드로이드: navigator.vibrate 패턴. iOS(18+) Safari는 vibrate가 없어서,
+        // 숨긴 switch 체크박스의 label을 누르면 나는 시스템 햅틱을 탭 횟수로 흉내 낸다.
+        const haptic = (() => {
+            let enabled = storeGet(STORE.haptic, 'on') !== 'off';
+            const canVibrate = typeof navigator.vibrate === 'function';
+            const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            function iosTap() {
+                const keep = document.activeElement;
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                label.setAttribute('aria-hidden', 'true');
+                label.style.display = 'none';
+                input.type = 'checkbox';
+                input.setAttribute('switch', '');
+                input.tabIndex = -1;
+                label.appendChild(input);
+                document.head.appendChild(label);
+                label.click();
+                label.remove();
+                if (keep && keep !== document.activeElement && typeof keep.focus === 'function') keep.focus({ preventScroll: true });
+            }
+            // [안드로이드 진동 패턴(ms: 울림, 쉼, 울림…), iOS 탭 시점(ms)]
+            const P = {
+                tick:      [[6], [0]],                         // 고르기 · 토글 · 카드 넘김
+                select:    [[10], [0]],                        // 챕터 선택처럼 '찜' 하는 동작
+                snap:      [[8], [0]],                         // 드래그가 넘어가는 지점을 지날 때
+                success:   [[10, 70, 16], [0, 90]],            // 정답: 가볍게 톡-톡
+                combo:     [[8, 50, 10, 50, 20], [0, 70, 140]],// 3연속부터: 점점 또렷하게
+                error:     [[22, 80, 22], [0, 120]],           // 오답: 묵직하게 두 번
+                known:     [[8, 60, 14], [0, 80]],             // 외웠어요 도장
+                celebrate: [[12, 70, 12, 70, 12, 90, 36], [0, 90, 180, 300]] // 만점 · 졸업
+            };
+            let last = 0;
+            return {
+                supported: canVibrate || isIOS,
+                get on() { return enabled; },
+                set(v) { enabled = v; storeSet(STORE.haptic, v ? 'on' : 'off'); },
+                play(name) {
+                    if (!enabled || !P[name]) return;
+                    const now = performance.now();
+                    if ((name === 'tick' || name === 'snap') && now - last < 45) return; // 연타로 뭉개지지 않게
+                    last = now;
+                    try {
+                        if (canVibrate) navigator.vibrate(P[name][0]);
+                        else if (isIOS) P[name][1].forEach((t) => (t ? setTimeout(iosTap, t) : iosTap()));
+                    } catch (e) { /* 진동이 안 돼도 앱은 계속 */ }
+                }
+            };
+        })();
 
         // ===== 마스코트: 먹물방울 '먹동이' =====
         const MASCOT_FACES = {
@@ -1013,6 +1075,7 @@
                 const items = chapterItems([ch.id]);
                 const knownCnt = items.filter((it) => state.known.has(it.index)).length;
                 btn.querySelector('.tile-bar i').style.width = `${(knownCnt / items.length) * 100}%`;
+                btn.querySelector('.tile-bar').classList.toggle('is-empty', knownCnt === 0); // 외운 게 없으면 빈 막대를 숨겨 타일을 깔끔하게
                 btn.setAttribute('aria-label', `챕터 ${ch.id}, ${(ch.id - 1) * 10 + 1}번부터 ${ch.id * 10}번, 외운 성어 ${knownCnt}/${items.length}${isActive ? ', 선택됨' : ''}`);
                 btn.classList.toggle('animate-entry', state.isMenuFirstLoad);
             });
@@ -1052,7 +1115,7 @@
             if (shownStats && streak > shownStats.streak) setTimeout(() => { $('stat-streak').innerText = streak; restartClass($('stat-streak').closest('.panel'), 'pop'); }, 500);
             else $('stat-streak').innerText = streak;
             shownStats = { xp, streak };
-            $('stat-goal').innerText = DAILY_GOAL;
+            $('stat-xp-label').innerText = xp >= DAILY_GOAL ? '오늘 목표 달성' : xp > 0 ? `목표까지 ${DAILY_GOAL - xp} XP` : `오늘 목표 ${DAILY_GOAL} XP`;
             $('stat-xp-bar').style.width = `${Math.min(100, (xp / DAILY_GOAL) * 100)}%`;
             $('menu-greet').innerText = greeting();
             if (state.isMenuFirstLoad) renderMascot('mascot-menu', xp >= DAILY_GOAL ? 'happy' : 'idle', 'idle');
@@ -1064,7 +1127,9 @@
                 if (state.selectedChapters.includes(chapterId)) state.selectedChapters = state.selectedChapters.filter((c) => c !== chapterId);
                 else state.selectedChapters.push(chapterId);
             } else { state.selectedChapters = [chapterId]; }
-            sfx.play(state.selectedChapters.includes(chapterId) ? 'select' : 'tap');
+            const picked = state.selectedChapters.includes(chapterId);
+            sfx.play(picked ? 'select' : 'tap');
+            haptic.play(picked ? 'select' : 'tick');
             renderMenu();
         }
 
@@ -1089,6 +1154,7 @@
                 updateStudyCardData(item); restartAnimation('#view-study .text-pop', 'text-pop'); return;
             }
             sfx.play('flip');
+            if (!flung) haptic.play('tick'); // 던진 카드는 이미 드래그 중에 '딸깍'을 줬다
             studyBusyUntil = performance.now() + 420;
             const sign = direction === 'next' ? -1 : 1;
             // 손가락으로 던진 카드는 화면 밖까지 날아가고, 버튼으로 넘길 때는 살짝만 밀린다
@@ -1172,6 +1238,8 @@
                 d.x = x;
                 card.style.transform = `translateX(${x}px) rotate(${x / 20}deg)`;
                 const k = Math.min(1, Math.abs(x) / 90);
+                const past = Math.abs(x) > 90 && !(x > 0 && state.studyIdx === 0);
+                if (past !== d.past) { d.past = past; if (past) haptic.play('snap'); } // 놓으면 넘어가는 지점을 손끝으로 알려 준다
                 $('swipe-next').style.opacity = x < 0 ? k : 0;
                 $('swipe-prev').style.opacity = x > 0 && state.studyIdx > 0 ? k : 0;
             });
@@ -1314,7 +1382,7 @@
             let extra = '';
             if (!isCorrect) {
                 sfx.play(skipped ? 'skip' : 'wrong');
-                if (!skipped) buzz(60);
+                haptic.play(skipped ? 'tick' : 'error');
                 $('feedback-title').innerText = skipped ? '정답은 바로' : '아쉬워요! 정답은';
                 $('feedback-answer').innerText = item.text;
                 $('feedback-mean').innerText = `${item.hanja} · ${item.mean}`;
@@ -1328,7 +1396,6 @@
                 addXP(XP_PER_CORRECT);
                 floatXP(`+${XP_PER_CORRECT} XP`);
                 restartClass($('quiz-progress'), 'shine');
-                buzz(12);
                 const PRAISE = ['정답이에요!', '좋아요!', '훌륭해요!', '맞았어요!', '완벽해요!'];
                 $('feedback-title').innerText = qz.combo >= 3 ? `${qz.combo}연속 정답!` : PRAISE[Math.floor(Math.random() * PRAISE.length)];
                 $('feedback-answer').innerText = item.text;
@@ -1345,7 +1412,9 @@
                     }
                 }
                 $('feedback-mean').innerText = extra || item.hanja;
-                sfx.play(extra === '오답 노트 졸업!' ? 'graduate' : 'correct', qz.combo);
+                const graduated = extra === '오답 노트 졸업!';
+                sfx.play(graduated ? 'graduate' : 'correct', qz.combo);
+                haptic.play(graduated ? 'celebrate' : qz.combo >= 3 ? 'combo' : 'success');
             }
             renderCombo(true);
             // 정답 0.6초(졸업·연속 안내가 있으면 1.1초), 오답 1.5초 뒤 자동으로 다음 문제로 넘어간다.
@@ -1421,8 +1490,9 @@
                 qz.celebrated = true;
                 if (isPerfect) { qz.xp += XP_PERFECT_BONUS; addXP(XP_PERFECT_BONUS); }
                 qz.streakUp = touchStreak();
+                haptic.play(isPerfect ? 'celebrate' : 'success');
                 setTimeout(() => { if (isPerfect) { sfx.play('perfect'); triggerConfetti(); } else sfx.play('finish'); }, 250);
-                if (qz.streakUp) setTimeout(() => sfx.play('streak'), 1500);
+                if (qz.streakUp) setTimeout(() => { sfx.play('streak'); haptic.play('success'); }, 1500);
             }
             $('result-score').innerText = score;
             $('result-total').innerText = total;
@@ -1439,6 +1509,7 @@
                     box.style.opacity = '';
                     restartClass(box, 'pop-in');
                     sfx.play('pop');
+                    haptic.play('tick');
                     countUp(el, val, suffix);
                 }, 700 + i * 220);
             });
@@ -1501,6 +1572,7 @@
                     <button type="button" aria-label="${esc(it.text)} 삭제" class="delete-btn icon-btn absolute top-3 right-3"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">${ICONS.cross}</svg></button>`;
                 el.querySelector('.delete-btn').onclick = () => {
                     sfx.play('pop');
+                    haptic.play('tick');
                     el.style.transition = 'opacity 0.25s var(--ease), transform 0.25s var(--ease)';
                     el.style.opacity = '0'; el.style.transform = 'translateX(24px)';
                     setTimeout(() => { state.savedWrongs = state.savedWrongs.filter((x) => x.index !== w.index); saveWrongs(); renderReview(); renderMenu(); }, 300);
@@ -1693,16 +1765,16 @@
                 state.studyIdx = 0; buildStudyList(); navigateTo('study');
             });
             on('btn-review', () => navigateTo('review'));
-            on('btn-multi-select', () => { state.multiSelectMode = !state.multiSelectMode; state.isMenuFirstLoad = false; sfx.play('tap'); renderMenu(); });
+            on('btn-multi-select', () => { state.multiSelectMode = !state.multiSelectMode; state.isMenuFirstLoad = false; sfx.play('tap'); haptic.play('tick'); renderMenu(); });
             on('btn-select-all', () => {
                 const isAll = state.selectedChapters.length === CHAPTERS.length;
                 state.selectedChapters = isAll ? [] : CHAPTERS.map((c) => c.id);
-                state.isMenuFirstLoad = false; sfx.play(isAll ? 'tap' : 'select'); renderMenu();
+                state.isMenuFirstLoad = false; sfx.play(isAll ? 'tap' : 'select'); haptic.play(isAll ? 'tick' : 'select'); renderMenu();
             });
             document.querySelectorAll('#quiz-type-seg [data-type]').forEach((b) => {
                 b.onclick = () => {
                     state.quizType = validType(b.dataset.type); storeSet(STORE.type, state.quizType); renderQuizType();
-                    sfx.play('select'); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+                    sfx.play('select'); haptic.play('tick'); restartClass(b, 'pop');
                 };
             });
 
@@ -1716,6 +1788,7 @@
                 if (nowKnown) state.known.add(it.index); else state.known.delete(it.index);
                 saveKnown(); updateStudyCardData(it);
                 sfx.play(nowKnown ? 'known' : 'unknown');
+                haptic.play(nowKnown ? 'known' : 'tick');
                 if (nowKnown) { const b = $('study-known-badge'); b.classList.remove('pop-in'); void b.offsetWidth; b.classList.add('pop-in'); }
             });
             initStudyDrag();
@@ -1727,7 +1800,12 @@
                 requestAnimationFrame(() => { header.classList.toggle('scrolled', window.scrollY > 4); scrollTick = false; });
             }, { passive: true });
 
-            on('btn-theme-toggle', () => { applyTheme(state.theme === 'light' ? 'dark' : 'light'); sfx.play('tap'); });
+            on('btn-theme-toggle', () => { applyTheme(state.theme === 'light' ? 'dark' : 'light'); sfx.play('tap'); haptic.play('tick'); });
+            const hb = $('btn-haptic');
+            const renderHaptic = () => { hb.setAttribute('aria-pressed', haptic.on ? 'true' : 'false'); $('haptic-label').innerText = haptic.on ? '진동 켜짐' : '진동 꺼짐'; };
+            hb.classList.toggle('hidden', !haptic.supported); // 진동을 못 내는 기기(데스크톱 등)에서는 숨긴다
+            renderHaptic();
+            hb.onclick = () => { haptic.set(!haptic.on); renderHaptic(); haptic.play('select'); sfx.play('tap'); };
             on('btn-sound', () => { sfx.set(!sfx.on); renderSoundButton(); sfx.play('select'); });
             renderSoundButton();
             renderMascot('mascot-stop', 'sad', 'idle');
