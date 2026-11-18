@@ -56,6 +56,7 @@ The look is a bright, game-like study app: chunky pressable buttons, a mascot, c
 - Fonts: `.fun` = Jua (display: titles, idioms, numbers), `.hanja` = Noto Serif KR, everything else Pretendard. All have system fallbacks because the CDNs can be unreachable.
 - Mascot: `renderMascot(id, mood, anim)` draws the ink-drop character (`idle`/`happy`/`sad`/`wow` faces, `idle`/`jump`/`droop` motion) into an empty `.mascot` element.
 - Sound: `sfx.play(name)` synthesizes short effects with Web Audio (no audio files, works offline, silently does nothing if audio is unavailable). The header speaker button toggles it.
+- Motion: `navigateTo` slides views by `VIEW_DEPTH` (deeper = enter from the right, shallower = from the left, same depth = fade-up). The study card follows the pointer (`initStudyDrag`: `touch-action: pan-y` on `#study-card-area`, rubber band on the first card, a far drag or fast flick calls `studyStep(…, flung = true)`, anything else springs back; `studyBusyUntil` ignores drags while a card is flying). The header is `position: sticky` and gets `.scrolled` on scroll, which is why horizontal overflow is clipped on `html` / `body { overflow-x: clip }` rather than `hidden` on `body`. Use `restartClass(el, cls)` to replay a one-shot animation (`pop`, `pop-in`, `shine`, `type-pop`).
 - Keep text ≥ 11px and WCAG-AA contrast in both themes. `prefers-reduced-motion` disables animations globally.
 
 ### Search

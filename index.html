@@ -77,12 +77,19 @@
         html, body {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
             background-color: var(--bg); color: var(--ink);
-            overflow-x: hidden; -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch;
             font-family: var(--font-ui); font-synthesis: none;
             -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none; -webkit-font-smoothing: antialiased;
         }
+        /* body가 스크롤 컨테이너가 되면 sticky 헤더가 깨지므로 가로 넘침은 html에서만 막는다 */
+        html { overflow-x: hidden; }
+        body { overflow-x: clip; }
         input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
+
+        /* 스크롤하면 헤더가 위에 붙고 아래 선이 생긴다 */
+        .app-header { position: sticky; top: 0; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); height: calc(48px + env(safe-area-inset-top, 0px)); transition: box-shadow 200ms var(--ease); }
+        .app-header.scrolled { box-shadow: 0 2px 0 var(--line); }
         .hidden { display: none !important; }
 
         /* 글꼴 · 글자색 역할 */
@@ -141,7 +148,10 @@
 
         /* 진행 막대 */
         .bar { height: 16px; border-radius: 8px; background: var(--raised); overflow: hidden; }
-        .bar > i { display: block; height: 100%; width: 0; border-radius: 8px; background: var(--green); position: relative; transition: width 500ms var(--spring); }
+        .bar > i { display: block; height: 100%; width: 0; border-radius: 8px; background: var(--green); position: relative; overflow: hidden; transition: width 500ms var(--spring), background-color 300ms var(--ease); }
+        .bar.hot > i { background: var(--amber); }
+        .bar > i.shine::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); animation: shine 700ms var(--ease) both; }
+        @keyframes shine { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
         .bar > i::after { content: ''; position: absolute; left: 8px; right: 8px; top: 4px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.35); }
         .bar.amber > i { background: var(--amber); }
         .bar.thin { height: 10px; border-radius: 5px; }
@@ -187,7 +197,13 @@
             #study-mean-container { min-height: 100px !important; }
         }
         #study-mean-container { min-height: 80px; display: flex; align-items: center; justify-content: center; width: 100%; }
-        #study-card-inner { transition: transform 200ms var(--ease), opacity 200ms var(--ease); }
+        #study-card-inner { transition: transform 200ms var(--ease), opacity 200ms var(--ease); will-change: transform; }
+        /* 가로 드래그는 앱이, 세로 스크롤은 브라우저가 처리 */
+        #study-card-area { touch-action: pan-y; }
+        @media (pointer: fine) { #study-card-inner { cursor: grab; } #study-card-inner.dragging { cursor: grabbing; } }
+        .swipe-hint { position: absolute; top: 50%; height: 40px; margin-top: -20px; padding: 0 12px; border-radius: 20px; display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 800; opacity: 0; pointer-events: none; }
+        .swipe-hint.next { right: 16px; background: var(--blue-soft); color: var(--blue-text); }
+        .swipe-hint.prev { left: 16px; background: var(--raised); color: var(--ink-2); }
         .known-badge {
             position: absolute; top: 16px; right: 16px; height: 32px; padding: 0 12px 0 8px; border-radius: 16px;
             display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 800;
@@ -215,7 +231,10 @@
         .choice-btn.is-right .choice-key { border-color: var(--green-line); color: var(--green-text); }
         .choice-btn.is-wrong { background: var(--red-soft); border-color: var(--red-line); box-shadow: 0 4px 0 var(--red-line); color: var(--red-text); animation: shake 400ms var(--ease); }
         .choice-btn.is-wrong .choice-key { border-color: var(--red-line); color: var(--red-text); }
-        .choice-btn.is-dim { opacity: 0.45; }
+        .choice-btn.is-dim { opacity: 0.45; transition: opacity 200ms var(--ease); }
+        .choice-in { animation: rise 380ms var(--spring) both; }
+        @keyframes typePop { 0% { transform: scale(1); } 40% { transform: scale(1.04); } 100% { transform: scale(1); } }
+        .type-pop { animation: typePop 180ms var(--ease); }
 
         #quiz-hint { transition: opacity 300ms var(--ease), transform 300ms var(--spring); }
         .hint-chip { display: inline-block; padding: 4px 12px; border-radius: 10px; background: var(--amber-soft); color: var(--amber-text); }
@@ -289,6 +308,10 @@
         @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
         .rise { animation: rise 450ms var(--spring) both; }
         .fade-enter-active { animation: rise 350ms var(--ease) both; }
+        @keyframes viewInFwd { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+        @keyframes viewInBack { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+        .view-in-fwd { animation: viewInFwd 420ms var(--spring) both; }
+        .view-in-back { animation: viewInBack 420ms var(--spring) both; }
         @keyframes tileIn { from { opacity: 0; transform: translateY(16px) scale(0.85); } to { opacity: 1; transform: none; } }
         .animate-entry { animation: tileIn 450ms var(--spring) backwards; }
         @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
@@ -317,11 +340,11 @@
 <body>
     <div id="app" class="max-w-md sm:max-w-[520px] mx-auto min-h-[100dvh] flex flex-col p-5 sm:p-8 relative">
         <!-- 헤더 -->
-        <header class="relative flex items-center mb-4 shrink-0 z-20 h-12">
-            <button id="btn-back" type="button" aria-label="뒤로" class="icon-btn absolute left-0 z-10 hidden">
+        <header id="app-header" class="app-header flex items-center mb-4 shrink-0 z-20 -mx-5 px-5 sm:-mx-8 sm:px-8">
+            <button id="btn-back" type="button" aria-label="뒤로" class="icon-btn absolute left-5 sm:left-8 z-10 hidden">
                 <svg id="header-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
             </button>
-            <div class="absolute right-0 z-10 flex items-center gap-1">
+            <div class="absolute right-5 sm:right-8 z-10 flex items-center gap-1">
                 <button id="btn-sound" type="button" aria-label="효과음 끄기" aria-pressed="true" class="icon-btn">
                     <svg id="sound-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
                 </button>
@@ -424,6 +447,8 @@
                 </div>
                 <div id="study-card-area" class="flex justify-center w-full pb-2">
                     <div id="study-card-inner" class="card3d card-fixed-size relative p-8 flex flex-col items-center justify-center text-center gap-6">
+                        <span id="swipe-next" class="swipe-hint next" aria-hidden="true">다음<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+                        <span id="swipe-prev" class="swipe-hint prev" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>이전</span>
                         <span id="study-known-badge" class="known-badge hidden" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>외웠어요</span>
                         <p id="study-index" class="index-tag">1장 · 001</p>
                         <div class="space-y-3 w-full">
@@ -552,7 +577,7 @@
         <footer id="footer-menu" class="fixed left-0 right-0 px-4 pb-4 sm:px-8 sm:pb-8 z-30 transition-transform duration-500 pointer-events-none">
             <div class="footer-bar max-w-md sm:max-w-[488px] mx-auto p-3 pl-5 flex items-center gap-3 pointer-events-auto">
                 <div class="flex-1 min-w-0">
-                    <p id="footer-status" class="font-extrabold t-1 text-base">챕터를 골라 주세요</p>
+                    <p id="footer-status" class="font-extrabold t-1 text-base origin-left">챕터를 골라 주세요</p>
                     <p class="text-[12px] font-semibold t-3 mt-0.5 break-keep">4글자가 아닌 성어는 객관식으로 나와요</p>
                 </div>
                 <button id="btn-footer-start" type="button" disabled class="btn btn-green h-12 px-6 shrink-0">퀴즈 시작</button>
@@ -808,6 +833,7 @@
             storeSet(STORE.theme, theme);
         }
 
+        function restartClass(el, cls) { if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
         function restartAnimation(selector, animClass) {
             document.querySelectorAll(selector).forEach((el) => { el.classList.remove(animClass); void el.offsetWidth; el.classList.add(animClass); });
         }
@@ -871,6 +897,7 @@
         let navBusy = false; // 전환 애니메이션(300ms) 중 중복 호출을 막아 히스토리가 꼬이지 않게 한다.
         function clearQuizTimer() { if (state.quiz.timer) { clearTimeout(state.quiz.timer); state.quiz.timer = null; } }
 
+        const VIEW_DEPTH = { menu: 0, study: 1, quiz: 1, review: 1, search: 1, result: 2 };
         function navigateTo(newView, fromPopState = false) {
             if (state.view === newView) return;
             if (navBusy) { if (fromPopState) setTimeout(() => navigateTo(newView, true), 340); return; }
@@ -888,9 +915,11 @@
             }
             sfx.play('tap');
 
+            // 깊이가 깊어지면 왼쪽으로 밀려나고 오른쪽에서 들어온다(뒤로 갈 때는 반대).
+            const dir = Math.sign(VIEW_DEPTH[newView] - VIEW_DEPTH[state.view]);
             const currentEl = els.views[state.view];
             currentEl.style.opacity = '0';
-            currentEl.style.transform = 'translateY(-10px)';
+            currentEl.style.transform = dir ? `translateX(${dir * -32}px)` : 'translateY(-10px)';
             currentEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
 
             setTimeout(() => {
@@ -898,8 +927,9 @@
                 const newEl = els.views[newView];
                 newEl.style.opacity = ''; newEl.style.transform = ''; newEl.style.transition = '';
                 newEl.classList.remove('hidden');
+                newEl.classList.remove('fade-enter-active', 'view-in-fwd', 'view-in-back');
                 void newEl.offsetWidth;
-                newEl.classList.add('fade-enter-active');
+                newEl.classList.add(dir > 0 ? 'view-in-fwd' : dir < 0 ? 'view-in-back' : 'fade-enter-active');
 
                 if (newView === 'menu') state.isMenuFirstLoad = true;
                 else if (newView === 'search') $('search-input').focus();
@@ -997,7 +1027,9 @@
             $('btn-start-study').disabled = !hasSelection;
             const listLen = chapterItems(state.selectedChapters).length;
             $('study-btn-sub').innerText = hasSelection ? `${listLen}개 성어` : '챕터를 먼저 선택하세요';
-            $('footer-status').innerText = hasSelection ? `${listLen}문제 준비 완료` : '챕터를 골라 주세요';
+            const status = hasSelection ? `${listLen}문제 준비 완료` : '챕터를 골라 주세요';
+            const fs = $('footer-status');
+            if (fs.innerText !== status) { fs.innerText = status; if (!state.isMenuFirstLoad) { restartClass(fs, 'pop'); restartClass($('btn-footer-start'), 'pop'); } }
             renderQuizType();
             renderStats();
         }
@@ -1010,10 +1042,16 @@
             if (progress.total > 0) return '다시 왔네요! 퀴즈 한 판으로 몸 풀어 볼까요?';
             return '안녕하세요! 챕터를 고르고 첫 퀴즈를 풀어 봐요.';
         }
+        let shownStats = null; // 마지막으로 화면에 보여 준 값. 늘었으면 숫자를 굴려 올린다.
         function renderStats() {
-            const xp = todayXP();
-            $('stat-streak').innerText = currentStreak();
-            $('stat-xp').innerText = xp;
+            const xp = todayXP(), streak = currentStreak();
+            if (shownStats && xp > shownStats.xp) {
+                const from = shownStats.xp;
+                setTimeout(() => { countUp($('stat-xp'), xp, '', from); restartClass($('stat-xp').closest('.panel'), 'pop'); }, 350);
+            } else $('stat-xp').innerText = xp;
+            if (shownStats && streak > shownStats.streak) setTimeout(() => { $('stat-streak').innerText = streak; restartClass($('stat-streak').closest('.panel'), 'pop'); }, 500);
+            else $('stat-streak').innerText = streak;
+            shownStats = { xp, streak };
             $('stat-goal').innerText = DAILY_GOAL;
             $('stat-xp-bar').style.width = `${Math.min(100, (xp / DAILY_GOAL) * 100)}%`;
             $('menu-greet').innerText = greeting();
@@ -1036,19 +1074,28 @@
             state.studyList = state.studyShuffle ? shuffle(l) : l;
         }
 
-        function renderStudy(direction = 'none') {
+        let studyBusyUntil = 0; // 카드가 넘어가는 동안에는 새 드래그를 받지 않는다
+        function renderStudy(direction = 'none', flung = false) {
             const list = state.studyList;
             if (!list.length) return;
             const item = list[state.studyIdx];
             const cardInner = $('study-card-inner');
+            resetSwipeHints();
             $('study-current-num').innerText = state.studyIdx + 1;
             $('study-total-num').innerText = list.length;
             $('study-progress').style.width = `${((state.studyIdx + 1) / list.length) * 100}%`;
-            if (direction === 'none') { updateStudyCardData(item); restartAnimation('#view-study .text-pop', 'text-pop'); return; }
+            if (direction === 'none') {
+                cardInner.style.transition = ''; cardInner.style.transform = ''; cardInner.style.opacity = '';
+                updateStudyCardData(item); restartAnimation('#view-study .text-pop', 'text-pop'); return;
+            }
             sfx.play('flip');
-            const out = direction === 'next' ? 'translateX(-56px) rotate(-4deg)' : 'translateX(56px) rotate(4deg)';
-            const from = direction === 'next' ? 'translateX(56px) rotate(4deg)' : 'translateX(-56px) rotate(-4deg)';
-            cardInner.style.transition = 'transform 0.2s var(--ease), opacity 0.2s var(--ease)';
+            studyBusyUntil = performance.now() + 420;
+            const sign = direction === 'next' ? -1 : 1;
+            // 손가락으로 던진 카드는 화면 밖까지 날아가고, 버튼으로 넘길 때는 살짝만 밀린다
+            const out = flung ? `translateX(${sign * 420}px) rotate(${sign * 18}deg)` : `translateX(${sign * 56}px) rotate(${sign * 4}deg)`;
+            const from = `translateX(${-sign * 56}px) rotate(${-sign * 4}deg)`;
+            const exitMs = flung ? 180 : 200;
+            cardInner.style.transition = `transform ${exitMs}ms var(--ease), opacity ${exitMs}ms var(--ease)`;
             cardInner.style.transform = out;
             cardInner.style.opacity = '0';
             setTimeout(() => {
@@ -1056,8 +1103,9 @@
                 cardInner.style.transition = 'none';
                 cardInner.style.transform = from;
                 setTimeout(() => { cardInner.style.transition = 'transform 0.45s var(--spring), opacity 0.25s var(--ease)'; cardInner.style.transform = 'none'; cardInner.style.opacity = '1'; }, 40);
-            }, 200);
+            }, exitMs);
         }
+        function resetSwipeHints() { ['swipe-next', 'swipe-prev'].forEach((id) => { $(id).style.opacity = ''; }); }
 
         function updateStudyCardData(item) {
             if (!item) return;
@@ -1074,10 +1122,61 @@
             $('btn-study-shuffle').setAttribute('aria-pressed', state.studyShuffle ? 'true' : 'false');
         }
 
-        function studyStep(delta) {
-            if (delta < 0) { if (state.studyIdx > 0) { state.studyIdx--; renderStudy('prev'); } }
+        function studyStep(delta, flung = false) {
+            if (delta < 0) { if (state.studyIdx > 0) { state.studyIdx--; renderStudy('prev', flung); } }
             else if (state.studyIdx >= state.studyList.length - 1) navigateTo('menu');
-            else { state.studyIdx++; renderStudy('next'); }
+            else { state.studyIdx++; renderStudy('next', flung); }
+        }
+
+        // 카드가 손가락을 따라 기울며 움직이고, 충분히 밀거나 빠르게 튕기면 넘어간다.
+        function initStudyDrag() {
+            const area = $('study-card-area');
+            const card = $('study-card-inner');
+            let d = null;
+            const end = (e) => {
+                if (!d || e.pointerId !== d.id) return;
+                const g = d; d = null;
+                card.classList.remove('dragging');
+                if (!g.active) return;
+                const fast = Math.abs(g.vx) > 0.5 && Math.abs(g.x) > 30;
+                const far = Math.abs(g.x) > 90;
+                const step = g.x < 0 ? 1 : -1;
+                const blocked = step < 0 && state.studyIdx === 0;
+                if ((fast || far) && !blocked && e.type === 'pointerup') { studyStep(step, true); return; }
+                resetSwipeHints();
+                card.style.transition = 'transform 0.45s var(--spring)';
+                card.style.transform = '';
+            };
+            area.addEventListener('pointerdown', (e) => {
+                if (state.view !== 'study' || performance.now() < studyBusyUntil) return;
+                if (e.pointerType === 'mouse' && (e.button !== 0 || e.target.closest('.selectable'))) return;
+                if (e.target.closest('button')) return;
+                d = { id: e.pointerId, sx: e.clientX, sy: e.clientY, x: 0, vx: 0, lx: e.clientX, lt: performance.now(), active: false };
+            });
+            area.addEventListener('pointermove', (e) => {
+                if (!d || e.pointerId !== d.id) return;
+                const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+                if (!d.active) {
+                    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+                    if (Math.abs(dy) > Math.abs(dx)) { d = null; return; } // 세로 스크롤로 판단
+                    d.active = true;
+                    try { area.setPointerCapture(e.pointerId); } catch (err) {}
+                    card.classList.add('dragging');
+                    card.style.transition = 'none';
+                }
+                const now = performance.now();
+                d.vx = (e.clientX - d.lx) / Math.max(1, now - d.lt);
+                d.lx = e.clientX; d.lt = now;
+                // 첫 카드에서 오른쪽으로 당기면 고무줄처럼 덜 움직인다
+                const x = dx > 0 && state.studyIdx === 0 ? dx * 0.25 : dx;
+                d.x = x;
+                card.style.transform = `translateX(${x}px) rotate(${x / 20}deg)`;
+                const k = Math.min(1, Math.abs(x) / 90);
+                $('swipe-next').style.opacity = x < 0 ? k : 0;
+                $('swipe-prev').style.opacity = x > 0 && state.studyIdx > 0 ? k : 0;
+            });
+            area.addEventListener('pointerup', end);
+            area.addEventListener('pointercancel', end);
         }
 
         // ===== 퀴즈 =====
@@ -1143,7 +1242,8 @@
                 q.options.forEach((opt, i) => {
                     const b = document.createElement('button');
                     b.type = 'button';
-                    b.className = 'choice-btn tap';
+                    b.className = 'choice-btn tap choice-in';
+                    b.style.animationDelay = `${120 + i * 50}ms`;
                     b.dataset.index = opt.index;
                     b.innerHTML = `<span class="choice-key" aria-hidden="true">${i + 1}</span><span class="choice-label">${esc(opt.text)}</span>`;
                     b.onclick = () => submitAnswer({ picked: opt.index });
@@ -1192,6 +1292,7 @@
                 if (!isCorrect && !skipped) { inputEl.classList.add('shake-error'); setTimeout(() => inputEl.classList.remove('shake-error'), 400); }
             } else {
                 document.querySelectorAll('#quiz-choices .choice-btn').forEach((b) => {
+                    b.classList.remove('choice-in'); b.style.animationDelay = '';
                     const i = Number(b.dataset.index);
                     b.classList.add(i === item.index ? 'is-right' : i === picked ? 'is-wrong' : 'is-dim');
                 });
@@ -1226,6 +1327,8 @@
                 qz.xp += XP_PER_CORRECT;
                 addXP(XP_PER_CORRECT);
                 floatXP(`+${XP_PER_CORRECT} XP`);
+                restartClass($('quiz-progress'), 'shine');
+                buzz(12);
                 const PRAISE = ['정답이에요!', '좋아요!', '훌륭해요!', '맞았어요!', '완벽해요!'];
                 $('feedback-title').innerText = qz.combo >= 3 ? `${qz.combo}연속 정답!` : PRAISE[Math.floor(Math.random() * PRAISE.length)];
                 $('feedback-answer').innerText = item.text;
@@ -1254,7 +1357,8 @@
             const c = state.quiz.combo;
             el.innerHTML = c >= 2 ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONS.flame}</svg>${c}` : '';
             el.setAttribute('aria-label', c >= 2 ? `${c}연속 정답` : '');
-            if (animate && c >= 2) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+            if (animate && c >= 2) restartClass(el, 'pop');
+            $('quiz-progress').parentElement.classList.toggle('hot', c >= 3); // 3연속부터 막대가 불붙은 색으로
         }
         function floatXP(text) {
             const host = $('quiz-combo').parentElement;
@@ -1294,13 +1398,13 @@
         }
 
         // ===== 결과 =====
-        function countUp(el, to, suffix = '') {
+        function countUp(el, to, suffix = '', from = 0) {
             const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (reduce || to <= 0) { el.innerText = `${to}${suffix}`; return; }
+            if (reduce || to <= from) { el.innerText = `${to}${suffix}`; return; }
             const t0 = performance.now(), dur = 700;
             const step = (now) => {
                 const k = Math.min(1, (now - t0) / dur);
-                el.innerText = `${Math.round(to * (1 - Math.pow(1 - k, 3)))}${suffix}`;
+                el.innerText = `${Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)))}${suffix}`;
                 if (k < 1) requestAnimationFrame(step);
             };
             requestAnimationFrame(step);
@@ -1317,25 +1421,34 @@
                 qz.celebrated = true;
                 if (isPerfect) { qz.xp += XP_PERFECT_BONUS; addXP(XP_PERFECT_BONUS); }
                 qz.streakUp = touchStreak();
-                setTimeout(() => {
-                    if (isPerfect) { sfx.play('perfect'); triggerConfetti(); } else sfx.play('finish');
-                    if (qz.streakUp) sfx.play('streak');
-                }, 250);
+                setTimeout(() => { if (isPerfect) { sfx.play('perfect'); triggerConfetti(); } else sfx.play('finish'); }, 250);
+                if (qz.streakUp) setTimeout(() => sfx.play('streak'), 1500);
             }
             $('result-score').innerText = score;
             $('result-total').innerText = total;
             $('result-title').innerText = isPerfect ? '완벽해요! 만점이에요' : ratio >= 0.8 ? '거의 다 외웠어요!' : ratio >= 0.5 ? '잘하고 있어요!' : '괜찮아요, 한 번 더 해 봐요!';
             renderMascot('mascot-result', isPerfect ? 'wow' : ratio >= 0.5 ? 'happy' : 'sad', ratio >= 0.5 ? 'jump' : 'droop');
-            countUp($('res-xp'), qz.xp);
-            countUp($('res-acc'), Math.round(ratio * 100), '%');
-            countUp($('res-combo'), qz.maxCombo);
+            const boxes = [[$('res-xp'), qz.xp, ''], [$('res-acc'), Math.round(ratio * 100), '%'], [$('res-combo'), qz.maxCombo, '']];
+            boxes.forEach(([el, val, suffix], i) => {
+                const box = el.closest('.res-box');
+                el.innerText = `0${suffix}`;
+                box.classList.remove('pop-in');
+                box.style.opacity = '0';
+                setTimeout(() => {
+                    if (state.view !== 'result') { box.style.opacity = ''; el.innerText = `${val}${suffix}`; return; }
+                    box.style.opacity = '';
+                    restartClass(box, 'pop-in');
+                    sfx.play('pop');
+                    countUp(el, val, suffix);
+                }, 700 + i * 220);
+            });
 
             const streakEl = $('result-streak');
             streakEl.classList.toggle('hidden', !qz.streakUp);
             if (qz.streakUp) {
                 $('result-streak-text').innerText = currentStreak() > 1 ? `${currentStreak()}일 연속 학습!` : '연속 학습 시작!';
-                streakEl.classList.remove('pop-in'); void streakEl.offsetWidth; streakEl.classList.add('pop-in');
-                streakEl.style.animationDelay = '0.9s';
+                streakEl.style.animationDelay = '1.5s';
+                restartClass(streakEl, 'pop-in');
             }
             const extra = $('result-extra');
             extra.classList.toggle('hidden', !qz.graduated.length);
@@ -1605,13 +1718,13 @@
                 sfx.play(nowKnown ? 'known' : 'unknown');
                 if (nowKnown) { const b = $('study-known-badge'); b.classList.remove('pop-in'); void b.offsetWidth; b.classList.add('pop-in'); }
             });
-            // 학습 카드 스와이프
-            let sx = 0, sy = 0;
-            const area = $('study-card-area');
-            area.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; sy = e.changedTouches[0].clientY; }, { passive: true });
-            area.addEventListener('touchend', (e) => {
-                const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-                if (Math.abs(dx) > 50 && Math.abs(dy) < 40) studyStep(dx < 0 ? 1 : -1);
+            initStudyDrag();
+            const header = $('app-header');
+            let scrollTick = false;
+            window.addEventListener('scroll', () => {
+                if (scrollTick) return;
+                scrollTick = true;
+                requestAnimationFrame(() => { header.classList.toggle('scrolled', window.scrollY > 4); scrollTick = false; });
             }, { passive: true });
 
             on('btn-theme-toggle', () => { applyTheme(state.theme === 'light' ? 'dark' : 'light'); sfx.play('tap'); });
@@ -1621,7 +1734,13 @@
             on('btn-show-search', () => navigateTo('search'));
 
             const qIn = $('quiz-input');
-            qIn.oninput = (e) => { state.quiz.val = e.target.value; $('btn-quiz-check').disabled = state.quiz.val.length < 2; };
+            qIn.oninput = (e) => {
+                const grew = e.target.value.length > state.quiz.val.length;
+                state.quiz.val = e.target.value;
+                $('btn-quiz-check').disabled = state.quiz.val.length < 2;
+                if (grew) restartClass(qIn, 'type-pop');
+                if (state.quiz.val.length === 2 && grew) restartClass($('btn-quiz-check'), 'pop');
+            };
             qIn.onkeydown = (e) => {
                 if (e.key !== 'Enter' || e.isComposing) return; // 한글 조합 중 Enter는 무시
                 e.preventDefault();
