@@ -175,6 +175,34 @@
         .mascot svg { width: 100%; height: 100%; overflow: visible; display: block; }
         .mascot .body { transform-box: fill-box; transform-origin: 50% 90%; }
         .mascot.idle .body { animation: bob 2.4s ease-in-out infinite alternate; }
+        .mascot .eyes { transform-box: fill-box; transform-origin: 50% 50%; animation: blink 4.2s infinite; }
+        @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+
+        .spark { position: fixed; z-index: 1200; pointer-events: none; border-radius: 50%; will-change: transform, opacity; }
+        .spark.star { border-radius: 0; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+
+        .fb-mascot { width: 56px; height: 56px; margin: -8px -4px -8px 0; }
+        .kb-open .fb-mascot { width: 44px; height: 44px; }
+
+        .star-svg path { fill: var(--raised); stroke: var(--line); stroke-width: 1.5; stroke-linejoin: round; transition: fill 200ms var(--ease), stroke 200ms var(--ease); }
+        .star-svg.on path { fill: var(--amber); stroke: var(--amber-edge); }
+        .star-svg.big { margin-bottom: 8px; }
+        .rays {
+            position: absolute; left: 50%; top: 50%; width: 260px; height: 260px; margin: -130px 0 0 -130px; border-radius: 50%;
+            background: repeating-conic-gradient(var(--amber-soft) 0deg 12deg, transparent 12deg 30deg);
+            -webkit-mask-image: radial-gradient(circle, #000 25%, transparent 70%); mask-image: radial-gradient(circle, #000 25%, transparent 70%);
+            animation: spin 24s linear infinite, popIn 600ms var(--spring) both;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .result-card { overflow: clip; } /* 후광이 카드 밖으로 새지 않게 */
+
+        .ch-crown { position: absolute; top: -8px; right: -6px; width: 24px; height: 24px; border-radius: 12px; background: var(--amber); color: #fff; border: 2px solid var(--card); display: none; align-items: center; justify-content: center; }
+        .chapter-btn.mastered .ch-crown { display: flex; animation: popIn 420ms var(--spring) both; }
+        .chapter-btn.mastered .tile-bar i { background: var(--amber); }
+
+        .flame { color: var(--ink-3); opacity: 0.5; transform-origin: 50% 90%; transition: color 300ms var(--ease), opacity 300ms var(--ease); }
+        .flame.lit { color: var(--amber); opacity: 1; animation: flicker 1.6s ease-in-out infinite; }
+        @keyframes flicker { 0%, 100% { transform: scale(1) rotate(0deg); } 25% { transform: scale(1.06, 0.96) rotate(-3deg); } 50% { transform: scale(0.97, 1.05) rotate(2deg); } 75% { transform: scale(1.04, 0.98) rotate(-1deg); } }
         .mascot.jump .body { animation: jump 650ms var(--ease) both; }
         .mascot.droop .body { animation: droop 600ms var(--ease) both; }
         @keyframes bob { from { transform: translateY(0); } to { transform: translateY(-3px); } }
@@ -390,7 +418,7 @@
 
                 <div class="rise grid grid-cols-2 gap-3" style="animation-delay: 60ms">
                     <div class="panel stat-box">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="t-amber shrink-0" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                        <svg id="stat-flame" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="flame shrink-0" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                         <div>
                             <p class="stat-num t-amber"><span id="stat-streak">0</span><span class="stat-unit">일</span></p>
                             <p class="stat-label">연속 학습</p>
@@ -530,6 +558,7 @@
                                     <p id="feedback-answer" class="fun text-2xl t-1 leading-snug"></p>
                                     <p id="feedback-mean" class="text-sm font-semibold t-2 leading-relaxed break-keep"></p>
                                 </div>
+                                <div id="mascot-feedback" class="mascot fb-mascot shrink-0" aria-hidden="true"></div>
                             </div>
                         </div>
                     </div>
@@ -538,8 +567,16 @@
 
             <!-- 4. 결과 뷰 -->
             <div id="view-result" class="hidden h-full flex flex-col gap-8 py-2">
-                <div class="rise card3d p-6 sm:p-8 w-full space-y-6 text-center">
-                    <div id="mascot-result" class="mascot w-28 h-28 mx-auto" aria-hidden="true"></div>
+                <div class="rise card3d result-card p-6 sm:p-8 w-full space-y-6 text-center">
+                    <div class="relative w-28 h-28 mx-auto">
+                        <div id="result-rays" class="rays hidden" aria-hidden="true"></div>
+                        <div id="mascot-result" class="mascot relative w-28 h-28" aria-hidden="true"></div>
+                    </div>
+                    <div id="result-stars" class="flex justify-center items-end gap-2 -mt-2" role="img" aria-label="별 0개">
+                        <svg class="star-svg" width="44" height="44" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg>
+                        <svg class="star-svg big" width="60" height="60" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg>
+                        <svg class="star-svg" width="44" height="44" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></svg>
+                    </div>
                     <div class="space-y-2">
                         <h2 id="result-title" class="fun text-3xl t-1 leading-tight break-keep">퀴즈 완료</h2>
                         <p id="result-sub" class="text-[15px] font-semibold t-2"><span id="result-total">0</span>문제 중 <span id="result-score">0</span>개 맞혔어요</p>
@@ -769,7 +806,8 @@
                 finish: () => [0, 4, 7, 12].forEach((s, i) => tone(note(s), i * 0.1, 0.22, { gain: 0.13 })),
                 perfect: () => { [0, 4, 7, 12, 16].forEach((s, i) => tone(note(s), i * 0.09, 0.2, { gain: 0.13 })); tone(note(19), 0.47, 0.6, { gain: 0.14 }); tone(note(12), 0.47, 0.6, { type: 'sine', gain: 0.08 }); },
                 streak: () => [7, 12].forEach((s, i) => tone(note(s), 0.9 + i * 0.12, 0.3, { type: 'sine', gain: 0.12 })),
-                pop: () => tone(880, 0, 0.07, { type: 'sine', gain: 0.07, to: 1320 })
+                pop: () => tone(880, 0, 0.07, { type: 'sine', gain: 0.07, to: 1320 }),
+                star: (i = 0) => { tone(note(12 + i * 4), 0, 0.12, { gain: 0.13 }); tone(note(19 + i * 4), 0.05, 0.2, { type: 'sine', gain: 0.08 }); }
             };
             return {
                 get on() { return enabled; },
@@ -835,9 +873,9 @@
 
         // ===== 마스코트: 먹물방울 '먹동이' =====
         const MASCOT_FACES = {
-            idle: '<ellipse cx="40" cy="60" rx="6.5" ry="7.5" fill="#fff"/><ellipse cx="62" cy="60" rx="6.5" ry="7.5" fill="#fff"/><circle cx="41.5" cy="61.5" r="3.6" fill="#1b2140"/><circle cx="63.5" cy="61.5" r="3.6" fill="#1b2140"/><path d="M45 74q6 5 12 0" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round"/>',
+            idle: '<g class="eyes"><ellipse cx="40" cy="60" rx="6.5" ry="7.5" fill="#fff"/><ellipse cx="62" cy="60" rx="6.5" ry="7.5" fill="#fff"/><circle cx="41.5" cy="61.5" r="3.6" fill="#1b2140"/><circle cx="63.5" cy="61.5" r="3.6" fill="#1b2140"/><circle cx="43" cy="59.5" r="1.3" fill="#fff"/><circle cx="65" cy="59.5" r="1.3" fill="#fff"/></g><path d="M45 74q6 5 12 0" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round"/>',
             happy: '<path d="M34 61q6-8 12 0M56 61q6-8 12 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M42 71q9 12 18 0z" fill="#fff"/><path d="M46 76q5 4 10 0" fill="#FF7B8E"/>',
-            sad: '<ellipse cx="40" cy="62" rx="6" ry="6.5" fill="#fff"/><ellipse cx="62" cy="62" rx="6" ry="6.5" fill="#fff"/><circle cx="40" cy="64" r="3.4" fill="#1b2140"/><circle cx="62" cy="64" r="3.4" fill="#1b2140"/><path d="M33 54l12-4M69 54l-12-4" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M45 79q6-5 12 0" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M33 70q-3 5 0 7q3-2 0-7z" fill="#8FD3FF"/>',
+            sad: '<g class="eyes"><ellipse cx="40" cy="62" rx="6" ry="6.5" fill="#fff"/><ellipse cx="62" cy="62" rx="6" ry="6.5" fill="#fff"/><circle cx="40" cy="64" r="3.4" fill="#1b2140"/><circle cx="62" cy="64" r="3.4" fill="#1b2140"/></g><path d="M33 54l12-4M69 54l-12-4" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M45 79q6-5 12 0" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M33 70q-3 5 0 7q3-2 0-7z" fill="#8FD3FF"/>',
             wow: '<circle cx="40" cy="59" r="7.5" fill="#fff"/><circle cx="62" cy="59" r="7.5" fill="#fff"/><path d="M40 53.5l1.6 3.4 3.7.4-2.8 2.5.8 3.6-3.3-1.9-3.3 1.9.8-3.6-2.8-2.5 3.7-.4z M62 53.5l1.6 3.4 3.7.4-2.8 2.5.8 3.6-3.3-1.9-3.3 1.9.8-3.6-2.8-2.5 3.7-.4z" fill="#FFB020"/><ellipse cx="51" cy="76" rx="6" ry="5" fill="#fff"/>'
         };
         function renderMascot(id, mood = 'idle', anim = 'idle') {
@@ -852,6 +890,33 @@
             el.classList.remove('idle', 'jump', 'droop');
             void el.offsetWidth;
             el.classList.add(anim);
+            const eyes = el.querySelector('.eyes'); // 여러 마스코트가 동시에 깜빡이지 않도록 시점을 흩뜨린다
+            if (eyes) eyes.style.animationDelay = `${-Math.random() * 4}s`;
+        }
+
+        // ===== 반짝이 파티클: 정답 · 외웠어요 순간 요소에서 별과 동그라미가 터져 나온다 =====
+        const SPARK_COLORS = ['var(--green)', 'var(--amber)', 'var(--blue)', 'var(--red)'];
+        function burst(el, { count = 14, colors = SPARK_COLORS, spread = 1 } = {}) {
+            if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const r = el.getBoundingClientRect();
+            const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+            for (let i = 0; i < count; i++) {
+                const star = i % 3 === 0;
+                const size = star ? 14 + Math.random() * 6 : 6 + Math.random() * 6;
+                const p = document.createElement('span');
+                p.className = `spark${star ? ' star' : ''}`;
+                p.style.cssText = `left:${cx - size / 2}px;top:${cy - size / 2}px;width:${size}px;height:${size}px;background:${colors[i % colors.length]}`;
+                document.body.appendChild(p);
+                const ang = (Math.PI * 2 * i) / count + Math.random() * 0.5;
+                const dist = (60 + Math.random() * 70) * spread;
+                const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist * 0.75;
+                const rot = (Math.random() - 0.5) * 360;
+                p.animate([
+                    { transform: 'translate(0,0) scale(0.3) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${dx * 0.8}px,${dy * 0.8}px) scale(1) rotate(${rot * 0.7}deg)`, opacity: 1, offset: 0.6 },
+                    { transform: `translate(${dx}px,${dy + 24}px) scale(0.6) rotate(${rot}deg)`, opacity: 0 }
+                ], { duration: 650 + Math.random() * 250, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' }).onfinish = () => p.remove();
+            }
         }
 
         const state = {
@@ -1116,7 +1181,8 @@
                     btn.innerHTML = `
                         <span class="ch-label">${ch.id}장</span>
                         <span class="ch-range">${(ch.id - 1) * 10 + 1}–${ch.id * 10}</span>
-                        <span class="tile-bar" aria-hidden="true"><i></i></span>`;
+                        <span class="tile-bar" aria-hidden="true"><i></i></span>
+                        <span class="ch-crown" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18l-1.5-10-4.5 4-3-7-3 7-4.5-4z"/></svg></span>`;
                     btn.onclick = () => handleChapterClick(ch.id);
                     grid.appendChild(btn);
                 });
@@ -1133,7 +1199,8 @@
                 const knownCnt = items.filter((it) => state.known.has(it.index)).length;
                 btn.querySelector('.tile-bar i').style.width = `${(knownCnt / items.length) * 100}%`;
                 btn.querySelector('.tile-bar').classList.toggle('is-empty', knownCnt === 0); // 외운 게 없으면 빈 막대를 숨겨 타일을 깔끔하게
-                btn.setAttribute('aria-label', `챕터 ${ch.id}, ${(ch.id - 1) * 10 + 1}번부터 ${ch.id * 10}번, 외운 성어 ${knownCnt}/${items.length}${isActive ? ', 선택됨' : ''}`);
+                btn.classList.toggle('mastered', knownCnt === items.length); // 10개 다 외우면 왕관
+                btn.setAttribute('aria-label', `챕터 ${ch.id}, ${(ch.id - 1) * 10 + 1}번부터 ${ch.id * 10}번, 외운 성어 ${knownCnt}/${items.length}${knownCnt === items.length ? ', 모두 외움' : ''}${isActive ? ', 선택됨' : ''}`);
                 btn.classList.toggle('animate-entry', state.isMenuFirstLoad);
             });
             if (state.isMenuFirstLoad) setTimeout(() => { state.isMenuFirstLoad = false; }, 900);
@@ -1171,6 +1238,7 @@
             } else $('stat-xp').innerText = xp;
             if (shownStats && streak > shownStats.streak) setTimeout(() => { $('stat-streak').innerText = streak; restartClass($('stat-streak').closest('.panel'), 'pop'); }, 500);
             else $('stat-streak').innerText = streak;
+            $('stat-flame').classList.toggle('lit', streak > 0); // 연속 기록이 살아 있으면 불꽃이 일렁인다
             shownStats = { xp, streak };
             $('stat-xp-label').innerText = xp >= DAILY_GOAL ? '오늘 목표 달성' : xp > 0 ? `목표까지 ${DAILY_GOAL - xp} XP` : `오늘 목표 ${DAILY_GOAL} XP`;
             $('stat-xp-bar').style.width = `${Math.min(100, (xp / DAILY_GOAL) * 100)}%`;
@@ -1434,6 +1502,7 @@
             overlay.classList.toggle('correct-feedback', isCorrect);
             overlay.classList.toggle('wrong-feedback', !isCorrect);
             $('feedback-mark').innerHTML = isCorrect ? ICONS.check : ICONS.cross;
+            renderMascot('mascot-feedback', isCorrect ? (qz.combo >= 3 ? 'wow' : 'happy') : 'sad', isCorrect ? 'jump' : 'droop');
 
             let extra = '';
             if (!isCorrect) {
@@ -1471,6 +1540,8 @@
                 const graduated = extra === '오답 노트 졸업!';
                 sfx.play(graduated ? 'graduate' : 'correct', qz.combo);
                 haptic.play(graduated ? 'celebrate' : qz.combo >= 3 ? 'combo' : 'success');
+                const src = q.type === 'fill' ? inputEl : document.querySelector('#quiz-choices .choice-btn.is-right');
+                burst(src, { count: qz.combo >= 3 || graduated ? 20 : 12, spread: qz.combo >= 3 ? 1.3 : 1 });
             }
             renderCombo(true);
             // 정답 0.6초(졸업·연속 안내가 있으면 1.1초), 오답 1.5초 뒤 자동으로 다음 문제로 넘어간다.
@@ -1548,12 +1619,27 @@
                 qz.streakUp = touchStreak();
                 haptic.play(isPerfect ? 'celebrate' : 'success');
                 setTimeout(() => { if (isPerfect) { sfx.play('perfect'); triggerConfetti(); } else sfx.play('finish'); }, 250);
-                if (qz.streakUp) setTimeout(() => { sfx.play('streak'); haptic.play('success'); }, 1500);
+                if (qz.streakUp) setTimeout(() => { sfx.play('streak'); haptic.play('success'); }, 2000);
             }
             $('result-score').innerText = score;
             $('result-total').innerText = total;
             $('result-title').innerText = isPerfect ? '완벽해요! 만점이에요' : ratio >= 0.8 ? '거의 다 외웠어요!' : ratio >= 0.5 ? '잘하고 있어요!' : '괜찮아요, 한 번 더 해 봐요!';
             renderMascot('mascot-result', isPerfect ? 'wow' : ratio >= 0.5 ? 'happy' : 'sad', ratio >= 0.5 ? 'jump' : 'droop');
+            // 별: 50% 이상 1개, 80% 이상 2개, 만점 3개. 차례로 찍히고 소리가 한 음씩 올라간다.
+            const starCount = isPerfect ? 3 : ratio >= 0.8 ? 2 : ratio >= 0.5 ? 1 : 0;
+            $('result-stars').setAttribute('aria-label', `별 ${starCount}개`);
+            const order = [0, 1, 2]; // 왼쪽 → 가운데 → 오른쪽
+            document.querySelectorAll('#result-stars .star-svg').forEach((st, i) => {
+                st.classList.remove('on', 'pop-in');
+                if (order.indexOf(i) >= starCount) return;
+                setTimeout(() => {
+                    if (state.view !== 'result') { st.classList.add('on'); return; }
+                    st.classList.add('on'); restartClass(st, 'pop-in');
+                    sfx.play('star', i); haptic.play('tick');
+                    burst(st, { count: 8, colors: ['var(--amber)', 'var(--amber)', 'var(--green)'], spread: 0.6 });
+                }, 450 + i * 250);
+            });
+            $('result-rays').classList.toggle('hidden', starCount < 2);
             const boxes = [[$('res-xp'), qz.xp, ''], [$('res-acc'), Math.round(ratio * 100), '%'], [$('res-combo'), qz.maxCombo, '']];
             boxes.forEach(([el, val, suffix], i) => {
                 const box = el.closest('.res-box');
@@ -1567,14 +1653,14 @@
                     sfx.play('pop');
                     haptic.play('tick');
                     countUp(el, val, suffix);
-                }, 700 + i * 220);
+                }, 1250 + i * 200);
             });
 
             const streakEl = $('result-streak');
             streakEl.classList.toggle('hidden', !qz.streakUp);
             if (qz.streakUp) {
                 $('result-streak-text').innerText = currentStreak() > 1 ? `${currentStreak()}일 연속 학습!` : '연속 학습 시작!';
-                streakEl.style.animationDelay = '1.5s';
+                streakEl.style.animationDelay = '2s';
                 restartClass(streakEl, 'pop-in');
             }
             const extra = $('result-extra');
@@ -1845,7 +1931,7 @@
                 saveKnown(); updateStudyCardData(it);
                 sfx.play(nowKnown ? 'known' : 'unknown');
                 haptic.play(nowKnown ? 'known' : 'tick');
-                if (nowKnown) { const b = $('study-known-badge'); b.classList.remove('pop-in'); void b.offsetWidth; b.classList.add('pop-in'); }
+                if (nowKnown) { const b = $('study-known-badge'); restartClass(b, 'pop-in'); setTimeout(() => burst(b, { count: 10, colors: ['var(--green)', 'var(--amber)'], spread: 0.7 }), 120); }
             });
             initStudyDrag();
             const header = $('app-header');
