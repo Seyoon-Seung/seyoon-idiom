@@ -331,6 +331,9 @@
         .list-meta { font-size: 12px; font-weight: 700; color: var(--ink-3); font-variant-numeric: tabular-nums; }
         .search-field { background: var(--card); border: 2px solid var(--line); border-radius: 16px; transition: border-color 160ms var(--ease); }
         .search-field:focus-within { border-color: var(--blue-line); }
+        .tag { flex-shrink: 0; height: 22px; padding: 0 8px; border-radius: 8px; font-size: 12px; font-weight: 800; display: inline-flex; align-items: center; }
+        .tag-green { background: var(--green-soft); color: var(--green-text); }
+        .tag-red { background: var(--red-soft); color: var(--red-text); }
         mark.hl { background: var(--amber-soft); color: var(--amber-text); border-radius: 4px; padding: 0 2px; }
 
         /* 모달 · 토스트 */
@@ -629,7 +632,7 @@
             <div id="view-search" class="hidden h-full flex flex-col gap-4">
                 <div class="search-field flex items-center gap-3 px-4 h-14 shrink-0">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="t-3 shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input id="search-input" type="text" lang="ko" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="성어 검색" placeholder="성어, 한자, 뜻, 초성(ㄱㅇ), 번호" class="flex-1 bg-transparent outline-none text-base font-bold t-1">
+                    <input id="search-input" type="text" lang="ko" inputmode="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="성어 검색" placeholder="성어, 한자, 뜻, 초성, 번호, 3장" class="flex-1 bg-transparent outline-none text-base font-bold t-1">
                     <button id="search-clear" type="button" aria-label="검색어 지우기" class="icon-btn hidden w-8 h-8">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
                     </button>
@@ -698,7 +701,7 @@
         'use strict';
         // ===== 상수 · 저장소 =====
         const GRAD_STREAK = 2; // 오답 노트에서 연속 N번 맞히면 졸업
-        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', sound: 'idiom_sound_v1', haptic: 'idiom_haptic_v1', xp: 'idiom_xp_v1', streak: 'idiom_streak_v1' };
+        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', sound: 'idiom_sound_v1', haptic: 'idiom_haptic_v1', xp: 'idiom_xp_v1', streak: 'idiom_streak_v1', recent: 'idiom_search_recent_v1' };
         const XP_PER_CORRECT = 10, XP_PERFECT_BONUS = 20, DAILY_GOAL = 50;
         const QUIZ_TYPES = {
             fill: '앞 두 글자를 보고 뒤 두 글자를 써요. 4글자가 아닌 성어는 뜻 고르기로 나와요.',
@@ -937,6 +940,7 @@
             known: new Set(normalizeKnown(loadJSON(STORE.known, []))),
             isMenuFirstLoad: true,
             searchQuery: '',
+            recentSearches: loadRecent(),
             detailItem: null,
             theme: 'light'
         };
@@ -1156,6 +1160,7 @@
             else if (state.view === 'quiz') renderQuiz();
             else if (state.view === 'result') renderResult();
             else if (state.view === 'review') renderReview();
+            else if (isSearch) renderSearch(); // 빈 검색창: 최근 검색어 · 오답 노트
         }
 
         // ===== 메뉴 =====
@@ -1746,71 +1751,222 @@
             });
         }
 
-        // ===== 검색 (초성 · 초성+글자 혼합 · 번호) =====
+        // ===== 검색 =====
+        // 지원: 초성 · 초성+글자 혼합 · 띄어쓴 여러 단어(순서 무관) · 번호(12) · 장(12장) · 입력 중인 받침 · 오타 제안
         const CHOSEONG = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-        function choseongOf(ch) {
-            const c = ch.charCodeAt(0);
-            return c >= 0xAC00 && c <= 0xD7A3 ? CHOSEONG[Math.floor((c - 0xAC00) / 588)] : null;
+        const JUNGSEONG = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+        const JONGSEONG = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        // 받침을 다음 글자의 초성으로 넘길 때: [남는 받침 번호, 넘어가는 초성]
+        const JONG_SPLIT = { 1: [0, 'ㄱ'], 2: [0, 'ㄲ'], 3: [1, 'ㅅ'], 4: [0, 'ㄴ'], 5: [4, 'ㅈ'], 6: [4, 'ㅎ'], 7: [0, 'ㄷ'], 8: [0, 'ㄹ'], 9: [8, 'ㄱ'], 10: [8, 'ㅁ'], 11: [8, 'ㅂ'], 12: [8, 'ㅅ'], 13: [8, 'ㅌ'], 14: [8, 'ㅍ'], 15: [8, 'ㅎ'], 16: [0, 'ㅁ'], 17: [0, 'ㅂ'], 18: [17, 'ㅅ'], 19: [0, 'ㅅ'], 20: [0, 'ㅆ'], 21: [0, 'ㅇ'], 22: [0, 'ㅈ'], 23: [0, 'ㅊ'], 24: [0, 'ㅋ'], 25: [0, 'ㅌ'], 26: [0, 'ㅍ'], 27: [0, 'ㅎ'] };
+        const isSyllable = (ch) => { const c = ch.charCodeAt(0); return c >= 0xAC00 && c <= 0xD7A3; };
+        const syllableParts = (ch) => { const c = ch.charCodeAt(0) - 0xAC00; return [Math.floor(c / 588), Math.floor((c % 588) / 28), c % 28]; };
+        const makeSyllable = (cho, jung, jong) => String.fromCharCode(0xAC00 + cho * 588 + jung * 28 + jong);
+        function choseongOf(ch) { return isSyllable(ch) ? CHOSEONG[syllableParts(ch)[0]] : null; }
+        // 오타 비교용: 음절을 자모로 풀어 쓴다 (명 → ㅁㅕㅇ)
+        function toJamo(s) {
+            let out = '';
+            for (const ch of s) {
+                if (!isSyllable(ch)) { out += ch; continue; }
+                const [a, b, c] = syllableParts(ch);
+                out += CHOSEONG[a] + JUNGSEONG[b] + JONGSEONG[c];
+            }
+            return out;
         }
-        function charMatches(textCh, qCh) {
+
+        // qCh가 textCh와 맞는지. last면 입력 중인 마지막 글자라서 '바'가 '박'과도 맞는다(받침 미완성).
+        function charMatches(textCh, qCh, last) {
             if (CHOSEONG.includes(qCh)) return choseongOf(textCh) === qCh || textCh === qCh;
-            return textCh.toLowerCase() === qCh.toLowerCase();
+            if (textCh === qCh || textCh.toLowerCase() === qCh.toLowerCase()) return true;
+            if (last && isSyllable(qCh) && isSyllable(textCh)) {
+                const [qa, qb, qc] = syllableParts(qCh), [ta, tb] = syllableParts(textCh);
+                return qc === 0 && qa === ta && qb === tb;
+            }
+            return false;
         }
-        // text 안에서 q(초성/글자 혼합 허용)와 맞는 첫 구간 [시작, 길이]를 찾는다.
-        function findRange(text, q) {
+        // text 안에서 q와 맞는 첫 구간 [시작, 길이]. last면 q의 마지막 글자를 미완성으로 본다.
+        function scanRange(text, q, last) {
             const n = q.length;
             if (!n) return null;
             for (let i = 0; i + n <= text.length; i++) {
                 let ok = true;
-                for (let j = 0; j < n; j++) { if (!charMatches(text[i + j], q[j])) { ok = false; break; } }
+                for (let j = 0; j < n; j++) { if (!charMatches(text[i + j], q[j], last && j === n - 1)) { ok = false; break; } }
                 if (ok) return [i, n];
             }
             return null;
         }
-        function highlight(text, q) {
-            const r = findRange(text, q);
-            if (!r) return esc(text);
-            return `${esc(text.slice(0, r[0]))}<mark class="hl">${esc(text.slice(r[0], r[0] + r[1]))}</mark>${esc(text.slice(r[0] + r[1]))}`;
+        // 입력 중인 마지막 단어는 받침이 다음 글자 초성일 수도 있다: '가인'을 치다 생긴 '강'은 '가ㅇ'으로도 찾는다.
+        function variantsOf(token, last) {
+            const out = [{ q: token, exact: true }];
+            if (!last) return out;
+            out.push({ q: token, exact: false });
+            const ch = token[token.length - 1];
+            if (isSyllable(ch)) {
+                const [a, b, c] = syllableParts(ch);
+                if (c) out.push({ q: token.slice(0, -1) + makeSyllable(a, b, JONG_SPLIT[c][0]) + JONG_SPLIT[c][1], exact: false });
+            }
+            return out;
+        }
+        function findRange(text, token, last = false) {
+            for (const v of variantsOf(token, last)) { const r = scanRange(text, v.q, !v.exact); if (r) return { range: r, exact: v.exact }; }
+            return null;
+        }
+
+        // 한 성어에 대한 점수. 모든 단어가 어딘가에 맞아야 하고, 이름 > 한자 > 뜻 순으로, 앞쪽에서 맞을수록 높다.
+        function scoreItem(it, tokens) {
+            let score = 0;
+            for (let k = 0; k < tokens.length; k++) {
+                const t = tokens[k], last = k === tokens.length - 1;
+                let best = 0;
+                const m = findRange(it.text, t, last);
+                if (m) best = Math.max(best, (m.range[1] === it.text.length ? 100 : m.range[0] === 0 ? 85 : 65) - (m.exact ? 0 : 6));
+                const h = findRange(it.hanja, t, last);
+                if (h) best = Math.max(best, (h.range[1] === it.hanja.length ? 75 : 55) - (h.exact ? 0 : 6));
+                const d = findRange(it.mean, t, last);
+                if (d) best = Math.max(best, 30 - Math.min(d.range[0], 20) / 2 - (d.exact ? 0 : 6));
+                if (!best) return 0;
+                score += best;
+            }
+            return score;
+        }
+
+        function searchItems(raw) {
+            const q = raw.trim().normalize('NFC').replace(/\s+/g, ' ');
+            if (!q) return { q, kind: 'empty', items: [] };
+            const ch = q.match(/^(\d{1,2})\s*장$/);
+            if (ch) return { q, kind: 'chapter', chapter: +ch[1], items: RAW_DATA.filter((it) => chapterOf(it) === +ch[1]) };
+            if (/^\d+$/.test(q)) return { q, kind: 'index', items: RAW_DATA.filter((it) => it.index === +q) };
+            const tokens = q.split(' ');
+            const items = RAW_DATA.map((it) => ({ it, s: scoreItem(it, tokens) })).filter((x) => x.s > 0)
+                .sort((a, b) => b.s - a.s || a.it.index - b.it.index).map((x) => x.it);
+            return { q, kind: 'text', tokens, items };
+        }
+
+        // 결과가 없을 때 '혹시 이거?': 자모 단위 편집 거리가 가까운 성어 이름 (오타 1~2타 정도)
+        function editDistance(a, b) {
+            const m = a.length, n = b.length;
+            let prev = Array.from({ length: n + 1 }, (_, j) => j);
+            for (let i = 1; i <= m; i++) {
+                const cur = [i];
+                for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+                prev = cur;
+            }
+            return prev[n];
+        }
+        function suggestItems(q) {
+            const s = q.replace(/\s/g, '');
+            if (s.length < 2 || [...s].some((c) => CHOSEONG.includes(c))) return [];
+            const qj = toJamo(s), limit = Math.max(1, Math.floor(qj.length / 4));
+            return RAW_DATA.map((it) => ({ it, d: editDistance(qj, toJamo(it.text)) }))
+                .filter((x) => x.d <= limit).sort((a, b) => a.d - b.d || a.it.index - b.it.index).slice(0, 3).map((x) => x.it);
+        }
+
+        function highlight(text, tokens) {
+            if (!tokens || !tokens.length) return esc(text);
+            const marks = new Array(text.length).fill(false);
+            tokens.forEach((t, k) => { const m = findRange(text, t, k === tokens.length - 1); if (m) for (let i = m.range[0]; i < m.range[0] + m.range[1]; i++) marks[i] = true; });
+            let html = '', open = false;
+            for (let i = 0; i < text.length; i++) {
+                if (marks[i] !== open) { html += marks[i] ? '<mark class="hl">' : '</mark>'; open = marks[i]; }
+                html += esc(text[i]);
+            }
+            return open ? html + '</mark>' : html;
+        }
+
+        // 최근 검색어 (기기 안에만, 6개까지)
+        // state 초기화 때 불리므로 function 선언(호이스팅)으로 둔다
+        function loadRecent() { const v = loadJSON(STORE.recent, []); return Array.isArray(v) ? v.filter((x) => typeof x === 'string').slice(0, 6) : []; }
+        const RECENT_MAX = 6;
+        function rememberSearch(q) {
+            q = (q || '').trim().normalize('NFC').replace(/\s+/g, ' ');
+            if (!q) return;
+            state.recentSearches = [q, ...state.recentSearches.filter((x) => x !== q)].slice(0, RECENT_MAX);
+            storeSet(STORE.recent, JSON.stringify(state.recentSearches));
+        }
+
+        function searchCard(it, tokens, idx) {
+            const el = document.createElement('button');
+            el.type = 'button';
+            el.className = 'rise tap list-card space-y-2 text-left w-full block';
+            el.style.animationDelay = `${Math.min(idx, 8) * 40}ms`;
+            const tags = [];
+            if (state.known.has(it.index)) tags.push('<span class="tag tag-green">외웠어요</span>');
+            if (state.savedWrongs.some((w) => w.index === it.index)) tags.push('<span class="tag tag-red">오답 노트</span>');
+            el.innerHTML = `
+                <div class="flex items-center gap-2"><p class="list-meta flex-1">${chapterOf(it)}장 · ${String(it.index).padStart(3, '0')}</p>${tags.join('')}</div>
+                <div class="flex justify-between items-baseline gap-3">
+                    <h3 class="fun text-2xl t-1">${highlight(it.text, tokens)}</h3>
+                    <span class="hanja text-lg t-3 shrink-0">${highlight(it.hanja, tokens)}</span>
+                </div>
+                <p class="text-[14px] t-2 font-semibold break-keep leading-relaxed">${highlight(it.mean, tokens)}</p>`;
+            el.onclick = () => { rememberSearch(state.searchQuery); showSearchDetail(it); };
+            return el;
+        }
+        function sectionLabel(text) {
+            const p = document.createElement('p');
+            p.className = 'text-[13px] font-bold t-3 mt-2';
+            p.innerText = text;
+            return p;
+        }
+
+        // 빈 검색창: 최근 검색어 + 오답 노트 바로가기
+        function renderSearchHome(listEl) {
+            const recent = state.recentSearches;
+            if (recent.length) {
+                const box = document.createElement('div');
+                box.className = 'rise space-y-2';
+                box.innerHTML = `
+                    <div class="flex items-center"><p class="text-[13px] font-bold t-3 flex-1">최근 검색</p><button type="button" class="link-btn" data-recent-clear>모두 지우기</button></div>
+                    <div class="flex flex-wrap gap-2">${recent.map((r) => `<button type="button" class="tap chip" data-recent="${esc(r)}">${esc(r)}</button>`).join('')}</div>`;
+                listEl.appendChild(box);
+            }
+            const wrongs = state.savedWrongs.slice(0, 5).map((w) => BY_INDEX.get(w.index)).filter(Boolean);
+            if (wrongs.length) {
+                listEl.appendChild(sectionLabel(`오답 노트에서 (${state.savedWrongs.length}개)`));
+                wrongs.forEach((it, i) => listEl.appendChild(searchCard(it, null, i + 1)));
+            }
+            if (!recent.length && !wrongs.length) {
+                const tip = document.createElement('div');
+                tip.className = 'rise panel p-6 space-y-2';
+                tip.innerHTML = `
+                    <p class="fun text-lg t-1">이렇게 찾아 봐요</p>
+                    <ul class="text-[14px] font-semibold t-2 space-y-1 break-keep">
+                        <li><b class="t-blue">가인박명</b> · 이름이나 한자</li>
+                        <li><b class="t-blue">ㄱㅇㅂㅁ</b> · 초성만</li>
+                        <li><b class="t-blue">운명 사람</b> · 뜻에 든 낱말 여러 개</li>
+                        <li><b class="t-blue">12</b> · 번호, <b class="t-blue">3장</b> · 장 전체</li>
+                    </ul>`;
+                listEl.appendChild(tip);
+            }
         }
 
         function renderSearch() {
-            const q = state.searchQuery.trim().normalize('NFC');
             const listEl = $('search-list');
             const subtitle = $('search-subtitle');
             listEl.innerHTML = '';
-            if (!q) { subtitle.classList.add('hidden'); return; }
+            const res = searchItems(state.searchQuery);
+            if (res.kind === 'empty') { subtitle.classList.add('hidden'); renderSearchHome(listEl); return; }
             subtitle.classList.remove('hidden');
+            const tokens = res.kind === 'text' ? res.tokens : null;
 
-            const isNum = /^\d+$/.test(q);
-            const results = RAW_DATA.filter((it) =>
-                findRange(it.text, q) || findRange(it.hanja, q) || findRange(it.mean, q) || (isNum && it.index === Number(q)));
-
-            subtitle.innerText = results.length > 0 ? `${results.length}개 찾았어요` : '';
-            if (!results.length) {
-                listEl.innerHTML = `
-                    <div class="rise panel p-8 text-center space-y-3">
-                        <div id="mascot-search" class="mascot w-20 h-20 mx-auto" aria-hidden="true"></div>
-                        <p class="fun text-xl t-1 break-all">‘${esc(q)}’ 성어를 못 찾았어요</p>
-                        <p class="text-[14px] font-semibold t-3 break-keep">초성(ㄱㅇ)이나 번호로도 찾을 수 있어요</p>
-                    </div>`;
-                renderMascot('mascot-search', 'sad', 'droop');
+            if (!res.items.length) {
+                subtitle.innerText = '';
+                const sugg = res.kind === 'text' ? suggestItems(res.q) : [];
+                const box = document.createElement('div');
+                box.className = 'rise panel p-8 text-center space-y-3';
+                box.innerHTML = `
+                    <div id="mascot-search" class="mascot w-20 h-20 mx-auto" aria-hidden="true"></div>
+                    <p class="fun text-xl t-1 break-all">‘${esc(res.q)}’ 성어를 못 찾았어요</p>
+                    <p class="text-[14px] font-semibold t-3 break-keep">${res.kind === 'chapter' ? '장은 1장부터 12장까지 있어요' : res.kind === 'index' ? '번호는 1부터 120까지 있어요' : '초성(ㄱㅇ)이나 번호, ‘3장’처럼 장으로도 찾을 수 있어요'}</p>`;
+                listEl.appendChild(box);
+                renderMascot('mascot-search', sugg.length ? 'idle' : 'sad', sugg.length ? 'idle' : 'droop');
+                if (sugg.length) {
+                    listEl.appendChild(sectionLabel('혹시 이 성어를 찾았나요?'));
+                    sugg.forEach((it, i) => listEl.appendChild(searchCard(it, null, i + 1)));
+                }
                 return;
             }
-            results.forEach((it, idx) => {
-                const el = document.createElement('button');
-                el.type = 'button';
-                el.className = 'rise tap list-card space-y-2 text-left w-full block';
-                el.style.animationDelay = `${Math.min(idx, 8) * 40}ms`;
-                el.innerHTML = `
-                    <p class="list-meta">${chapterOf(it)}장 · ${String(it.index).padStart(3, '0')}</p>
-                    <div class="flex justify-between items-baseline gap-3">
-                        <h3 class="fun text-2xl t-1">${highlight(it.text, q)}</h3>
-                        <span class="hanja text-lg t-3 shrink-0">${highlight(it.hanja, q)}</span>
-                    </div>
-                    <p class="text-[14px] t-2 font-semibold break-keep leading-relaxed">${highlight(it.mean, q)}</p>`;
-                el.onclick = () => showSearchDetail(it);
-                listEl.appendChild(el);
-            });
+            subtitle.innerText = res.kind === 'chapter' ? `${res.chapter}장 · ${res.items.length}개` : `${res.items.length}개 찾았어요`;
+            res.items.forEach((it, idx) => listEl.appendChild(searchCard(it, tokens, idx)));
         }
 
         function showSearchDetail(it) {
@@ -2038,14 +2194,15 @@
 
             const searchInput = $('search-input');
             const searchClear = $('search-clear');
-            let searchTimer;
             const doSearch = () => { state.searchQuery = searchInput.value; renderSearch(); };
-            searchInput.oninput = (e) => {
-                searchClear.classList.toggle('hidden', !e.target.value);
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(doSearch, 300);
-            };
-            onEnterAfterCompose(searchInput, () => { searchInput.blur(); clearTimeout(searchTimer); doSearch(); });
+            // 120개뿐이라 매 입력마다 바로 찾는다 (조합 중인 글자도 받침 처리로 끊기지 않게 맞춘다)
+            searchInput.oninput = (e) => { searchClear.classList.toggle('hidden', !e.target.value); doSearch(); };
+            onEnterAfterCompose(searchInput, () => { searchInput.blur(); doSearch(); if (searchItems(searchInput.value).items.length) rememberSearch(searchInput.value); });
+            $('search-list').addEventListener('click', (e) => {
+                const chip = e.target.closest('[data-recent]');
+                if (chip) { searchInput.value = chip.dataset.recent; searchClear.classList.remove('hidden'); doSearch(); sfx.play('tap'); return; }
+                if (e.target.closest('[data-recent-clear]')) { state.recentSearches = []; storeSet(STORE.recent, '[]'); renderSearch(); sfx.play('tap'); }
+            });
             // 결과를 손가락으로 훑기 시작하면 키보드를 내려 목록을 넓게 보여 준다(탭은 그대로 동작)
             $('search-list').addEventListener('touchmove', () => { if (document.activeElement === searchInput) searchInput.blur(); }, { passive: true });
             searchClear.onclick = () => { searchInput.value = ''; searchClear.classList.add('hidden'); doSearch(); searchInput.focus({ preventScroll: true }); };

@@ -64,7 +64,15 @@ The look is a bright, game-like study app: chunky pressable buttons, a mascot, c
 - Keep text ≥ 11px and WCAG-AA contrast in both themes. `prefers-reduced-motion` disables animations globally.
 
 ### Search
-`findRange` matches a query against idiom text, hanja and meaning, supporting Korean **초성** (initial consonants) and 초성+글자 mixes like "가ㅇ"; a purely numeric query also matches `index`. Input is debounced 300 ms; a result opens a detail modal with a jump to the study card.
+`searchItems(query)` runs on every keystroke (no debounce; 120 items is instant):
+- `12` matches that index, `3장` (or `3 장`) lists the whole chapter.
+- Anything else is split on spaces into tokens that must **all** match (any order) somewhere in the idiom text, hanja or meaning. Each token supports Korean **초성** and 초성+글자 mixes like "가ㅇ".
+- The **last** token is treated as still being typed: a final syllable without 받침 matches any 받침 ("가인바" → 가인박명), and a 받침 can be read as the next syllable's 초성 ("강" → "가ㅇ"), so results don't flicker to zero mid-IME. These lenient matches score slightly lower.
+- `scoreItem` ranks: exact name > name prefix > name contains > hanja > meaning (earlier position scores higher), then by index.
+- No results → `suggestItems` offers up to 3 names within a small jamo-level edit distance ("가인박멍" → 가인박명).
+- `highlight` marks every token's match.
+- An empty box shows recent searches (`idiom_search_recent_v1`, 6 max, saved on Enter with results or when a result is opened; not in backups) and the first 5 오답 노트 idioms, or a how-to panel when both are empty.
+- Result cards carry `.tag-green` 외웠어요 / `.tag-red` 오답 노트 tags. A result opens a detail modal with a jump to the study card.
 
 ### Deployment notes
 `og:url` / `og:image` / `twitter:image` use the absolute URL `https://seyoon-seung.github.io/seyoon-idiom/` (assumed GitHub Pages address — update all three if the real address differs; social crawlers require absolute image URLs).
