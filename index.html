@@ -109,13 +109,14 @@
         .btn-blue { background: var(--blue); box-shadow: 0 4px 0 var(--blue-edge); }
         .btn-green { background: var(--green); box-shadow: 0 4px 0 var(--green-edge); }
         .btn-red { background: var(--red); box-shadow: 0 4px 0 var(--red-edge); }
-        .tap:active:not(:disabled), .btn:active:not(:disabled), .tap.is-pressed:not(:disabled), .btn.is-pressed:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        /* 누를 때 두께가 줄거나 튕기지 않고, 색만 살짝 어두워진다 */
+        .tap:active:not(:disabled), .btn:active:not(:disabled), .tap.is-pressed:not(:disabled), .btn.is-pressed:not(:disabled) { filter: brightness(0.94); }
         /* '지금 할 것' 버튼은 천천히 숨 쉰다 */
         .btn.breathe:not(:disabled):not(:active):not(.is-pressed) { animation: breathe 2.4s ease-in-out infinite alternate; }
         @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
         @media (hover: hover) {
             .tap:hover:not(:disabled) { background-color: var(--raised); }
-            .btn:hover:not(:disabled) { filter: brightness(1.06); }
+            .btn:hover:not(:disabled):not(:active):not(.is-pressed) { filter: brightness(1.06); }
         }
         .tap:disabled { opacity: 0.5; }
         /* 버튼 기본 글자색보다 역할 색이 이기도록 */
@@ -124,7 +125,6 @@
 
         /* 선택된 상태 (챕터 · 문제 유형 · 토글) */
         .tap.selected, .tap[aria-pressed="true"] { background: var(--blue-soft); border-color: var(--blue-line); box-shadow: 0 4px 0 var(--blue-line); color: var(--blue-text); }
-        .tap.selected:active, .tap[aria-pressed="true"]:active, .tap.selected.is-pressed, .tap[aria-pressed="true"].is-pressed { box-shadow: 0 0 0 transparent; }
         #btn-study-known[aria-pressed="true"] { background: var(--green-soft); border-color: var(--green-line); box-shadow: 0 4px 0 var(--green-line); color: var(--green-text); }
 
         .icon-btn {
@@ -1221,7 +1221,7 @@
             $('study-btn-sub').innerText = hasSelection ? `${listLen}개 성어` : '챕터를 먼저 선택하세요';
             const status = hasSelection ? `${listLen}문제 준비 완료` : '챕터를 골라 주세요';
             const fs = $('footer-status');
-            if (fs.innerText !== status) { fs.innerText = status; if (!state.isMenuFirstLoad) { restartClass(fs, 'pop'); restartClass($('btn-footer-start'), 'pop'); } }
+            if (fs.innerText !== status) { fs.innerText = status; if (!state.isMenuFirstLoad) { restartClass(fs, 'pop'); } }
             renderQuizType();
             renderStats();
         }
@@ -1946,7 +1946,7 @@
             document.querySelectorAll('#quiz-type-seg [data-type]').forEach((b) => {
                 b.onclick = () => {
                     state.quizType = validType(b.dataset.type); storeSet(STORE.type, state.quizType); renderQuizType();
-                    sfx.play('select'); haptic.play('tick'); restartClass(b, 'pop');
+                    sfx.play('select'); haptic.play('tick');
                 };
             });
 
