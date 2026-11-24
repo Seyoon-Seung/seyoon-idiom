@@ -109,8 +109,9 @@
         .btn-blue { background: var(--blue); box-shadow: 0 4px 0 var(--blue-edge); }
         .btn-green { background: var(--green); box-shadow: 0 4px 0 var(--green-edge); }
         .btn-red { background: var(--red); box-shadow: 0 4px 0 var(--red-edge); }
-        /* 누를 때 두께가 줄거나 튕기지 않고, 색만 살짝 어두워진다 */
-        .tap:active:not(:disabled), .btn:active:not(:disabled), .tap.is-pressed:not(:disabled), .btn.is-pressed:not(:disabled) { filter: brightness(0.94); }
+        /* 누르면 두께만큼 내려가고, 뗄 때는 튕기지 않고 그대로 올라온다 */
+        .tap:active:not(:disabled), .btn:active:not(:disabled), .tap.is-pressed:not(:disabled), .btn.is-pressed:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        .tap.selected:active, .tap[aria-pressed="true"]:active, .tap.selected.is-pressed, .tap[aria-pressed="true"].is-pressed { box-shadow: 0 0 0 transparent; }
         /* '지금 할 것' 버튼은 천천히 숨 쉰다 */
         .btn.breathe:not(:disabled):not(:active):not(.is-pressed) { animation: breathe 2.4s ease-in-out infinite alternate; }
         @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
