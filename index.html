@@ -102,14 +102,17 @@
         /* ===== 눌리는 버튼 (아래 4px 두께가 눌릴 때 사라진다) ===== */
         .tap, .btn {
             position: relative; border-radius: 16px; font-weight: 700;
-            transition: transform 100ms var(--ease), box-shadow 100ms var(--ease), background-color 160ms var(--ease), border-color 160ms var(--ease), color 160ms var(--ease);
+            transition: transform 80ms cubic-bezier(.4,0,.2,1), box-shadow 80ms cubic-bezier(.4,0,.2,1), background-color 160ms var(--ease), border-color 160ms var(--ease), color 160ms var(--ease);
         }
         .tap { background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); color: var(--ink); }
         .btn { border: 0; color: var(--on-color); font-weight: 800; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-blue { background: var(--blue); box-shadow: 0 4px 0 var(--blue-edge); }
         .btn-green { background: var(--green); box-shadow: 0 4px 0 var(--green-edge); }
         .btn-red { background: var(--red); box-shadow: 0 4px 0 var(--red-edge); }
-        .tap:active:not(:disabled), .btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        .tap:active:not(:disabled), .btn:active:not(:disabled), .tap.is-pressed:not(:disabled), .btn.is-pressed:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
+        /* '지금 할 것' 버튼은 천천히 숨 쉰다 */
+        .btn.breathe:not(:disabled):not(:active):not(.is-pressed) { animation: breathe 2.4s ease-in-out infinite alternate; }
+        @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
         @media (hover: hover) {
             .tap:hover:not(:disabled) { background-color: var(--raised); }
             .btn:hover:not(:disabled) { filter: brightness(1.06); }
@@ -121,7 +124,7 @@
 
         /* 선택된 상태 (챕터 · 문제 유형 · 토글) */
         .tap.selected, .tap[aria-pressed="true"] { background: var(--blue-soft); border-color: var(--blue-line); box-shadow: 0 4px 0 var(--blue-line); color: var(--blue-text); }
-        .tap.selected:active, .tap[aria-pressed="true"]:active { box-shadow: 0 0 0 transparent; }
+        .tap.selected:active, .tap[aria-pressed="true"]:active, .tap.selected.is-pressed, .tap[aria-pressed="true"].is-pressed { box-shadow: 0 0 0 transparent; }
         #btn-study-known[aria-pressed="true"] { background: var(--green-soft); border-color: var(--green-line); box-shadow: 0 4px 0 var(--green-line); color: var(--green-text); }
 
         .icon-btn {
@@ -641,7 +644,7 @@
                     <p id="footer-status" class="font-extrabold t-1 text-base origin-left">챕터를 골라 주세요</p>
                     <p class="text-[12px] font-semibold t-3 mt-0.5 break-keep">4글자가 아닌 성어는 객관식으로 나와요</p>
                 </div>
-                <button id="btn-footer-start" type="button" disabled class="btn btn-green h-12 px-5 shrink-0">퀴즈 시작</button>
+                <button id="btn-footer-start" type="button" disabled class="btn btn-green breathe h-12 px-5 shrink-0">퀴즈 시작</button>
             </div>
         </footer>
     </div>
@@ -1594,13 +1597,20 @@
         }
 
         // ===== 결과 =====
-        function countUp(el, to, suffix = '', from = 0) {
+        function countUp(el, to, suffix = '', from = 0, ticks = false) {
             const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (reduce || to <= from) { el.innerText = `${to}${suffix}`; return; }
             const t0 = performance.now(), dur = 700;
+            let lastTick = -1;
             const step = (now) => {
                 const k = Math.min(1, (now - t0) / dur);
                 el.innerText = `${Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)))}${suffix}`;
+                // 숫자가 오르는 동안 틱틱틱, 끝에서 딸깍 (진동은 서로 끊으므로 첫 번째 상자에서만)
+                if (ticks) {
+                    const slot = Math.floor(k * 5);
+                    if (k >= 1) haptic.play('snap');
+                    else if (slot !== lastTick) { lastTick = slot; if (slot > 0) haptic.play('tick'); }
+                }
                 if (k < 1) requestAnimationFrame(step);
             };
             requestAnimationFrame(step);
@@ -1651,8 +1661,7 @@
                     box.style.opacity = '';
                     restartClass(box, 'pop-in');
                     sfx.play('pop');
-                    haptic.play('tick');
-                    countUp(el, val, suffix);
+                    countUp(el, val, suffix, 0, i === 0);
                 }, 1250 + i * 200);
             });
 
@@ -1901,6 +1910,14 @@
             });
 
             const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+            // 누르는 순간 바로 눌린다: :active는 모바일에서 늦게 붙는다. 뗌·취소·이탈 때 모두 푼다.
+            const pressed = new Set();
+            const release = () => { pressed.forEach((b) => b.classList.remove('is-pressed')); pressed.clear(); };
+            document.addEventListener('pointerdown', (e) => {
+                const b = e.target.closest && e.target.closest('.tap, .btn');
+                if (b && !b.disabled) { b.classList.add('is-pressed'); pressed.add(b); }
+            }, { passive: true });
+            ['pointerup', 'pointercancel', 'dragstart', 'scroll'].forEach((t) => document.addEventListener(t, release, { passive: true, capture: true }));
             on('btn-footer-start', () => startQuiz('normal'));
             on('btn-start-study', () => {
                 if (!state.selectedChapters.length) return;
