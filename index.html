@@ -367,6 +367,8 @@
         .animate-entry { animation: tileIn 450ms var(--spring) backwards; }
         @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
         .pop { animation: pop 320ms var(--spring); }
+        .bump { animation: bump 320ms var(--spring); }
+        @keyframes bump { 0% { transform: scale(0.6); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
         @keyframes popIn { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
         .pop-in { animation: popIn 420ms var(--spring) both; }
         @keyframes textPop { from { opacity: 0; transform: translateY(12px) scale(0.92); } to { opacity: 1; transform: none; } }
@@ -1239,7 +1241,12 @@
                 const from = shownStats.xp;
                 setTimeout(() => { countUp($('stat-xp'), xp, '', from); restartClass($('stat-xp').closest('.panel'), 'pop'); }, 350);
             } else $('stat-xp').innerText = xp;
-            if (shownStats && streak > shownStats.streak) setTimeout(() => { $('stat-streak').innerText = streak; restartClass($('stat-streak').closest('.panel'), 'pop'); }, 500);
+            if (shownStats && streak > shownStats.streak) setTimeout(() => {
+                $('stat-streak').innerText = streak; restartClass($('stat-streak').closest('.panel'), 'pop');
+                // 불꽃 bump: CSS의 일렁임 위에 잠깐 덮어씌운다 (Web Animations가 끝나면 일렁임으로 돌아간다)
+                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) $('stat-flame').animate([{ transform: 'scale(0.6)' }, { transform: 'scale(1.15)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 320, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+                if (state.view === 'menu') { sfx.play('pop'); haptic.play('success'); }
+            }, 500);
             else $('stat-streak').innerText = streak;
             $('stat-flame').classList.toggle('lit', streak > 0); // 연속 기록이 살아 있으면 불꽃이 일렁인다
             shownStats = { xp, streak };
@@ -1541,10 +1548,16 @@
                 }
                 $('feedback-mean').innerText = extra || item.hanja;
                 const graduated = extra === '오답 노트 졸업!';
-                sfx.play(graduated ? 'graduate' : 'correct', qz.combo);
-                haptic.play(graduated ? 'celebrate' : qz.combo >= 3 ? 'combo' : 'success');
                 const src = q.type === 'fill' ? inputEl : document.querySelector('#quiz-choices .choice-btn.is-right');
-                burst(src, { count: qz.combo >= 3 || graduated ? 20 : 12, spread: qz.combo >= 3 ? 1.3 : 1 });
+                const combo = qz.combo;
+                // 소리·진동·반짝이는 서랍이 올라와 자리에 닿는 순간 한 번에 (스프링이 목표를 처음 지나는 ≈160ms)
+                const land = () => {
+                    if (state.quiz !== qz || state.view !== 'quiz') return;
+                    sfx.play(graduated ? 'graduate' : 'correct', combo);
+                    haptic.play(graduated ? 'celebrate' : combo >= 3 ? 'combo' : 'success');
+                    burst(src, { count: combo >= 3 || graduated ? 20 : 12, spread: combo >= 3 ? 1.3 : 1 });
+                };
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) land(); else setTimeout(land, 160);
             }
             renderCombo(true);
             // 정답 0.6초(졸업·연속 안내가 있으면 1.1초), 오답 1.5초 뒤 자동으로 다음 문제로 넘어간다.
@@ -1556,7 +1569,7 @@
             const c = state.quiz.combo;
             el.innerHTML = c >= 2 ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${ICONS.flame}</svg>${c}` : '';
             el.setAttribute('aria-label', c >= 2 ? `${c}연속 정답` : '');
-            if (animate && c >= 2) restartClass(el, 'pop');
+            if (animate && c >= 2) restartClass(el, 'bump');
             $('quiz-progress').parentElement.classList.toggle('hot', c >= 3); // 3연속부터 막대가 불붙은 색으로
         }
         function floatXP(text) {
