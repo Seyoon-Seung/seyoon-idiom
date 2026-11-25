@@ -701,8 +701,10 @@
         'use strict';
         // ===== 상수 · 저장소 =====
         const GRAD_STREAK = 2; // 오답 노트에서 연속 N번 맞히면 졸업
-        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', sound: 'idiom_sound_v1', haptic: 'idiom_haptic_v1', xp: 'idiom_xp_v1', streak: 'idiom_streak_v1', recent: 'idiom_search_recent_v1' };
-        const XP_PER_CORRECT = 10, XP_PERFECT_BONUS = 20, DAILY_GOAL = 50;
+        const STORE = { wrongs: 'idiom_seung_opt_v1', theme: 'idiom_theme_pref', known: 'idiom_known_v1', type: 'idiom_quiz_type_v1', sound: 'idiom_sound_v1', haptic: 'idiom_haptic_v1', xp: 'idiom_xp_v1', streak: 'idiom_streak_v1', recent: 'idiom_search_recent_v1', mastery: 'idiom_mastery_v1' };
+        const XP_PER_CORRECT = 10, XP_WITH_HINT = 5, XP_PERFECT_BONUS = 20, PERFECT_MIN = 5, DAILY_GOAL = 50;
+        const ROUND_MAX = 20;   // 한 판 최대 문제 수
+        const KNOWN_STREAK = 2; // 퀴즈에서 힌트 없이 연속 N번 맞히면 자동으로 '외웠어요'
         const QUIZ_TYPES = {
             fill: '앞 두 글자를 보고 뒤 두 글자를 써요. 4글자가 아닌 성어는 뜻 고르기로 나와요.',
             meaning: '뜻을 보고 알맞은 성어를 4개 중에 골라요.',
@@ -737,6 +739,12 @@
                 seen.add(idx);
                 out.push({ index: idx, date: typeof w.date === 'string' ? w.date : null, streak: Number.isInteger(w.streak) && w.streak > 0 ? w.streak : 0 });
             }
+            return out;
+        }
+        // 퀴즈 연속 정답 수 { index: n } (힌트 없이 맞힌 것만 센다)
+        function normalizeMastery(o) {
+            const out = {};
+            if (o && typeof o === 'object' && !Array.isArray(o)) for (const [k, v] of Object.entries(o)) { const i = Number(k), n = Number(v); if (BY_INDEX.has(i) && Number.isInteger(n) && n > 0) out[i] = n; }
             return out;
         }
         function normalizeKnown(arr) { return Array.isArray(arr) ? arr.map(Number).filter((n) => BY_INDEX.has(n)) : []; }
@@ -938,6 +946,7 @@
             studyList: [], studyIdx: 0, studyShuffle: false,
             savedWrongs: normalizeWrongs(loadJSON(STORE.wrongs, [])),
             known: new Set(normalizeKnown(loadJSON(STORE.known, []))),
+            mastery: normalizeMastery(loadJSON(STORE.mastery, {})),
             isMenuFirstLoad: true,
             searchQuery: '',
             recentSearches: loadRecent(),
@@ -946,6 +955,7 @@
         };
         const saveWrongs = () => storeSet(STORE.wrongs, JSON.stringify(state.savedWrongs));
         const saveKnown = () => storeSet(STORE.known, JSON.stringify([...state.known]));
+        const saveMastery = () => storeSet(STORE.mastery, JSON.stringify(state.mastery));
 
         const els = {
             views: { menu: $('view-menu'), study: $('view-study'), quiz: $('view-quiz'), result: $('view-result'), review: $('view-review'), search: $('view-search') },
@@ -1225,7 +1235,7 @@
             $('btn-start-study').disabled = !hasSelection;
             const listLen = chapterItems(state.selectedChapters).length;
             $('study-btn-sub').innerText = hasSelection ? `${listLen}개 성어` : '챕터를 먼저 선택하세요';
-            const status = hasSelection ? `${listLen}문제 준비 완료` : '챕터를 골라 주세요';
+            const status = hasSelection ? `${Math.min(listLen, ROUND_MAX)}문제 준비 완료` : '챕터를 골라 주세요';
             const fs = $('footer-status');
             if (fs.innerText !== status) { fs.innerText = status; if (!state.isMenuFirstLoad) { restartClass(fs, 'pop'); } }
             renderQuizType();
@@ -1396,23 +1406,40 @@
             if (quizType === 'mixed') { const pool = can4 ? ['fill', 'meaning', 'hanja'] : ['meaning', 'hanja']; return pool[Math.floor(Math.random() * pool.length)]; }
             return quizType;
         }
+        function confusability(a, b) {
+            let s = 0;
+            for (const ch of new Set(a.text)) if (b.text.includes(ch)) s += 3;
+            for (const ch of new Set(a.hanja)) if (b.hanja.includes(ch)) s += 2;
+            if (choseongOf(a.text[0]) === choseongOf(b.text[0])) s += 1;
+            if (chapterOf(a) === chapterOf(b)) s += 1;
+            return s + Math.random() * 2.5; // 같은 점수끼리는 섞여서 매번 조금씩 다른 보기가 나온다
+        }
         function buildQuestion(item, type) {
             if (type === 'fill') return { type, item };
             const sameLen = RAW_DATA.filter((o) => o.index !== item.index && o.text.length === item.text.length);
             const pool = sameLen.length >= 3 ? sameLen : RAW_DATA.filter((o) => o.index !== item.index);
-            return { type, item, options: shuffle([item, ...shuffle(pool).slice(0, 3)]) };
+            // 헷갈리는 보기를 고른다: 글자·한자를 공유하거나, 첫 초성이 같거나, 같은 장인 성어일수록 우선
+            const picked = pool.map((o) => ({ o, s: confusability(item, o) })).sort((a, b) => b.s - a.s).slice(0, 3).map((x) => x.o);
+            return { type, item, options: shuffle([item, ...picked]) };
         }
 
+        // 한 판은 최대 ROUND_MAX문제. 넘치면 약한 성어부터 뽑는다: 오답 노트(연속 정답 적은 순) → 아직 안 외운 것 → 외운 것
+        function pickRound(list) {
+            if (list.length <= ROUND_MAX) return list;
+            const wrongs = new Map(state.savedWrongs.map((w) => [w.index, w]));
+            const tier = (it) => (wrongs.has(it.index) ? wrongs.get(it.index).streak * 0.1 : state.known.has(it.index) ? 2 : 1);
+            return shuffle(list).sort((a, b) => tier(a) - tier(b)).slice(0, ROUND_MAX); // 정렬은 안정적이라 같은 단계 안에서는 무작위
+        }
         function startQuiz(mode = 'normal', items = null) {
             let list;
             if (items) list = items.slice();
-            else if (mode === 'review') list = state.savedWrongs.map((w) => BY_INDEX.get(w.index));
-            else list = chapterItems(state.selectedChapters);
+            else list = pickRound(mode === 'review' ? state.savedWrongs.map((w) => BY_INDEX.get(w.index)) : chapterItems(state.selectedChapters));
             if (!list.length) return;
             clearQuizTimer();
             const qs = shuffle(list).map((it) => buildQuestion(it, pickType(it, state.quizType)));
             state.quiz = { ...newQuizState(), qs, mode, done: false };
-            if (mode !== 'retry') state.lastRun = { mode, items: list.slice() };
+            // 오답 노트 퀴즈를 다시 풀 때는 그때의 노트로 새로 뽑는다(졸업한 성어 빼고, 새로 틀린 성어 넣고)
+            if (mode !== 'retry') state.lastRun = { mode, items: mode === 'review' ? null : list.slice() };
             navigateTo('quiz');
         }
 
@@ -1532,15 +1559,19 @@
                 state.savedWrongs.unshift({ index: item.index, date: new Date().toISOString(), streak: 0 });
                 saveWrongs();
                 if (!qz.wrongs.some((it) => it.index === item.index)) qz.wrongs.push(item);
+                // 틀리면 '외웠어요'를 풀고 연속 정답을 0으로
+                delete state.mastery[item.index]; saveMastery();
+                if (state.known.delete(item.index)) saveKnown();
             } else {
-                qz.xp += XP_PER_CORRECT;
-                addXP(XP_PER_CORRECT);
-                floatXP(`+${XP_PER_CORRECT} XP`);
+                const gain = qz.hints ? XP_WITH_HINT : XP_PER_CORRECT; // 힌트를 보고 맞히면 절반
+                qz.xp += gain;
+                addXP(gain);
+                floatXP(`+${gain} XP`);
                 restartClass($('quiz-progress'), 'shine');
                 const PRAISE = ['정답이에요!', '좋아요!', '훌륭해요!', '맞았어요!', '완벽해요!'];
                 $('feedback-title').innerText = qz.combo >= 3 ? `${qz.combo}연속 정답!` : PRAISE[Math.floor(Math.random() * PRAISE.length)];
                 $('feedback-answer').innerText = item.text;
-                if (qz.mode === 'review') {
+                {   // 오답 노트에 있는 성어는 어느 퀴즈에서 맞혀도 졸업에 가까워진다
                     const w = state.savedWrongs.find((x) => x.index === item.index);
                     if (w) {
                         w.streak = (w.streak || 0) + 1;
@@ -1551,6 +1582,11 @@
                         } else extra = `연속 정답 ${w.streak}/${GRAD_STREAK}`;
                         saveWrongs();
                     }
+                }
+                if (!qz.hints) { // 힌트 없이 연속으로 맞히면 자동으로 '외웠어요'
+                    const n = (state.mastery[item.index] || 0) + 1;
+                    state.mastery[item.index] = n; saveMastery();
+                    if (n >= KNOWN_STREAK && !state.known.has(item.index)) { state.known.add(item.index); saveKnown(); if (!extra) extra = '외운 성어로 표시했어요'; }
                 }
                 $('feedback-mean').innerText = extra || item.hanja;
                 const graduated = extra === '오답 노트 졸업!';
@@ -1644,7 +1680,7 @@
             const first = !qz.celebrated;
             if (first) {
                 qz.celebrated = true;
-                if (isPerfect) { qz.xp += XP_PERFECT_BONUS; addXP(XP_PERFECT_BONUS); }
+                if (isPerfect && total >= PERFECT_MIN) { qz.xp += XP_PERFECT_BONUS; addXP(XP_PERFECT_BONUS); } // 1~4문제짜리 판으로 보너스를 쉽게 못 받게
                 qz.streakUp = touchStreak();
                 haptic.play(isPerfect ? 'celebrate' : 'success');
                 setTimeout(() => { if (isPerfect) { sfx.play('perfect'); triggerConfetti(); } else sfx.play('finish'); }, 250);
@@ -1695,6 +1731,8 @@
             extra.classList.toggle('hidden', !qz.graduated.length);
             extra.innerText = qz.graduated.length ? `${qz.graduated.length}개 오답 노트 졸업` : '';
             $('btn-result-wrongs').classList.toggle('hidden', qz.wrongs.length === 0);
+            // 오답 노트를 다 졸업했으면 다시 풀 게 없다
+            $('btn-result-again').classList.toggle('hidden', !!state.lastRun && state.lastRun.mode === 'review' && !state.savedWrongs.length);
 
             const wrongsContainer = $('wrong-answers-container');
             const wrongsListEl = $('wrong-answers-list');
@@ -1991,7 +2029,8 @@
 
         // ===== 백업 · 복원 =====
         function exportData() {
-            const data = { app: 'idiom-seung', version: 1, exportedAt: new Date().toISOString(), wrongs: state.savedWrongs, known: [...state.known] };
+            const data = { app: 'idiom-seung', version: 1, exportedAt: new Date().toISOString(), wrongs: state.savedWrongs, known: [...state.known], mastery: state.mastery,
+                xp: { total: progress.total, today: progress.today, day: progress.day }, streak: { last: progress.last, count: progress.count } };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             const d = new Date();
@@ -2003,6 +2042,30 @@
             showToast('백업 파일을 저장했어요');
         }
 
+        // 백업의 XP · 연속 학습일을 지금 기록과 합친다. 두 연속 구간이 이어지거나 겹치면 하나로 잇는다.
+        const parseDay = (k) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(k || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; };
+        const daysBetween = (a, b) => Math.round((b - a) / 86400000);
+        function mergeProgress(xp, streak) {
+            const x = xp || {}, s = streak || {};
+            progress.total = Math.max(progress.total, num(x.total));
+            if (typeof x.day === 'string' && parseDay(x.day)) {
+                if (x.day > progress.day) { progress.day = x.day; progress.today = num(x.today); }
+                else if (x.day === progress.day) progress.today = Math.max(progress.today, num(x.today));
+            }
+            const bLast = parseDay(s.last), bCount = num(s.count);
+            if (bLast && bCount) {
+                const cLast = parseDay(progress.last), cCount = progress.count;
+                if (!cLast || !cCount) { progress.last = s.last; progress.count = bCount; }
+                else {
+                    const start = (last, n) => { const d = new Date(last); d.setDate(d.getDate() - (n - 1)); return d; };
+                    const [early, late] = bLast <= cLast ? [[bLast, bCount], [cLast, cCount]] : [[cLast, cCount], [bLast, bCount]];
+                    const touches = daysBetween(early[0], start(late[0], late[1])) <= 1; // 앞 구간 끝 다음 날까지 뒤 구간이 시작하면 이어진 것
+                    const count = touches ? daysBetween(start(early[0], early[1]) < start(late[0], late[1]) ? start(early[0], early[1]) : start(late[0], late[1]), late[0]) + 1 : late[1];
+                    progress.last = dayKey(late[0]); progress.count = count;
+                }
+            }
+            saveProgress();
+        }
         function importData(file) {
             if (!file) return;
             const reader = new FileReader();
@@ -2019,9 +2082,11 @@
                     });
                     state.savedWrongs = [...merged.values()].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
                     normalizeKnown(data.known).forEach((n) => state.known.add(n));
-                    saveWrongs(); saveKnown();
+                    Object.entries(normalizeMastery(data.mastery)).forEach(([i, n]) => { state.mastery[i] = Math.max(state.mastery[i] || 0, n); });
+                    mergeProgress(data.xp, data.streak);
+                    saveWrongs(); saveKnown(); saveMastery();
                     renderMenu();
-                    showToast(`복원 완료 · 오답 ${state.savedWrongs.length}개, 외운 성어 ${state.known.size}개`);
+                    showToast(`복원 완료 · 오답 ${state.savedWrongs.length}개, 외운 성어 ${state.known.size}개, ${currentStreak()}일 연속`);
                 } catch (e) { showToast('올바른 백업 파일이 아니에요'); }
             };
             reader.readAsText(file);
@@ -2114,7 +2179,7 @@
                 const it = state.studyList[state.studyIdx];
                 if (!it) return;
                 const nowKnown = !state.known.has(it.index);
-                if (nowKnown) state.known.add(it.index); else state.known.delete(it.index);
+                if (nowKnown) state.known.add(it.index); else { state.known.delete(it.index); delete state.mastery[it.index]; saveMastery(); }
                 saveKnown(); updateStudyCardData(it);
                 sfx.play(nowKnown ? 'known' : 'unknown');
                 haptic.play(nowKnown ? 'known' : 'tick');
